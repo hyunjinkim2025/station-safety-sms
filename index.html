@@ -3,44 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>안전 문자 전송</title>
+<title>방배역 안전망 [0-0]</title>
 <style>
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
-    background: #111;
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    text-align: center;
-    padding: 24px;
-    box-sizing: border-box;
-  }
+  body { margin: 0; font-family: -apple-system, sans-serif; background: #111; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; padding: 24px; box-sizing: border-box; }
   h1 { font-size: 20px; margin-bottom: 8px; }
   p { color: #aaa; font-size: 14px; margin-bottom: 32px; }
-  a.btn {
-    display: inline-block;
-    background: #2ecc71;
-    color: #111;
-    font-weight: bold;
-    font-size: 18px;
-    padding: 18px 32px;
-    border-radius: 12px;
-    text-decoration: none;
-    width: 80%;
-    max-width: 320px;
-  }
+  a.btn { display: inline-block; background: #2ecc71; color: #111; font-weight: bold; font-size: 18px; padding: 18px 32px; border-radius: 12px; text-decoration: none; width: 80%; max-width: 320px; margin-bottom: 12px; }
 </style>
 </head>
 <body>
   <h1>방배역 스마트 안전망</h1>
-  <p id="sub">아래 버튼을 누르면 구호 문자가 자동 완성됩니다.</p>
+  <p>아래 버튼을 누르면 [0-0 지점] 구호 문자가 자동 완성됩니다.</p>
   <div>
-    <!-- 자바스크립트 자동 이동을 완전히 배제하고, HTML 순정 링크로만 철저하게 강제 고정합니다. -->
-    <a class="btn" href="sms:0215771234?body=%5B%EB%B0%A9%EB%B0%B0%EC%97%AD%20%EC%9Wait%EC%8A%A0%EA%B0%95%EC%9E%A5%5D%20%EC%9D%91%EA%B8%89%ED%99%99%EC%9E%90%20%EB%B0%9C%EC%83%9D%21%20%EC%A6%89%EC%8B%9C%20%EC%97%AD%EC%A7%81%EC%9B%90%20%EC%B6%9C%EB%8F%99%20%EC%9A%94%EC%B2%AD%20%EB%B0%94%EB%9E%8D%EB%8B%88%EB%8B%A4.">🚨 구호요청 문자 발송</a>
+    <!-- 아이폰(iOS) 전용 버튼 -->
+    <a class="btn" href="sms:15771234&body=%5B%EB%B0%A9%EB%B0%B0%EC%97%AD%20%EC%8A%B9%EA%B0%95%EC%9E%A5%200-0%20%EC%A7%80%EC%A0%90%5D%20%EC%9D%91%EA%B8%89%ED%99%99%EC%9E%90%20%EB%B0%9C%EC%83%9D%21%20%EC%A6%89%EC%8B%9C%20%EC%97%AD%EC%A7%81%EC%9B%90%20%B2%B1%EB%8F%99%20%EC%9A%94%EC%B2%AD%20%EB%B0%94%EB%9E%8D%EB%8B%88%EB%8B%A4.">iPhone 구호요청 문자 발송</a>
+    
+    <!-- 갤럭시(Android) 전용 버튼 -->
+    <a class="btn" style="background: #3498db;" href="sms:15771234?body=%5B%EB%B0%A9%EB%B0%B0%EC%97%AD%20%EC%8A%B9%EA%B0%95%EC%9E%A5%200-0%20%EC%A7%80%EC%A0%90%5D%20%EC%9D%91%EA%B8%89%ED%99%99%EC%9E%90%20%EB%B0%9C%EC%83%9D%21%20%EC%A6%89%EC%8B%9C%20%EC%97%AD%EC%A7%81%EC%9B%90%20%B2%B1%EB%8F%99%20%EC%9A%94%EC%B2%AD%20%EB%B0%94%EB%9E%8D%EB%8B%88%EB%8B%A4.">Galaxy 구호요청 문자 발송</a>
   </div>
 </body>
 </html>
