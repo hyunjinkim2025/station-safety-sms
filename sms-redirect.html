@@ -37,17 +37,17 @@
 </head>
 <body>
   <h1>방배역 스마트 안전망</h1>
-  <p id="sub">잠시 후 문자 메시지 앱으로 이동합니다...</p>
+  <p id="sub">위치 정보 분석 중...</p>
   <div id="btn-container"></div>
 
   <script>
-    // 1. URL 쿼리스트링 파라미터 안전하게 읽기
+    // 1. URL 쿼리스트링 파라미터 읽기
     var params = new URLSearchParams(window.location.search);
-    var number = params.get("num") || "0215771234"; // 기본 고객센터 전화번호 기본 세팅
-    var location = params.get("loc") || "방배역 외선 승강장";
+    var number = params.get("num") || "0215771234"; // 김부자님 지정 기본 번호
+    var location = params.get("loc") || "방배역 외선 승강장"; // 김부자님 지정 기본 위치
     var message = "[" + location + "] 응급환자 발생! 즉시 역직원 출동 요청 바랍니다.";
 
-    // 2. iOS(아이폰)와 Android(갤럭시) 기종 판별 분기 처리
+    // 2. iOS(아이폰)와 Android(갤럭시) 기종 판별
     var ua = navigator.userAgent;
     var isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
     var separator = isIOS ? "&" : "?";
@@ -55,22 +55,23 @@
     // 3. 최종 SMS 프로토콜 주소 생성
     var smsLink = "sms:" + number + separator + "body=" + encodeURIComponent(message);
 
-    // 4. 화면에 위치 정보 텍스트 바인딩
+    // 4. 화면에 텍스트 표시
     document.getElementById("sub").textContent = location + " 구호요청";
 
-    // 5. 버튼 생성 및 화면 배치
+    // 5. 버튼 출력
     var container = document.getElementById("btn-container");
     container.innerHTML = '<a class="btn" href="' + smsLink + '">문자 앱 수동 열기</a>';
 
-    // 6. [핵심] PC 브라우저 404 무한루프 방지 및 모바일 자동 강제 호출
-    // 모바일 기기(iOS, Android) 환경일 때만 즉시 문자 앱을 강제 실행합니다.
+    // 6. [결정적 해결책] 스마트폰 환경일 때만 자동 이동 실행
+    // PC 크롬 브라우저에서는 절대로 자동 리다이렉트가 일어나지 않도록 안전장치를 겁니다.
     if (/Android|iPhone|iPad|iPod/i.test(ua)) {
         setTimeout(function() {
             window.location.href = smsLink;
-        }, 300); // 0.3초 뒤 자동 실행
+        }, 300);
     } else {
-        // PC 크롬 브라우저로 테스트할 때는 주소가 바뀌지 않고 화면을 그대로 유지하도록 처리
-        document.getElementById("sub").textContent = "PC 환경 테스트 모드 (주소 유지)";
+        // PC 테스트 시에는 404로 튕기지 않고 브라우저 주소를 고정합니다.
+        console.log("PC 환경: " + smsLink);
+        document.getElementById("sub").textContent = location + " (PC 테스트 모드 - 화면 고정)";
     }
   </script>
 </body>
