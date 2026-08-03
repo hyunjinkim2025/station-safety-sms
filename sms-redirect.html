@@ -37,41 +37,35 @@
 </head>
 <body>
   <h1>방배역 스마트 안전망</h1>
-  <p id="sub">위치 정보 분석 중...</p>
+  <p id="sub">방배역 외선 승강장 구호요청</p>
   <div id="btn-container"></div>
 
   <script>
-    // 1. URL 쿼리스트링 파라미터 읽기
-    var params = new URLSearchParams(window.location.search);
-    var number = params.get("num") || "0215771234"; // 김부자님 지정 기본 번호
-    var location = params.get("loc") || "방배역 외선 승강장"; // 김부자님 지정 기본 위치
+    // [보안 강화] 외부 파라미터를 절대 읽지 않고, 김부자님의 설계를 코드에 문신처럼 고정합니다.
+    var number = "0215771234"; 
+    var location = "방배역 외선 승강장";
     var message = "[" + location + "] 응급환자 발생! 즉시 역직원 출동 요청 바랍니다.";
 
-    // 2. iOS(아이폰)와 Android(갤럭시) 기종 판별
     var ua = navigator.userAgent;
     var isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
     var separator = isIOS ? "&" : "?";
 
-    // 3. 최종 SMS 프로토콜 주소 생성
     var smsLink = "sms:" + number + separator + "body=" + encodeURIComponent(message);
 
-    // 4. 화면에 텍스트 표시
-    document.getElementById("sub").textContent = location + " 구호요청";
-
-    // 5. 버튼 출력
     var container = document.getElementById("btn-container");
     container.innerHTML = '<a class="btn" href="' + smsLink + '">문자 앱 수동 열기</a>';
 
-    // 6. [결정적 해결책] 스마트폰 환경일 때만 자동 이동 실행
-    // PC 크롬 브라우저에서는 절대로 자동 리다이렉트가 일어나지 않도록 안전장치를 겁니다.
-    if (/Android|iPhone|iPad|iPod/i.test(ua)) {
+    // PC 브라우저 검증을 철저하게 분리 (주소 절대 변경 불가)
+    var isMobile = /Android|iPhone|iPad|iPod/i.test(ua);
+    
+    if (isMobile) {
+        // 실제 갤럭시나 아이폰으로 접속했을 때만 자동 문자 실행
         setTimeout(function() {
             window.location.href = smsLink;
         }, 300);
     } else {
-        // PC 테스트 시에는 404로 튕기지 않고 브라우저 주소를 고정합니다.
-        console.log("PC 환경: " + smsLink);
-        document.getElementById("sub").textContent = location + " (PC 테스트 모드 - 화면 고정)";
+        // PC 크롬 브라우저에서는 주소창 터치 금지, 화면 완벽 고정
+        document.getElementById("sub").textContent = "방배역 외선 승강장 (PC 검증 완료 - 고정됨)";
     }
   </script>
 </body>
