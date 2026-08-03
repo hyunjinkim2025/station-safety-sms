@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>안전 문자 전송</title>
+<style>
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
+    background: #111;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+    padding: 24px;
+    box-sizing: border-box;
+  }
+  h1 { font-size: 20px; margin-bottom: 8px; }
+  p { color: #aaa; font-size: 14px; margin-bottom: 32px; }
+  a.btn {
+    display: inline-block;
+    background: #2ecc71;
+    color: #111;
+    font-weight: bold;
+    font-size: 18px;
+    padding: 18px 32px;
+    border-radius: 12px;
+    text-decoration: none;
+    width: 80%;
+    max-width: 320px;
+  }
+</style>
+</head>
+<body>
+  <h1 id="title">아래 버튼을 눌러주세요</h1>
+  <p id="sub">눌러야만 문자 앱이 열립니다</p>
+  <a id="smsBtn" class="btn" href="#">문자 앱 열기</a>
+
+<script>
+  // ===== 이 두 값만 역/지점별로 바꿔서 태그마다 다른 쿼리스트링으로 배포 =====
+  // 예: sms-redirect.html?num=15771234&loc=승강장%203-3%20지점
+  const params = new URLSearchParams(window.location.search);
+
+  const DEFAULT_NUMBER = "01012345678"; // 기본 번호 (하이픈 없이, 실제 콜센터/119 번호로 교체)
+  const DEFAULT_LOCATION = "방배역 외선승강장 3-3 지점";
+
+  const number = params.get("num") || DEFAULT_NUMBER;
+  const location = params.get("loc") || DEFAULT_LOCATION;
+
+  const message = `${location} 응급환자 발생 역직원 출동 요청`;
+
+  // iOS는 & 로, Android는 ? 로 body 파라미터를 구분해야 정상적으로 채워짐
+  const ua = navigator.userAgent;
+  const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+  const separator = isIOS ? "&" : "?";
+
+  const smsLink = `sms:${number}${separator}body=${encodeURIComponent(message)}`;
+
+  const btn = document.getElementById("smsBtn");
+  btn.setAttribute("href", smsLink);
+  document.getElementById("sub").textContent = location;
+</script>
+</body>
+</html>
