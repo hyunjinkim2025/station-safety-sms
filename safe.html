@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>안전 문자 전송</title>
+<style>
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
+    background: #111;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+    padding: 24px;
+    box-sizing: border-box;
+  }
+  h1 { font-size: 20px; margin-bottom: 8px; }
+  p { color: #aaa; font-size: 14px; margin-bottom: 32px; }
+  a.btn {
+    display: inline-block;
+    background: #2ecc71;
+    color: #111;
+    font-weight: bold;
+    font-size: 18px;
+    padding: 18px 32px;
+    border-radius: 12px;
+    text-decoration: none;
+    width: 80%;
+    max-width: 320px;
+  }
+</style>
+</head>
+<body>
+  <h1>방배역 스마트 안전망</h1>
+  <p id="sub">방배역 외선 승강장 구호요청</p>
+  <div id="btn-container"></div>
+
+  <script>
+    // [보안 강화] 외부 파라미터를 절대 읽지 않고, 김부자님의 설계를 코드에 문신처럼 고정합니다.
+    var number = "0215771234"; 
+    var location = "방배역 외선 승강장";
+    var message = "[" + location + "] 응급환자 발생! 즉시 역직원 출동 요청 바랍니다.";
+
+    var ua = navigator.userAgent;
+    var isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+    var separator = isIOS ? "&" : "?";
+
+    var smsLink = "sms:" + number + separator + "body=" + encodeURIComponent(message);
+
+    var container = document.getElementById("btn-container");
+    container.innerHTML = '<a class="btn" href="' + smsLink + '">문자 앱 수동 열기</a>';
+
+    // PC 브라우저 검증을 철저하게 분리 (주소 절대 변경 불가)
+    var isMobile = /Android|iPhone|iPad|iPod/i.test(ua);
+    
+    if (isMobile) {
+        // 실제 갤럭시나 아이폰으로 접속했을 때만 자동 문자 실행
+        setTimeout(function() {
+            window.location.href = smsLink;
+        }, 300);
+    } else {
+        // PC 크롬 브라우저에서는 주소창 터치 금지, 화면 완벽 고정
+        document.getElementById("sub").textContent = "방배역 외선 승강장 (PC 검증 완료 - 고정됨)";
+    }
+  </script>
+</body>
+</html>
