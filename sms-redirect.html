@@ -36,33 +36,42 @@
 </style>
 </head>
 <body>
-  <h1>아래 버튼을 눌러주세요</h1>
-  <p id="sub">눌러야만 문자 앱이 열립니다</p>
+  <h1>방배역 스마트 안전망</h1>
+  <p id="sub">잠시 후 문자 메시지 앱으로 이동합니다...</p>
+  <div id="btn-container"></div>
 
   <script>
-    // ===== 이 두 값만 역/지점별로 바꿔서 태그마다 다른 쿼리스트링으로 배포 =====
-    // 예: sms-redirect.html?num=15771234&loc=승강장%203-3%20지점
+    // 1. URL 쿼리스트링 파라미터 안전하게 읽기
     var params = new URLSearchParams(window.location.search);
+    var number = params.get("num") || "0215771234"; // 기본 고객센터 전화번호 기본 세팅
+    var location = params.get("loc") || "방배역 외선 승강장";
+    var message = "[" + location + "] 응급환자 발생! 즉시 역직원 출동 요청 바랍니다.";
 
-    var DEFAULT_NUMBER = "01012345678"; // 기본 번호 (하이픈 없이, 실제 콜센터/119 번호로 교체)
-    var DEFAULT_LOCATION = "방배역 외선승강장 3-3 지점";
-
-    var number = params.get("num") || DEFAULT_NUMBER;
-    var location = params.get("loc") || DEFAULT_LOCATION;
-
-    var message = location + " 응급환자 발생 역직원 출동 요청";
-
-    // iOS는 & 로, Android는 ? 로 body 파라미터를 구분해야 정상적으로 채워짐
+    // 2. iOS(아이폰)와 Android(갤럭시) 기종 판별 분기 처리
     var ua = navigator.userAgent;
     var isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
     var separator = isIOS ? "&" : "?";
 
+    // 3. 최종 SMS 프로토콜 주소 생성
     var smsLink = "sms:" + number + separator + "body=" + encodeURIComponent(message);
 
-    document.getElementById("sub").textContent = location;
+    // 4. 화면에 위치 정보 텍스트 바인딩
+    document.getElementById("sub").textContent = location + " 구호요청";
 
-    // 페이지 작성 시점에 바로 링크가 박힌 <a> 태그를 직접 출력
-    document.write('<a class="btn" href="' + smsLink + '">문자 앱 열기</a>');
+    // 5. 버튼 생성 및 화면 배치
+    var container = document.getElementById("btn-container");
+    container.innerHTML = '<a class="btn" href="' + smsLink + '">문자 앱 수동 열기</a>';
+
+    // 6. [핵심] PC 브라우저 404 무한루프 방지 및 모바일 자동 강제 호출
+    // 모바일 기기(iOS, Android) 환경일 때만 즉시 문자 앱을 강제 실행합니다.
+    if (/Android|iPhone|iPad|iPod/i.test(ua)) {
+        setTimeout(function() {
+            window.location.href = smsLink;
+        }, 300); // 0.3초 뒤 자동 실행
+    } else {
+        // PC 크롬 브라우저로 테스트할 때는 주소가 바뀌지 않고 화면을 그대로 유지하도록 처리
+        document.getElementById("sub").textContent = "PC 환경 테스트 모드 (주소 유지)";
+    }
   </script>
 </body>
 </html>
