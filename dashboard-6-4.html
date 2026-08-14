@@ -12,17 +12,11 @@
   .desc { font-size: 13px; color: #777; margin: 0 0 16px; font-weight: 600; }
   .intro-card { background: #a29b53; color: #ffffff; padding: 15px 18px; border-radius: 12px; font-size: 13px; line-height: 1.6; text-align: justify; word-break: keep-all; width: 100%; max-width: 360px; box-sizing: border-box; box-shadow: 0 3px 6px rgba(0,0,0,0.06); margin-bottom: 20px; }
   .btn-list { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
-  .btn-call-bb { display: block; background: #f4f6ef; color: #5a5426; border: 1.5px solid #a29b53; text-decoration: none; font-size: 14.5px; font-weight: bold; padding: 14px; border-radius: 12px; text-align: center; box-shadow: 0 3px 6px rgba(0,0,0,0.04); box-sizing: border-box; }
-  .btn-call-119 { display: block; background: #fdf3f0; color: #a33e24; border: 1.5px solid #d97d64; text-decoration: none; font-size: 14.5px; font-weight: bold; padding: 14px; border-radius: 12px; text-align: center; box-shadow: 0 3px 6px rgba(0,0,0,0.04); box-sizing: border-box; }
-  .sms-card-bb { background: #ffffff; border: 1.5px solid #a29b53; border-radius: 12px; padding: 12px 14px; text-align: center; box-shadow: 0 3px 6px rgba(0,0,0,0.04); }
-  .sms-card-119 { background: #ffffff; border: 1.5px solid #d97d64; border-radius: 12px; padding: 12px 14px; text-align: center; box-shadow: 0 3px 6px rgba(0,0,0,0.04); }
-  .sms-title { font-size: 13.5px; font-weight: bold; margin-bottom: 8px; }
-  .title-bb { color: #5a5426; }
-  .title-119 { color: #a33e24; }
-  .sms-btns { display: flex; gap: 8px; justify-content: center; }
-  .btn-sub { flex: 1; padding: 9px 0; border-radius: 8px; font-size: 12.5px; font-weight: bold; text-decoration: none; text-align: center; }
-  .btn-sub-bb { background: #ece8d9; color: #5a5426; border: 1px solid #d4ceb8; }
-  .btn-sub-119 { background: #fdf3f0; color: #a33e24; border: 1px solid #ecc9c0; }
+  .btn-main { display: block; text-decoration: none; font-size: 14.5px; font-weight: bold; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 3px 6px rgba(0,0,0,0.04); box-sizing: border-box; }
+  .btn-bb-call { background: #f4f6ef; color: #5a5426; border: 1.5px solid #a29b53; }
+  .btn-bb-sms { background: #ffffff; color: #5a5426; border: 1.5px solid #a29b53; }
+  .btn-119-call { background: #fdf3f0; color: #a33e24; border: 1.5px solid #d97d64; }
+  .btn-119-sms { background: #ffffff; color: #a33e24; border: 1.5px solid #d97d64; }
   .section-title { font-size: 16px; font-weight: 800; color: #a29b53; text-align: center; margin: 0 0 12px; width: 100%; max-width: 360px; }
   .faq-container { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
   details { background: #a29b53; color: #ffffff; border-radius: 10px; padding: 13px 15px; font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
@@ -49,23 +43,10 @@
   </div>
 
   <div class="btn-list">
-    <a class="btn-call-bb" href="tel:02-6110-2251">📞 방배역 응급환자 구호요청 전화</a>
-    <div class="sms-card-bb">
-      <div class="sms-title title-bb">🚨 방배역 응급환자 구호요청 문자</div>
-      <div class="sms-btns">
-        <a class="btn-sub btn-sub-bb" href="sms:0215771234&body=%5B%EB%B0%A9%EB%B0%B0%EC%97%AD%20%EC%99%B8%EC%84%A0%20%EC%8A%B9%EA%B0%95%EC%9E%A5%206-4%20%EC%A7%80%EC%A0%90%5D%20%EC%9D%91%EA%B8%89%ED%99%98%EC%9E%90%20%EB%B0%9C%EC%83%9D%21%20%EC%A6%89%EC%8B%9C%20%EC%97%AD%EC%A7%81%EC%9B%90%20%EC%B6%9C%EB%8F%99%20%EC%9A%94%EC%B2%AD%20%EB%B0%94%EB%9E%8D%EB%8B%88%EB%8B%A4.">🍎 iPhone 문자</a>
-        <a class="btn-sub btn-sub-bb" href="sms:0215771234?body=%5B%EB%B0%A9%EB%B0%B0%EC%97%AD%20%EC%99%B8%EC%84%A0%20%EC%8A%B9%EA%B0%95%EC%9E%A5%206-4%20%EC%A7%80%EC%A0%90%5D%20%EC%9D%91%EA%B8%89%ED%99%98%EC%9E%90%20%EB%B0%9C%EC%83%9D%21%20%EC%A6%89%EC%8B%9C%20%EC%97%AD%EC%A7%81%EC%9B%90%20%EC%B6%9C%EB%8F%99%20%EC%9A%94%EC%B2%AD%20%EB%B0%94%EB%9E%8D%EB%8B%88%EB%8B%A4.">📱 Galaxy 문자</a>
-      </div>
-    </div>
-
-    <a class="btn-call-119" href="tel:119">📞 119 응급환자 구호요청 전화</a>
-    <div class="sms-card-119">
-      <div class="sms-title title-119">🚑 119 응급환자 구호요청 문자</div>
-      <div class="sms-btns">
-        <a class="btn-sub btn-sub-119" href="sms:119&body=%5B%EB%B0%A9%EB%B0%B0%EC%97%AD%20%EC%84%9C%EC%B4%88%EB%B0%A9%EB%A9%B4%20%EC%8A%B9%EA%B0%95%EC%9E%A5%206-4%20%EC%A7%80%EC%A0%90%5D%20%EC%9D%91%EA%B8%89%ED%99%98%EC%9E%90%20%EB%B0%9C%EC%83%9D%21%20%EC%A6%89%EC%8B%9C%20%EA%B5%AC%EA%B8%89%EB%8C%80%EC%9B%90%20%EC%B6%9C%EB%8F%99%20%EC%9A%94%EC%B2%AD%20%EB%B0%94%EB%9E%8D%EB%8B%88%EB%8B%A4.">🍎 iPhone 문자</a>
-        <a class="btn-sub btn-sub-119" href="sms:119?body=%5B%EB%B0%A9%EB%B0%B0%EC%97%AD%20%EC%84%9C%EC%B4%88%EB%B0%A9%EB%A9%B4%20%EC%8A%B9%EA%B0%95%EC%9E%A5%206-4%20%EC%A7%80%EC%A0%90%5D%20%EC%9D%91%EA%B8%89%ED%99%98%EC%9E%90%20%EB%B0%9C%EC%83%9D%21%20%EC%A6%89%EC%8B%9C%20%EA%B5%AC%EA%B8%89%EB%8C%80%EC%9B%90%20%EC%B6%9C%EB%8F%99%20%EC%9A%94%EC%B2%AD%20%EB%B0%94%EB%9E%8D%EB%8B%88%EB%8B%A4.">📱 Galaxy 문자</a>
-      </div>
-    </div>
+    <a class="btn-main btn-bb-call" href="tel:02-6110-2251">📞 방배역 응급환자 구호요청 전화</a>
+    <a id="btn-sms-bb" class="btn-main btn-bb-sms" href="#">🚨 방배역 응급환자 구호요청 문자</a>
+    <a class="btn-main btn-119-call" href="tel:119">📞 119 응급환자 구호요청 전화</a>
+    <a id="btn-sms-119" class="btn-main btn-119-sms" href="#">🚑 119 응급환자 구호요청 문자</a>
   </div>
 
   <div class="section-title">FAQ</div>
@@ -91,5 +72,16 @@
   </div>
 
   <div class="footer">Seoul Metro Bangbae Station Smart Safety Network</div>
+
+  <script>
+    (function() {
+      var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+      var sep = isIOS ? '&body=' : '?body=';
+      var bbText = "%5B%EB%B0%A9%EB%B0%B0%EC%97%AD%20%EC%99%B8%EC%84%A0%20%EC%8A%B9%EA%B0%95%EC%9E%A5%206-4%20%EC%A7%80%EC%A0%90%5D%20%EC%9D%91%EA%B8%89%ED%99%98%EC%9E%90%20%EB%B0%9C%EC%83%9D%21%20%EC%A6%89%EC%8B%9C%20%EC%97%AD%EC%A7%81%EC%9B%90%20%EC%B6%9C%EB%8F%99%20%EC%9A%94%EC%B2%AD%20%EB%B0%94%EB%9E%8D%EB%8B%88%EB%8B%A4.";
+      var s119Text = "%5B%EB%B0%A9%EB%B0%B0%EC%97%AD%20%EC%84%9C%EC%B4%88%EB%B0%A9%EB%A9%B4%20%EC%8A%B9%EA%B0%95%EC%9E%A5%206-4%20%EC%A7%80%EC%A0%90%5D%20%EC%9D%91%EA%B8%89%ED%99%98%EC%9E%90%20%EB%B0%9C%EC%83%9D%21%20%EC%A6%89%EC%8B%9C%20%EA%B5%AC%EA%B8%89%EB%8C%80%EC%9B%90%20%EC%B6%9C%EB%8F%99%20%EC%9A%94%EC%B2%AD%20%EB%B0%94%EB%9E%8D%EB%8B%88%EB%8B%A4.";
+      document.getElementById('btn-sms-bb').href = 'sms:0215771234' + sep + bbText;
+      document.getElementById('btn-sms-119').href = 'sms:119' + sep + s119Text;
+    })();
+  </script>
 </body>
 </html>
