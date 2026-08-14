@@ -33,7 +33,7 @@
   h1 { font-size: 19px; margin: 0 0 4px; font-weight: 800; color: #222; }
   .desc { font-size: 13px; color: #777; margin: 0 0 16px; font-weight: 600; }
   
-  /* 1. 메인 안내 박스 (양쪽 정렬 적용) */
+  /* 메인 안내 박스 (여백 및 양쪽 정렬 확보) */
   .intro-card {
     background: #a29b53;
     color: #ffffff;
@@ -47,6 +47,7 @@
     max-width: 360px;
     box-sizing: border-box;
     box-shadow: 0 3px 6px rgba(0,0,0,0.06);
+    margin-bottom: 20px; /* 전화 탭과의 충분한 간격 */
   }
   
   /* 버튼 리스트 */
@@ -59,20 +60,23 @@
     margin-bottom: 28px;
   }
   
-  /* 통일된 전화 탭 스타일 */
+  /* 방배역 전화 탭 (소프트 그린 톤으로 일체화) */
   .btn-call-bb {
     display: block;
-    background: #a29b53;
-    color: #ffffff;
+    background: #f4f6ef;
+    color: #5a5426;
+    border: 1.5px solid #a29b53;
     text-decoration: none;
     font-size: 14.5px;
     font-weight: bold;
-    padding: 15px;
+    padding: 14px;
     border-radius: 12px;
     text-align: center;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.06);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.04);
+    box-sizing: border-box;
   }
   
+  /* 119 전화 탭 (소프트 코랄 톤) */
   .btn-call-119 {
     display: block;
     background: #fdf3f0;
@@ -202,14 +206,14 @@
     <div class="desc">스마트 시민 안전망 대시보드 [3-3 지점]</div>
   </div>
 
-  <!-- 1. 메인 안내 (양쪽 정렬) -->
+  <!-- 메인 안내 (상하 여백 완벽 복원) -->
   <div class="intro-card">
     방배역은 시민 여러분의 안전한 지하철 이용을 위해 스마트 안전망 서비스를 제공합니다. 위급상황 발생 시 아래 채널을 통해 도움을 요청하세요!
   </div>
 
-  <!-- 2. 통일된 4대 탭 -->
+  <!-- 통일된 4대 탭 (소프트 톤 밸런스 완료) -->
   <div class="btn-list">
-    <!-- 방배역 전화 -->
+    <!-- 방배역 전화 (소프트 올리브 그린 톤) -->
     <a class="btn-call-bb" href="tel:02-6110-2251">📞 방배역 응급환자 구호요청 전화</a>
 
     <!-- 방배역 문자 -->
@@ -221,7 +225,7 @@
       </div>
     </div>
 
-    <!-- 119 전화 (소프트 로즈 톤으로 밸런스 조정) -->
+    <!-- 119 전화 (소프트 코랄 톤) -->
     <a class="btn-call-119" href="tel:119">📞 119 응급환자 구호요청 전화</a>
 
     <!-- 119 문자 -->
@@ -234,7 +238,7 @@
     </div>
   </div>
 
-  <!-- 3. FAQ 섹션 (수정 문구 반영) -->
+  <!-- FAQ 섹션 -->
   <div class="section-title">FAQ</div>
   <div class="faq-container">
     <details>
@@ -253,7 +257,7 @@
     </details>
   </div>
 
-  <!-- 4. 쉼터 사진 카드 (사진명 수정 반영) -->
+  <!-- 쉼터 사진 카드 -->
   <div class="photo-card">
     <img src="shelter.jpg" alt="방배역 쉼터 안내 사진" onerror="this.style.display='none'">
     <div class="photo-desc">방배역 응급환자 쉼터 시민 안전을 최우선으로~!</div>
