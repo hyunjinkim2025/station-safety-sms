@@ -18,15 +18,18 @@
     min-height: 100vh;
   }
   
-  /* 프로필 상단 */
+  /* 프로필 상단 로고 이미지 */
   .profile-box { text-align: center; margin-bottom: 16px; }
-  .badge {
-    width: 68px; height: 68px; background: #2ecc71; border-radius: 50%;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    color: #fff; font-weight: bold; margin: 0 auto 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  .logo-img {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 12px;
+    display: block;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: 2px solid #ffffff;
   }
-  .badge span:first-child { font-size: 22px; line-height: 1; }
-  .badge span:last-child { font-size: 10px; margin-top: 2px; }
   h1 { font-size: 19px; margin: 0 0 4px; font-weight: 800; color: #222; }
   .desc { font-size: 13px; color: #777; margin: 0 0 16px; font-weight: 600; }
   
@@ -98,12 +101,9 @@
 </head>
 <body>
 
-  <!-- 프로필 -->
+  <!-- 프로필 (공식 로고 이미지 적용) -->
   <div class="profile-box">
-    <div class="badge">
-      <span>2</span>
-      <span>방배역</span>
-    </div>
+    <img class="logo-img" src="logo.png" alt="방배역 스마트 안전망 로고" onerror="this.src='https://via.placeholder.com/84/2ecc71/ffffff?text=2호선'">
     <h1>서울교통공사 2호선 방배역</h1>
     <div class="desc">스마트 시민 안전망 대시보드 [3-3 지점]</div>
   </div>
@@ -160,7 +160,6 @@
 
   <!-- 방배역 쉼터 사진 카드 -->
   <div class="photo-card">
-    <!-- 깃허브 저장소에 shelter.jpg 파일을 올리면 아래 이미지가 표시됩니다 -->
     <img src="shelter.jpg" alt="방배역 쉼터 안내 사진" onerror="this.style.display='none'">
     <div class="photo-desc">방배역 시민 안심 쉼터 (응급구호실)</div>
   </div>
