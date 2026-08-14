@@ -5,78 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>방배역 안전망 [3-3]</title>
 <style>
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
-    background: #111;
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    text-align: center;
-    padding: 24px;
-    box-sizing: border-box;
-  }
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif; background: #111; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; padding: 24px; box-sizing: border-box; }
   h1 { font-size: 21px; margin-bottom: 8px; letter-spacing: -0.5px; }
   p { color: #aaa; font-size: 14px; margin: 0 0 6px 0; line-height: 1.4; }
-  
-  /* 위치 정보(3-3 지점) 시인성 극대화: 형광 노랑 */
-  p.sub-txt {
-    color: #f1c40f;
-    font-weight: bold;
-    font-size: 15px;
-    margin-bottom: 28px;
-    letter-spacing: -0.3px;
-  }
-  
-  .btn-group {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    width: 100%;
-    max-width: 320px;
-    align-items: center;
-  }
-  a.btn {
-    display: block;
-    font-weight: bold;
-    font-size: 16px;
-    padding: 16px 20px;
-    border-radius: 12px;
-    text-decoration: none;
-    width: 100%;
-    box-sizing: border-box;
-    letter-spacing: -0.3px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  }
-  
-  /* 아이폰(iOS): 애플 다크 그레이 & 시크 화이트 */
-  .btn-ios {
-    background: #2c2c2e;
-    color: #ffffff;
-    border: 1px solid #444446;
-  }
-  
-  /* 갤럭시(Android): 삼성 시그니처 딥블루 */
-  .btn-galaxy {
-    background: #1428a0;
-    color: #ffffff;
-  }
+  p.sub-txt { color: #f1c40f; font-weight: bold; font-size: 15px; margin-bottom: 28px; letter-spacing: -0.3px; }
+  .btn-group { display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 320px; align-items: center; }
+  a.btn { display: block; font-weight: bold; font-size: 16px; padding: 16px 20px; border-radius: 12px; text-decoration: none; width: 100%; box-sizing: border-box; letter-spacing: -0.3px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+  .btn-ios { background: #2c2c2e; color: #ffffff; border: 1px solid #444446; }
+  .btn-galaxy { background: #1428a0; color: #ffffff; }
 </style>
 </head>
 <body>
   <h1>방배역 스마트 안전망</h1>
   <p>사용하시는 기기에 맞춰 버튼을 눌러주세요.</p>
   <p class="sub-txt">[3-3 지점] 구호 문자가 자동 완성됩니다.</p>
-  
   <div class="btn-group">
-    <!-- 아이폰(iOS) 전용 (&body= 사용) -->
-    <a class="btn btn-ios" href="sms:0215771234&body=%5B%EB%B0%A9%EB%B0%B0%EC%97%AD%20%EC%99%B8%EC%84%A0%20%EC%8A%B9%EA%B0%95%EC%9E%A5%200-0%20%EC%A7%80%EC%A0%90%5D%20%EC%9D%91%EA%B8%89%ED%99%98%EC%9E%90%20%EB%B0%9C%EC%83%9D%21%20%EC%A6%89%EC%8B%9C%20%EC%97%AD%EC%A7%81%EC%9B%90%20%EC%B6%9C%EB%8F%99%20%EC%9A%94%EC%B2%AD%20%EB%B0%94%EB%9E%8D%EB%8B%88%EB%8B%A4.">🍎 아이폰(iOS) 구호요청</a>
-    
-    <!-- 갤럭시(Android) 전용 (?body= 사용) -->
-    <a class="btn btn-galaxy" href="sms:0215771234?body=%5B%EB%B0%A9%EB%B0%B0%EC%97%AD%20%EC%99%B8%EC%84%A0%20%EC%8A%B9%EA%B0%95%EC%9E%A5%200-0%20%EC%A7%80%EC%A0%90%5D%20%EC%9D%91%EA%B8%89%ED%99%98%EC%9E%90%20%EB%B0%9C%EC%83%9D%21%20%EC%A6%89%EC%8B%9C%20%EC%97%AD%EC%A7%81%EC%9B%90%20%EC%B6%9C%EB%8F%99%20%EC%9A%94%EC%B2%AD%20%EB%B0%94%EB%9E%8D%EB%8B%88%EB%8B%A4.">📱 갤럭시폰(Android) 구호요청</a>
+    <a class="btn btn-ios" href="sms:0215771234&body=%5B%EB%B0%A9%EB%B0%B0%EC%97%AD%20%EC%99%B8%EC%84%A0%20%EC%8A%B9%EA%B0%95%EC%9E%A5%203-3%20%EC%A7%80%EC%A0%90%5D%20%EC%9D%91%EA%B8%89%ED%99%98%EC%9E%90%20%EB%B0%9C%EC%83%9D%21%20%EC%A6%89%EC%8B%9C%20%EC%97%AD%EC%A7%81%EC%9B%90%20%EC%B6%9C%EB%8F%99%20%EC%9A%94%EC%B2%AD%20%EB%B0%94%EB%9E%8D%EB%8B%88%EB%8B%A4.">🍎 아이폰(iPhone) 구호요청</a>
+    <a class="btn btn-galaxy" href="sms:0215771234?body=%5B%EB%B0%A9%EB%B0%B0%EC%97%AD%20%EC%99%B8%EC%84%A0%20%EC%8A%B9%EA%B0%95%EC%9E%A5%203-3%20%EC%A7%80%EC%A0%90%5D%20%EC%9D%91%EA%B8%89%ED%99%98%EC%9E%90%20%EB%B0%9C%EC%83%9D%21%20%EC%A6%89%EC%8B%9C%20%EC%97%AD%EC%A7%81%EC%9B%90%20%EC%B6%9C%EB%8F%99%20%EC%9A%94%EC%B2%AD%20%EB%B0%94%EB%9E%8D%EB%8B%88%EB%8B%A4.">📱 갤럭시(Galaxy) 구호요청</a>
   </div>
 </body>
 </html>
