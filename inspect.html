@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>방배역 스마트 휴대용 비상조명등 점검</title>
+<title>방배역 스마트 비상조명등 점검</title>
 <style>
   body {
     margin: 0; padding: 20px 16px 40px;
@@ -25,7 +25,7 @@
   h1 { font-size: 19px; margin: 0 0 6px; color: #222; }
   .facility-title { font-size: 15px; color: #444; font-weight: bold; }
 
-  /* 시설 기본 제원 표 */
+  /* 시설 정보 표 */
   .info-table {
     width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 16px;
   }
@@ -37,14 +37,13 @@
     padding: 8px 6px; font-weight: 600; color: #222; border-bottom: 1px solid #eee;
   }
 
-  /* 세트 점검 카드 영역 */
+  /* 개별 조명등 점검 박스 */
   .lamp-group {
     background: #fdfaf6; border: 1.5px solid #fae5d3; border-radius: 10px;
     padding: 14px; margin-bottom: 18px;
   }
   .lamp-group-title {
     font-size: 13.5px; font-weight: bold; color: #d35400; margin-bottom: 12px;
-    display: flex; justify-content: space-between; align-items: center;
   }
   .lamp-item {
     display: flex; align-items: center; justify-content: space-between;
@@ -53,7 +52,7 @@
   .lamp-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
   .lamp-name { font-size: 13px; font-weight: bold; color: #444; }
 
-  /* 토글 라디오 버튼 스타일 */
+  /* 라디오 버튼 스타일 */
   .radio-group { display: flex; gap: 6px; }
   .radio-label {
     padding: 7px 14px; border: 1.5px solid #ddd; border-radius: 6px;
@@ -67,7 +66,7 @@
     border-color: #e74c3c !important; background: #fdf2f2 !important; color: #c0392b !important;
   }
 
-  /* 입력 폼 스타일 */
+  /* 입력 필드 */
   .form-group { margin-bottom: 15px; }
   label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 6px; color: #444; }
   input[type="text"], input[type="password"], textarea {
@@ -98,7 +97,6 @@
       <div class="facility-title" id="disp-title">보관함 정보를 조회 중...</div>
     </div>
 
-    <!-- 보관함 제원 현시 -->
     <table class="info-table">
       <tr>
         <th>보관함 식별ID</th>
@@ -123,7 +121,7 @@
     <form id="inspect-form">
       <div class="form-group">
         <label>점검자 성명</label>
-        <input type="text" id="inspector" placeholder="예: 김방배" required>
+        <input type="text" id="inspector" placeholder="예: 김현진" required>
       </div>
 
       <div class="form-group">
@@ -131,11 +129,8 @@
         <input type="password" id="pin" placeholder="직원 인증 PIN 번호 입력" maxlength="4" required>
       </div>
 
-      <!-- 3개 조명등 일괄 체크박스 그룹 -->
       <div class="lamp-group">
-        <div class="lamp-group-title">
-          <span>🔦 휴대용 비상조명등 개별 점등 상태</span>
-        </div>
+        <div class="lamp-group-title">🔦 휴대용 비상조명등 개별 점등 상태</div>
 
         <div class="lamp-item">
           <span class="lamp-name">1호 조명등</span>
@@ -184,7 +179,7 @@
           <input type="radio" name="finalResult" id="fr-ok" value="적합" checked>
           <label class="radio-label" for="fr-ok" style="flex:1; text-align:center;">적합 (이상없음)</label>
           <input type="radio" name="finalResult" id="fr-no" value="요조치" class="radio-danger">
-          <label class="radio-label" for="fr-no" style="flex:1; text-align:center;">요조치 (건전지교체 등)</label>
+          <label class="radio-label" for="fr-no" style="flex:1; text-align:center;">요조치 (정비필요)</label>
         </div>
       </div>
 
@@ -199,11 +194,10 @@
   </div>
 
   <script>
-    // ⚠️ 구글 앱스스크립트 Web App URL을 여기에 붙여넣어 주세요!
+    // ⚠️ 웹 앱 배포 URL을 여기에 입력해 주세요
     var GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbysX0kQ2JhgZPv2H36XV3bBkCvZISxkpHZnK1le11YWRCMedwP8dJ2i9FBANtFHs2m1/exec";
-    var CORRECT_PIN = "2251"; // 관리자 PIN
+    var CORRECT_PIN = "2251";
 
-    // [방배역 비상조명등 25개 보관함 마스터 데이터베이스]
     var facilityDB = {
       "BOX-LGT-01": { area: "내선", loc: "내선10-2벽체", count: 3 },
       "BOX-LGT-02": { area: "내선", loc: "내선9-1벽체", count: 3 },
@@ -232,19 +226,16 @@
       "BOX-LGT-25": { area: "대합실", loc: "38번벽체", count: 3 }
     };
 
-    // URL 파라미터에서 ID 추출 (기본 테스트: BOX-LGT-01)
     var urlParams = new URLSearchParams(window.location.search);
     var boxId = urlParams.get('id') || "BOX-LGT-01";
     var item = facilityDB[boxId] || { area: "역사구내", loc: "미등록 위치 (" + boxId + ")", count: 3 };
 
-    // 화면 표출
     document.getElementById('disp-id').innerText = boxId;
     document.getElementById('disp-title').innerText = item.area + " [" + item.loc + "]";
     document.getElementById('disp-area').innerText = item.area;
     document.getElementById('disp-loc').innerText = item.loc;
     document.getElementById('disp-count').innerText = item.count + " 개";
 
-    // 점검 완료 제출 이벤트
     document.getElementById('inspect-form').addEventListener('submit', function(e) {
       e.preventDefault();
       
@@ -263,7 +254,7 @@
       msg.innerText = "";
 
       var payload = {
-        sheetName: "휴대용 비상조명등",
+        sheetName: "휴대용 비상조명등", // ◄── 구글 시트 하단 탭 이름과 100% 일치
         boxId: boxId,
         area: item.area,
         location: item.loc,
@@ -286,13 +277,13 @@
         btn.innerText = "✅ 점검 완료 등록됨";
         btn.style.background = "#2c3e50";
         msg.style.color = "#27ae60";
-        msg.innerText = item.loc + " 점검 결과가 구글 대장에 기록되었습니다.";
+        msg.innerText = item.loc + " 점검 결과가 '휴대용 비상조명등' 대장에 저장되었습니다.";
       })
       .catch(function(err) {
         btn.disabled = false;
         btn.innerText = "제출 실패 (재시도)";
         msg.style.color = "#e74c3c";
-        msg.innerText = "전송 오류가 발생했습니다: " + err;
+        msg.innerText = "전송 오류: " + err;
       });
     });
   </script>
