@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>방배역 스마트 소방시설 점검</title>
+<style>
+  body {
+    margin: 0; padding: 20px 16px 40px;
+    background-color: #f5f6f8;
+    font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
+    color: #333; display: flex; flex-direction: column; align-items: center;
+    box-sizing: border-box; min-height: 100vh;
+  }
+  .card {
+    width: 100%; max-width: 400px; background: #ffffff;
+    border-radius: 14px; padding: 20px; box-sizing: border-box;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06); margin-bottom: 16px;
+  }
+  .header-box { text-align: center; margin-bottom: 20px; }
+  .badge {
+    display: inline-block; padding: 5px 12px; border-radius: 20px;
+    background: #e74c3c; color: #fff; font-size: 12px; font-weight: bold; margin-bottom: 8px;
+  }
+  h1 { font-size: 19px; margin: 0 0 6px; color: #222; }
+  .facility-title { font-size: 15px; color: #555; font-weight: bold; }
+
+  /* 시설 기본 제원 표출창 */
+  .info-table {
+    width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 16px;
+  }
+  .info-table th {
+    text-align: left; padding: 8px 6px; color: #777; width: 35%; background: #fafafa;
+    border-bottom: 1px solid #eee;
+  }
+  .info-table td {
+    padding: 8px 6px; font-weight: 600; color: #222; border-bottom: 1px solid #eee;
+  }
+
+  /* 입력 폼 스타일 */
+  .form-group { margin-bottom: 16px; }
+  label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 8px; color: #444; }
+  input[type="text"], input[type="password"], select, textarea {
+    width: 100%; padding: 12px; border: 1.5px solid #ddd; border-radius: 8px;
+    box-sizing: border-box; font-size: 14px; outline: none; font-family: inherit;
+  }
+  input[type="text"]:focus, input[type="password"]:focus, select:focus, textarea:focus { border-color: #27ae60; }
+
+  /* 토글 선택 버튼 그룹 */
+  .radio-group { display: flex; gap: 8px; }
+  .radio-label {
+    flex: 1; text-align: center; padding: 10px 0; border: 1.5px solid #ddd;
+    border-radius: 8px; font-size: 13.5px; font-weight: bold; cursor: pointer;
+    background: #fafafa; color: #666;
+  }
+  input[type="radio"] { display: none; }
+  input[type="radio"]:checked + .radio-label {
+    border-color: #2ecc71; background: #eafaf1; color: #27ae60;
+  }
+  .radio-danger:checked + .radio-label {
+    border-color: #e74c3c !important; background: #fdf2f2 !important; color: #c0392b !important;
+  }
+
+  /* 제출 버튼 */
+  .btn-submit {
+    width: 100%; padding: 16px; background: #27ae60; color: #fff;
+    border: none; border-radius: 10px; font-size: 16px; font-weight: bold;
+    cursor: pointer; box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3); margin-top: 10px;
+  }
+  .btn-submit:disabled { background: #bbb; box-shadow: none; }
+
+  #status-msg {
+    text-align: center; font-size: 14px; font-weight: bold; margin-top: 12px;
+  }
+</style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="header-box">
+      <span class="badge" id="type-badge">소방시설</span>
+      <h1>방배역 소방시설 스마트 점검</h1>
+      <div class="facility-title" id="disp-title">시설 정보를 불러오는 중...</div>
+    </div>
+
+    <!-- 시설 제원 현시 -->
+    <table class="info-table">
+      <tr>
+        <th>관리번호</th>
+        <td id="disp-id">-</td>
+      </tr>
+      <tr>
+        <th>설치위치</th>
+        <td id="disp-loc">-</td>
+      </tr>
+      <tr>
+        <th>내용연수/제조</th>
+        <td id="disp-mfg">-</td>
+      </tr>
+    </table>
+
+    <hr style="border:0; border-top:1px dashed #ddd; margin:18px 0;">
+
+    <!-- 현장 점검 입력 폼 -->
+    <form id="inspect-form">
+      <div class="form-group">
+        <label>점검자 성명</label>
+        <input type="text" id="inspector" placeholder="예: 김부자" required>
+      </div>
+
+      <div class="form-group">
+        <label>관리자 보안 PIN (4자리)</label>
+        <input type="password" id="pin" placeholder="직원 인증 PIN 번호 입력" maxlength="4" required>
+      </div>
+
+      <div class="form-group">
+        <label id="lbl-gauge">지시압력계 (게이지 정상 범위 여부)</label>
+        <div class="radio-group">
+          <input type="radio" name="gauge" id="g-ok" value="정상" checked>
+          <label class="radio-label" for="g-ok">정상</label>
+          <input type="radio" name="gauge" id="g-no" value="불량" class="radio-danger">
+          <label class="radio-label" for="g-no">불량 / 재충전</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>외관 상태 (부식, 호스, 안전핀 체결)</label>
+        <div class="radio-group">
+          <input type="radio" name="visual" id="v-ok" value="양호" checked>
+          <label class="radio-label" for="v-ok">양호</label>
+          <input type="radio" name="visual" id="v-no" value="불량" class="radio-danger">
+          <label class="radio-label" for="v-no">불량 / 파손</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>종합 점검 판정</label>
+        <div class="radio-group">
+          <input type="radio" name="result" id="r-pass" value="적합" checked>
+          <label class="radio-label" for="r-pass">적합 (정상)</label>
+          <input type="radio" name="result" id="r-fail" value="요조치" class="radio-danger">
+          <label class="radio-label" for="r-fail">요조치 (보수요청)</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>특이사항 메모</label>
+        <textarea id="notes" rows="2" placeholder="결함 및 정비 필요사항 기재"></textarea>
+      </div>
+
+      <button type="submit" id="btn-sub" class="btn-submit">현장 점검 완료 제출</button>
+      <div id="status-msg"></div>
+    </form>
+  </div>
+
+  <script>
+    // ⚠️ 복사하신 구글 앱스스크립트 Web App URL을 여기에 붙여넣으세요!
+    var GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyo1OB6U5fTrTf8t1XqiT6p6txkNFNL9BCejV_RUUrQYj7DAK_3a2yt9l9b4KeMfUHY/exec";
+    
+    // 기본 보안 PIN 번호 (원하시는 번호로 변경 가능, 예: 2251)
+    var CORRECT_PIN = "2251";
+
+    // 역사 내 소방시설 마스터 데이터베이스 (ID에 따라 자동 매핑)
+    var facilityDB = {
+      "EXT-B1-01": { type: "분말소화기", loc: "지하 1층 고객안전실 앞", mfg: "2023.05 (내용연수: 2033)" },
+      "EXT-B1-02": { type: "분말소화기", loc: "지하 1층 1번 출구 게이트", mfg: "2022.10 (내용연수: 2032)" },
+      "EXT-PF-01": { type: "분말소화기", loc: "외선 승강장 3-3 지점", mfg: "2024.01 (내용연수: 2034)" },
+      "HYD-B1-01": { type: "옥내소화전", loc: "지하 1층 대합실 중앙", mfg: "정기점검 대상" },
+      "LGT-PF-01": { type: "비상조명등", loc: "외선 승강장 8-4 지점", mfg: "축전지 점검 대상" }
+    };
+
+    // URL 파라미터에서 ID 읽기 (예: ?id=EXT-B1-01)
+    var urlParams = new URLSearchParams(window.location.search);
+    var facilityId = urlParams.get('id') || "EXT-B1-01";
+
+    var item = facilityDB[facilityId] || {
+      type: "소방시설",
+      loc: "방배역 구내 (미등록 ID)",
+      mfg: "-"
+    };
+
+    // 화면 표출
+    document.getElementById('disp-id').innerText = facilityId;
+    document.getElementById('type-badge').innerText = item.type;
+    document.getElementById('disp-title').innerText = item.type + " [" + facilityId + "]";
+    document.getElementById('disp-loc').innerText = item.loc;
+    document.getElementById('disp-mfg').innerText = item.mfg;
+
+    if(item.type.indexOf("조명") !== -1) {
+      document.getElementById('lbl-gauge').innerText = "점등 스위치 작동 시 점등 여부";
+    }
+
+    // 제출 이벤트
+    document.getElementById('inspect-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      var pinInput = document.getElementById('pin').value.trim();
+      var btn = document.getElementById('btn-sub');
+      var msg = document.getElementById('status-msg');
+
+      if (pinInput !== CORRECT_PIN) {
+        alert("관리자 보안 PIN 번호가 일치하지 않습니다.");
+        document.getElementById('pin').focus();
+        return;
+      }
+      
+      btn.disabled = true;
+      btn.innerText = "데이터 전송 중...";
+      msg.innerText = "";
+
+      var payload = {
+        facilityId: facilityId,
+        facilityType: item.type,
+        location: item.loc,
+        inspector: document.getElementById('inspector').value.trim(),
+        gaugeStatus: document.querySelector('input[name="gauge"]:checked').value,
+        visualStatus: document.querySelector('input[name="visual"]:checked').value,
+        finalResult: document.querySelector('input[name="result"]:checked').value,
+        notes: document.getElementById('notes').value.trim()
+      };
+
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+      .then(function() {
+        btn.innerText = "✅ 점검 완료 등록됨";
+        btn.style.background = "#2c3e50";
+        msg.style.color = "#27ae60";
+        msg.innerText = "구글 시트 소방점검대장에 실시간 저장되었습니다.";
+      })
+      .catch(function(err) {
+        btn.disabled = false;
+        btn.innerText = "제출 실패 (재시도)";
+        msg.style.color = "#e74c3c";
+        msg.innerText = "오류: " + err;
+      });
+    });
+  </script>
+</body>
+</html>
