@@ -3,74 +3,89 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>방배역 스마트 소방시설 점검</title>
+<title>방배역 스마트 비상조명등 점검</title>
 <style>
   body {
     margin: 0; padding: 20px 16px 40px;
-    background-color: #f5f6f8;
+    background-color: #f4f6f9;
     font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
     color: #333; display: flex; flex-direction: column; align-items: center;
     box-sizing: border-box; min-height: 100vh;
   }
   .card {
-    width: 100%; max-width: 400px; background: #ffffff;
-    border-radius: 14px; padding: 20px; box-sizing: border-box;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06); margin-bottom: 16px;
+    width: 100%; max-width: 420px; background: #ffffff;
+    border-radius: 14px; padding: 22px 18px; box-sizing: border-box;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.06); margin-bottom: 16px;
   }
-  .header-box { text-align: center; margin-bottom: 20px; }
+  .header-box { text-align: center; margin-bottom: 18px; }
   .badge {
     display: inline-block; padding: 5px 12px; border-radius: 20px;
-    background: #e74c3c; color: #fff; font-size: 12px; font-weight: bold; margin-bottom: 8px;
+    background: #e67e22; color: #fff; font-size: 12px; font-weight: bold; margin-bottom: 8px;
   }
   h1 { font-size: 19px; margin: 0 0 6px; color: #222; }
-  .facility-title { font-size: 15px; color: #555; font-weight: bold; }
+  .facility-title { font-size: 15px; color: #444; font-weight: bold; }
 
-  /* 시설 기본 제원 표출창 */
+  /* 시설 기본 제원 표 */
   .info-table {
     width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 16px;
   }
   .info-table th {
-    text-align: left; padding: 8px 6px; color: #777; width: 35%; background: #fafafa;
+    text-align: left; padding: 8px 6px; color: #777; width: 32%; background: #fbfbfb;
     border-bottom: 1px solid #eee;
   }
   .info-table td {
     padding: 8px 6px; font-weight: 600; color: #222; border-bottom: 1px solid #eee;
   }
 
-  /* 입력 폼 스타일 */
-  .form-group { margin-bottom: 16px; }
-  label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 8px; color: #444; }
-  input[type="text"], input[type="password"], select, textarea {
-    width: 100%; padding: 12px; border: 1.5px solid #ddd; border-radius: 8px;
-    box-sizing: border-box; font-size: 14px; outline: none; font-family: inherit;
+  /* 세트 점검 카드 영역 */
+  .lamp-group {
+    background: #fdfaf6; border: 1.5px solid #fae5d3; border-radius: 10px;
+    padding: 14px; margin-bottom: 18px;
   }
-  input[type="text"]:focus, input[type="password"]:focus, select:focus, textarea:focus { border-color: #27ae60; }
+  .lamp-group-title {
+    font-size: 13.5px; font-weight: bold; color: #d35400; margin-bottom: 12px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .lamp-item {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #eedbc9;
+  }
+  .lamp-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+  .lamp-name { font-size: 13px; font-weight: bold; color: #444; }
 
-  /* 토글 선택 버튼 그룹 */
-  .radio-group { display: flex; gap: 8px; }
+  /* 토글 라디오 버튼 스타일 */
+  .radio-group { display: flex; gap: 6px; }
   .radio-label {
-    flex: 1; text-align: center; padding: 10px 0; border: 1.5px solid #ddd;
-    border-radius: 8px; font-size: 13.5px; font-weight: bold; cursor: pointer;
-    background: #fafafa; color: #666;
+    padding: 7px 14px; border: 1.5px solid #ddd; border-radius: 6px;
+    font-size: 12.5px; font-weight: bold; cursor: pointer; background: #fff; color: #666;
   }
   input[type="radio"] { display: none; }
   input[type="radio"]:checked + .radio-label {
-    border-color: #2ecc71; background: #eafaf1; color: #27ae60;
+    border-color: #27ae60; background: #eafaf1; color: #27ae60;
   }
   .radio-danger:checked + .radio-label {
     border-color: #e74c3c !important; background: #fdf2f2 !important; color: #c0392b !important;
   }
 
+  /* 입력 폼 스타일 */
+  .form-group { margin-bottom: 15px; }
+  label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 6px; color: #444; }
+  input[type="text"], input[type="password"], textarea {
+    width: 100%; padding: 11px 12px; border: 1.5px solid #ddd; border-radius: 8px;
+    box-sizing: border-box; font-size: 13.5px; outline: none; font-family: inherit;
+  }
+  input[type="text"]:focus, input[type="password"]:focus, textarea:focus { border-color: #e67e22; }
+
   /* 제출 버튼 */
   .btn-submit {
-    width: 100%; padding: 16px; background: #27ae60; color: #fff;
-    border: none; border-radius: 10px; font-size: 16px; font-weight: bold;
-    cursor: pointer; box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3); margin-top: 10px;
+    width: 100%; padding: 15px; background: #e67e22; color: #fff;
+    border: none; border-radius: 10px; font-size: 15.5px; font-weight: bold;
+    cursor: pointer; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3); margin-top: 10px;
   }
-  .btn-submit:disabled { background: #bbb; box-shadow: none; }
+  .btn-submit:disabled { background: #bbb; box-shadow: none; cursor: not-allowed; }
 
   #status-msg {
-    text-align: center; font-size: 14px; font-weight: bold; margin-top: 12px;
+    text-align: center; font-size: 13.5px; font-weight: bold; margin-top: 12px;
   }
 </style>
 </head>
@@ -78,30 +93,33 @@
 
   <div class="card">
     <div class="header-box">
-      <span class="badge" id="type-badge">소방시설</span>
-      <h1>방배역 소방시설 스마트 점검</h1>
-      <div class="facility-title" id="disp-title">시설 정보를 불러오는 중...</div>
+      <span class="badge">휴대용 비상조명등</span>
+      <h1>방배역 스마트 소방시설 점검</h1>
+      <div class="facility-title" id="disp-title">보관함 정보를 조회 중...</div>
     </div>
 
-    <!-- 시설 제원 현시 -->
+    <!-- 보관함 제원 현시 -->
     <table class="info-table">
       <tr>
-        <th>관리번호</th>
+        <th>보관함 식별ID</th>
         <td id="disp-id">-</td>
       </tr>
       <tr>
-        <th>설치위치</th>
+        <th>설치구역</th>
+        <td id="disp-area">-</td>
+      </tr>
+      <tr>
+        <th>상세위치</th>
         <td id="disp-loc">-</td>
       </tr>
       <tr>
-        <th>내용연수/제조</th>
-        <td id="disp-mfg">-</td>
+        <th>관리수량</th>
+        <td id="disp-count">3 개 (1개 함 세트)</td>
       </tr>
     </table>
 
-    <hr style="border:0; border-top:1px dashed #ddd; margin:18px 0;">
+    <hr style="border:0; border-top:1px dashed #ddd; margin:16px 0;">
 
-    <!-- 현장 점검 입력 폼 -->
     <form id="inspect-form">
       <div class="form-group">
         <label>점검자 성명</label>
@@ -113,39 +131,66 @@
         <input type="password" id="pin" placeholder="직원 인증 PIN 번호 입력" maxlength="4" required>
       </div>
 
-      <div class="form-group">
-        <label id="lbl-gauge">지시압력계 (게이지 정상 범위 여부)</label>
-        <div class="radio-group">
-          <input type="radio" name="gauge" id="g-ok" value="정상" checked>
-          <label class="radio-label" for="g-ok">정상</label>
-          <input type="radio" name="gauge" id="g-no" value="불량" class="radio-danger">
-          <label class="radio-label" for="g-no">불량 / 재충전</label>
+      <!-- 3개 조명등 일괄 체크박스 그룹 -->
+      <div class="lamp-group">
+        <div class="lamp-group-title">
+          <span>🔦 휴대용 비상조명등 개별 점등 상태</span>
+        </div>
+
+        <div class="lamp-item">
+          <span class="lamp-name">1호 조명등</span>
+          <div class="radio-group">
+            <input type="radio" name="l1" id="l1-ok" value="정상" checked>
+            <label class="radio-label" for="l1-ok">점등정상</label>
+            <input type="radio" name="l1" id="l1-no" value="불량" class="radio-danger">
+            <label class="radio-label" for="l1-no">점등불량</label>
+          </div>
+        </div>
+
+        <div class="lamp-item">
+          <span class="lamp-name">2호 조명등</span>
+          <div class="radio-group">
+            <input type="radio" name="l2" id="l2-ok" value="정상" checked>
+            <label class="radio-label" for="l2-ok">점등정상</label>
+            <input type="radio" name="l2" id="l2-no" value="불량" class="radio-danger">
+            <label class="radio-label" for="l2-no">점등불량</label>
+          </div>
+        </div>
+
+        <div class="lamp-item">
+          <span class="lamp-name">3호 조명등</span>
+          <div class="radio-group">
+            <input type="radio" name="l3" id="l3-ok" value="정상" checked>
+            <label class="radio-label" for="l3-ok">점등정상</label>
+            <input type="radio" name="l3" id="l3-no" value="불량" class="radio-danger">
+            <label class="radio-label" for="l3-no">점등불량</label>
+          </div>
         </div>
       </div>
 
       <div class="form-group">
-        <label>외관 상태 (부식, 호스, 안전핀 체결)</label>
+        <label>보관함 외관 / 거치 상태</label>
         <div class="radio-group">
-          <input type="radio" name="visual" id="v-ok" value="양호" checked>
-          <label class="radio-label" for="v-ok">양호</label>
-          <input type="radio" name="visual" id="v-no" value="불량" class="radio-danger">
-          <label class="radio-label" for="v-no">불량 / 파손</label>
+          <input type="radio" name="boxVisual" id="bv-ok" value="양호" checked>
+          <label class="radio-label" for="bv-ok" style="flex:1; text-align:center;">양호 (파손없음)</label>
+          <input type="radio" name="boxVisual" id="bv-no" value="불량" class="radio-danger">
+          <label class="radio-label" for="bv-no" style="flex:1; text-align:center;">불량 (함체파손/유실)</label>
         </div>
       </div>
 
       <div class="form-group">
         <label>종합 점검 판정</label>
         <div class="radio-group">
-          <input type="radio" name="result" id="r-pass" value="적합" checked>
-          <label class="radio-label" for="r-pass">적합 (정상)</label>
-          <input type="radio" name="result" id="r-fail" value="요조치" class="radio-danger">
-          <label class="radio-label" for="r-fail">요조치 (보수요청)</label>
+          <input type="radio" name="finalResult" id="fr-ok" value="적합" checked>
+          <label class="radio-label" for="fr-ok" style="flex:1; text-align:center;">적합 (이상없음)</label>
+          <input type="radio" name="finalResult" id="fr-no" value="요조치" class="radio-danger">
+          <label class="radio-label" for="fr-no" style="flex:1; text-align:center;">요조치 (건전지교체 등)</label>
         </div>
       </div>
 
       <div class="form-group">
         <label>특이사항 메모</label>
-        <textarea id="notes" rows="2" placeholder="결함 및 정비 필요사항 기재"></textarea>
+        <textarea id="notes" rows="2" placeholder="이상 징후 및 정비 조치사항 기재"></textarea>
       </div>
 
       <button type="submit" id="btn-sub" class="btn-submit">현장 점검 완료 제출</button>
@@ -154,43 +199,52 @@
   </div>
 
   <script>
-    // ⚠️ 복사하신 구글 앱스스크립트 Web App URL을 여기에 붙여넣으세요!
+    // ⚠️ 구글 앱스스크립트 Web App URL을 여기에 붙여넣어 주세요!
     var GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyqzoUlz4DfYwHxygr59Z3yN3MWvkgjX5dci-8mKYPuMlzgJHHfkaHnZiV-U683tZPy/exec";
-    
-    // 기본 보안 PIN 번호 (원하시는 번호로 변경 가능, 예: 2251)
-    var CORRECT_PIN = "2251";
+    var CORRECT_PIN = "2251"; // 관리자 PIN
 
-    // 역사 내 소방시설 마스터 데이터베이스 (ID에 따라 자동 매핑)
+    // [방배역 비상조명등 25개 보관함 마스터 데이터베이스]
     var facilityDB = {
-      "EXT-B1-01": { type: "분말소화기", loc: "지하 1층 고객안전실 앞", mfg: "2023.05 (내용연수: 2033)" },
-      "EXT-B1-02": { type: "분말소화기", loc: "지하 1층 1번 출구 게이트", mfg: "2022.10 (내용연수: 2032)" },
-      "EXT-PF-01": { type: "분말소화기", loc: "외선 승강장 3-3 지점", mfg: "2024.01 (내용연수: 2034)" },
-      "HYD-B1-01": { type: "옥내소화전", loc: "지하 1층 대합실 중앙", mfg: "정기점검 대상" },
-      "LGT-PF-01": { type: "비상조명등", loc: "외선 승강장 8-4 지점", mfg: "축전지 점검 대상" }
+      "BOX-LGT-01": { area: "내선", loc: "내선10-2벽체", count: 3 },
+      "BOX-LGT-02": { area: "내선", loc: "내선9-1벽체", count: 3 },
+      "BOX-LGT-03": { area: "내선", loc: "내선7-3벽체", count: 3 },
+      "BOX-LGT-04": { area: "내선", loc: "내선6-1벽체", count: 3 },
+      "BOX-LGT-05": { area: "내선", loc: "내선5-1벽체", count: 3 },
+      "BOX-LGT-06": { area: "내선", loc: "내선4-2벽체", count: 3 },
+      "BOX-LGT-07": { area: "내선", loc: "내선3-2벽체", count: 3 },
+      "BOX-LGT-08": { area: "내선", loc: "내선2-2벽체", count: 3 },
+      "BOX-LGT-09": { area: "내선", loc: "내선1-3벽체", count: 3 },
+      "BOX-LGT-10": { area: "외선", loc: "외선10-1벽체", count: 3 },
+      "BOX-LGT-11": { area: "외선", loc: "외선8-3벽체", count: 3 },
+      "BOX-LGT-12": { area: "외선", loc: "외선7-3벽체", count: 3 },
+      "BOX-LGT-13": { area: "외선", loc: "외선6-4벽체", count: 3 },
+      "BOX-LGT-14": { area: "외선", loc: "외선5-3벽체", count: 3 },
+      "BOX-LGT-15": { area: "외선", loc: "외선4-4벽체", count: 3 },
+      "BOX-LGT-16": { area: "외선", loc: "외선3-4벽체", count: 3 },
+      "BOX-LGT-17": { area: "외선", loc: "외선2-4벽체", count: 3 },
+      "BOX-LGT-18": { area: "외선", loc: "외선1-3벽체", count: 3 },
+      "BOX-LGT-19": { area: "외선", loc: "13번벽체", count: 3 },
+      "BOX-LGT-20": { area: "외선", loc: "15번벽체", count: 3 },
+      "BOX-LGT-21": { area: "대합실", loc: "21번벽체", count: 3 },
+      "BOX-LGT-22": { area: "대합실", loc: "26번벽체", count: 3 },
+      "BOX-LGT-23": { area: "대합실", loc: "31번벽체", count: 3 },
+      "BOX-LGT-24": { area: "대합실", loc: "34번벽체", count: 3 },
+      "BOX-LGT-25": { area: "대합실", loc: "38번벽체", count: 3 }
     };
 
-    // URL 파라미터에서 ID 읽기 (예: ?id=EXT-B1-01)
+    // URL 파라미터에서 ID 추출 (기본 테스트: BOX-LGT-01)
     var urlParams = new URLSearchParams(window.location.search);
-    var facilityId = urlParams.get('id') || "EXT-B1-01";
-
-    var item = facilityDB[facilityId] || {
-      type: "소방시설",
-      loc: "방배역 구내 (미등록 ID)",
-      mfg: "-"
-    };
+    var boxId = urlParams.get('id') || "BOX-LGT-01";
+    var item = facilityDB[boxId] || { area: "역사구내", loc: "미등록 위치 (" + boxId + ")", count: 3 };
 
     // 화면 표출
-    document.getElementById('disp-id').innerText = facilityId;
-    document.getElementById('type-badge').innerText = item.type;
-    document.getElementById('disp-title').innerText = item.type + " [" + facilityId + "]";
+    document.getElementById('disp-id').innerText = boxId;
+    document.getElementById('disp-title').innerText = item.area + " [" + item.loc + "]";
+    document.getElementById('disp-area').innerText = item.area;
     document.getElementById('disp-loc').innerText = item.loc;
-    document.getElementById('disp-mfg').innerText = item.mfg;
+    document.getElementById('disp-count').innerText = item.count + " 개";
 
-    if(item.type.indexOf("조명") !== -1) {
-      document.getElementById('lbl-gauge').innerText = "점등 스위치 작동 시 점등 여부";
-    }
-
-    // 제출 이벤트
+    // 점검 완료 제출 이벤트
     document.getElementById('inspect-form').addEventListener('submit', function(e) {
       e.preventDefault();
       
@@ -209,13 +263,15 @@
       msg.innerText = "";
 
       var payload = {
-        facilityId: facilityId,
-        facilityType: item.type,
+        boxId: boxId,
+        area: item.area,
         location: item.loc,
         inspector: document.getElementById('inspector').value.trim(),
-        gaugeStatus: document.querySelector('input[name="gauge"]:checked').value,
-        visualStatus: document.querySelector('input[name="visual"]:checked').value,
-        finalResult: document.querySelector('input[name="result"]:checked').value,
+        l1Status: document.querySelector('input[name="l1"]:checked').value,
+        l2Status: document.querySelector('input[name="l2"]:checked').value,
+        l3Status: document.querySelector('input[name="l3"]:checked').value,
+        boxVisual: document.querySelector('input[name="boxVisual"]:checked').value,
+        finalResult: document.querySelector('input[name="finalResult"]:checked').value,
         notes: document.getElementById('notes').value.trim()
       };
 
@@ -229,13 +285,13 @@
         btn.innerText = "✅ 점검 완료 등록됨";
         btn.style.background = "#2c3e50";
         msg.style.color = "#27ae60";
-        msg.innerText = "구글 시트 소방점검대장에 실시간 저장되었습니다.";
+        msg.innerText = item.loc + " 점검 결과가 구글 대장에 기록되었습니다.";
       })
       .catch(function(err) {
         btn.disabled = false;
         btn.innerText = "제출 실패 (재시도)";
         msg.style.color = "#e74c3c";
-        msg.innerText = "오류: " + err;
+        msg.innerText = "전송 오류가 발생했습니다: " + err;
       });
     });
   </script>
