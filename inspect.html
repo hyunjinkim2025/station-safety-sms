@@ -91,14 +91,12 @@
 <body>
 
   <div class="card">
-    <!-- 헤더 레이아웃 순서 변경 반영 -->
     <div class="header-box">
       <h1>방배역 스마트 소방시설 점검</h1>
       <span class="badge">휴대용 비상조명등</span>
       <div class="facility-title" id="disp-title">보관함 정보를 조회 중...</div>
     </div>
 
-    <!-- 시설 정보 테이블 (시설 ID로 통일) -->
     <table class="info-table">
       <tr>
         <th>시설 ID</th>
@@ -180,6 +178,7 @@
         <div class="radio-group">
           <input type="radio" name="finalResult" id="fr-ok" value="적합" checked>
           <label class="radio-label" for="fr-ok" style="flex:1; text-align:center;">적합 (이상없음)</label>
+          <!-- '조치요' 반영 -->
           <input type="radio" name="finalResult" id="fr-no" value="조치요" class="radio-danger">
           <label class="radio-label" for="fr-no" style="flex:1; text-align:center;">조치요 (정비필요)</label>
         </div>
@@ -196,8 +195,7 @@
   </div>
 
   <script>
-    // ⚠️ 배포하신 Apps Script Web App URL을 입력하세요
-    var GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzadc1gMcczbIx9pv6P36mjchg5EsSBmlGy9lRKFR9TqcFF8Fvt0lOlp9ikGrbmWCmE/exec";
+    var GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwlHVbVlmNmjYIvENfZKvbHM50fd5unAqIlyBsjzvSowB6qrKWBHjS_krZ58PAOAiUE/exec";
     var CORRECT_PIN = "2251";
 
     var facilityDB = {
@@ -265,7 +263,7 @@
         l2Status: document.querySelector('input[name="l2"]:checked').value,
         l3Status: document.querySelector('input[name="l3"]:checked').value,
         boxVisual: document.querySelector('input[name="boxVisual"]:checked').value,
-        finalResult: document.querySelector('input[name="finalResult"]:checked').value,
+        finalResult: document.querySelector('input[name="finalResult"]:checked').value, // '조치요' 또는 '적합' 전송
         notes: document.getElementById('notes').value.trim()
       };
 
