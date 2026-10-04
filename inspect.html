@@ -23,21 +23,19 @@
     display: inline-block; padding: 5px 14px; border-radius: 20px;
     background: #e67e22; color: #fff; font-size: 13px; font-weight: bold; margin-bottom: 8px;
   }
-  .facility-title { font-size: 15px; color: #444; font-weight: bold; margin-top: 4px; }
+  .facility-title { font-size: 15px; color: #444; font-weight: bold; margin-top: 4px; word-break: keep-all; }
 
-  /* 시설 정보 표 */
   .info-table {
     width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 16px;
   }
   .info-table th {
-    text-align: left; padding: 8px 6px; color: #777; width: 32%; background: #fbfbfb;
+    text-align: left; padding: 8px 6px; color: #777; width: 30%; background: #fbfbfb;
     border-bottom: 1px solid #eee;
   }
   .info-table td {
-    padding: 8px 6px; font-weight: 600; color: #222; border-bottom: 1px solid #eee;
+    padding: 8px 6px; font-weight: 600; color: #222; border-bottom: 1px solid #eee; word-break: keep-all;
   }
 
-  /* 개별 조명등 점검 박스 */
   .lamp-group {
     background: #fdfaf6; border: 1.5px solid #fae5d3; border-radius: 10px;
     padding: 14px; margin-bottom: 18px;
@@ -52,7 +50,6 @@
   .lamp-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
   .lamp-name { font-size: 13px; font-weight: bold; color: #444; }
 
-  /* 라디오 버튼 스타일 */
   .radio-group { display: flex; gap: 6px; }
   .radio-label {
     padding: 7px 14px; border: 1.5px solid #ddd; border-radius: 6px;
@@ -66,7 +63,6 @@
     border-color: #e74c3c !important; background: #fdf2f2 !important; color: #c0392b !important;
   }
 
-  /* 입력 필드 */
   .form-group { margin-bottom: 15px; }
   label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 6px; color: #444; }
   input[type="text"], input[type="password"], textarea {
@@ -75,7 +71,6 @@
   }
   input[type="text"]:focus, input[type="password"]:focus, textarea:focus { border-color: #e67e22; }
 
-  /* 제출 버튼 */
   .btn-submit {
     width: 100%; padding: 15px; background: #e67e22; color: #fff;
     border: none; border-radius: 10px; font-size: 15.5px; font-weight: bold;
@@ -84,7 +79,7 @@
   .btn-submit:disabled { background: #bbb; box-shadow: none; cursor: not-allowed; }
 
   #status-msg {
-    text-align: center; font-size: 13.5px; font-weight: bold; margin-top: 12px;
+    text-align: center; font-size: 13.5px; font-weight: bold; margin-top: 12px; word-break: keep-all;
   }
 </style>
 </head>
@@ -178,7 +173,6 @@
         <div class="radio-group">
           <input type="radio" name="finalResult" id="fr-ok" value="적합" checked>
           <label class="radio-label" for="fr-ok" style="flex:1; text-align:center;">적합 (이상없음)</label>
-          <!-- '조치요' 반영 -->
           <input type="radio" name="finalResult" id="fr-no" value="조치요" class="radio-danger">
           <label class="radio-label" for="fr-no" style="flex:1; text-align:center;">조치요 (정비필요)</label>
         </div>
@@ -195,9 +189,10 @@
   </div>
 
   <script>
-    var GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwlHVbVlmNmjYIvENfZKvbHM50fd5unAqIlyBsjzvSowB6qrKWBHjS_krZ58PAOAiUE/exec";
+    var GOOGLE_SCRIPT_URL = "YOUR_GOOGLE_SCRIPT_WEBAPP_URL";
     var CORRECT_PIN = "2251";
 
+    // 25개소 현행화 위치 매핑
     var facilityDB = {
       "BOX-LGT-01": { area: "내선", loc: "내선10-2벽체", count: 3 },
       "BOX-LGT-02": { area: "내선", loc: "내선9-1벽체", count: 3 },
@@ -217,13 +212,13 @@
       "BOX-LGT-16": { area: "외선", loc: "외선3-4벽체", count: 3 },
       "BOX-LGT-17": { area: "외선", loc: "외선2-4벽체", count: 3 },
       "BOX-LGT-18": { area: "외선", loc: "외선1-3벽체", count: 3 },
-      "BOX-LGT-19": { area: "외선", loc: "13번벽체", count: 3 },
-      "BOX-LGT-20": { area: "외선", loc: "15번벽체", count: 3 },
-      "BOX-LGT-21": { area: "대합실", loc: "21번벽체", count: 3 },
-      "BOX-LGT-22": { area: "대합실", loc: "26번벽체", count: 3 },
-      "BOX-LGT-23": { area: "대합실", loc: "31번벽체", count: 3 },
-      "BOX-LGT-24": { area: "대합실", loc: "34번벽체", count: 3 },
-      "BOX-LGT-25": { area: "대합실", loc: "38번벽체", count: 3 }
+      "BOX-LGT-19": { area: "대합실", loc: "14번기둥 우측(화장실 방향)", count: 3 },
+      "BOX-LGT-20": { area: "대합실", loc: "가게이트 좌측(내선 방향)", count: 3 },
+      "BOX-LGT-21": { area: "대합실", loc: "21번기둥 중앙(전실 인근)", count: 3 },
+      "BOX-LGT-22": { area: "대합실", loc: "26번기둥 우측(고객안전실 인근)", count: 3 },
+      "BOX-LGT-23": { area: "대합실", loc: "30번기둥 좌측(전기실 인근)", count: 3 },
+      "BOX-LGT-24": { area: "대합실", loc: "34번기둥 중앙(다가게이트 앞)", count: 3 },
+      "BOX-LGT-25": { area: "대합실", loc: "다가게이트 내측(통신실 인근)", count: 3 }
     };
 
     var urlParams = new URLSearchParams(window.location.search);
@@ -263,7 +258,7 @@
         l2Status: document.querySelector('input[name="l2"]:checked').value,
         l3Status: document.querySelector('input[name="l3"]:checked').value,
         boxVisual: document.querySelector('input[name="boxVisual"]:checked').value,
-        finalResult: document.querySelector('input[name="finalResult"]:checked').value, // '조치요' 또는 '적합' 전송
+        finalResult: document.querySelector('input[name="finalResult"]:checked').value,
         notes: document.getElementById('notes').value.trim()
       };
 
