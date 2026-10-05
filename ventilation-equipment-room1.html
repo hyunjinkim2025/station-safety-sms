@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>방배역 스마트 기능실 가이드 & 출입순찰</title>
+<style>
+  body {
+    margin: 0; padding: 20px 16px 50px;
+    background-color: #f0f3f8;
+    font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
+    color: #333; display: flex; flex-direction: column; align-items: center;
+    box-sizing: border-box; min-height: 100vh;
+  }
+  .card {
+    width: 100%; max-width: 440px; background: #ffffff;
+    border-radius: 16px; padding: 22px 18px; box-sizing: border-box;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06); margin-bottom: 16px;
+  }
+  .header-box { text-align: center; margin-bottom: 16px; }
+  h1 { font-size: 19px; margin: 0 0 8px; color: #111; letter-spacing: -0.5px; }
+  .badge {
+    display: inline-block; padding: 5px 14px; border-radius: 20px;
+    background: #2980b9; color: #fff; font-size: 13px; font-weight: bold; margin-bottom: 6px;
+  }
+  .room-title { font-size: 17px; color: #2c3e50; font-weight: 800; margin-top: 4px; word-break: keep-all; }
+
+  /* 보안 잠금 화면 */
+  #lock-screen { text-align: center; padding: 20px 10px; }
+  .lock-icon { font-size: 42px; margin-bottom: 12px; }
+  .lock-desc { font-size: 14px; color: #666; margin-bottom: 20px; line-height: 1.5; }
+  .pin-input {
+    width: 180px; padding: 12px; font-size: 24px; text-align: center;
+    letter-spacing: 10px; border: 2px solid #3498db; border-radius: 10px;
+    outline: none; margin-bottom: 16px; font-weight: bold;
+  }
+  .btn-unlock {
+    width: 100%; padding: 14px; background: #2980b9; color: #fff;
+    border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer;
+  }
+
+  /* 보안 인증 후 콘텐츠 영역 */
+  #main-content { display: none; }
+
+  /* 섹션 스타일 */
+  .section-title {
+    font-size: 14.5px; font-weight: bold; color: #1b4f72;
+    border-left: 4px solid #3498db; padding-left: 8px; margin: 18px 0 10px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .info-table {
+    width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 14px;
+  }
+  .info-table th {
+    text-align: left; padding: 8px 6px; color: #666; width: 28%; background: #f8f9fa;
+    border-bottom: 1px solid #edf0f2;
+  }
+  .info-table td {
+    padding: 8px 6px; font-weight: 600; color: #222; border-bottom: 1px solid #edf0f2; word-break: keep-all;
+  }
+
+  /* 주요 시설 안내 박스 */
+  .facility-box {
+    background: #eef7fc; border: 1.5px solid #d4e6f1; border-radius: 10px;
+    padding: 12px; margin-bottom: 14px; font-size: 13px; line-height: 1.6; color: #244158;
+  }
+  .facility-box strong { color: #1a5276; }
+
+  /* 미디어 갤러리/링크 버튼 */
+  .media-grid { display: flex; gap: 8px; margin-bottom: 16px; }
+  .btn-media {
+    flex: 1; padding: 10px; border-radius: 8px; text-decoration: none;
+    font-size: 13px; font-weight: bold; text-align: center; display: inline-flex;
+    align-items: center; justify-content: center; gap: 4px;
+    background: #ffffff; border: 1.5px solid #3498db; color: #2980b9;
+    box-shadow: 0 2px 6px rgba(52,152,219,0.15);
+  }
+  .btn-media:hover { background: #ebf5fb; }
+
+  /* 출입/순찰 기록 폼 */
+  .form-group { margin-bottom: 13px; }
+  label { display: block; font-size: 12.5px; font-weight: bold; margin-bottom: 5px; color: #444; }
+  input[type="text"], textarea {
+    width: 100%; padding: 10px 12px; border: 1.5px solid #ddd; border-radius: 8px;
+    box-sizing: border-box; font-size: 13px; outline: none; font-family: inherit;
+  }
+  input[type="text"]:focus, textarea:focus { border-color: #3498db; }
+
+  .radio-group { display: flex; gap: 6px; }
+  .radio-label {
+    padding: 7px 10px; border: 1.5px solid #ddd; border-radius: 6px;
+    font-size: 12px; font-weight: bold; cursor: pointer; background: #fff; color: #666;
+    flex: 1; text-align: center;
+  }
+  input[type="radio"] { display: none; }
+  input[type="radio"]:checked + .radio-label {
+    border-color: #27ae60; background: #eafaf1; color: #27ae60;
+  }
+  .radio-danger:checked + .radio-label {
+    border-color: #e74c3c !important; background: #fdf2f2 !important; color: #c0392b !important;
+  }
+
+  .btn-submit {
+    width: 100%; padding: 14px; background: #2980b9; color: #fff;
+    border: none; border-radius: 10px; font-size: 15px; font-weight: bold;
+    cursor: pointer; box-shadow: 0 4px 10px rgba(41, 128, 185, 0.3); margin-top: 8px;
+  }
+  .btn-submit:disabled { background: #bbb; cursor: not-allowed; box-shadow: none; }
+  #status-msg { text-align: center; font-size: 13px; font-weight: bold; margin-top: 10px; word-break: keep-all; }
+</style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="header-box">
+      <h1>방배역 스마트 기능실 관리</h1>
+      <span class="badge">통제구역 · 시설가이드</span>
+      <div class="room-title" id="disp-room-name">기능실 정보를 조회 중...</div>
+    </div>
+
+    <!-- 1단계: 보안 PIN 잠금 화면 -->
+    <div id="lock-screen">
+      <div class="lock-icon">🔒</div>
+      <div class="lock-desc">
+        본 구역은 역무 보안 통제구역입니다.<br>
+        역직원 인증 PIN 번호를 입력하십시오.
+      </div>
+      <input type="password" id="pin-input" class="pin-input" maxlength="4" placeholder="••••" autofocus>
+      <button type="button" class="btn-unlock" onclick="verifyPin()">직원 인증 및 가이드 열람</button>
+      <div id="pin-error" style="color:#e74c3c; font-size:13px; font-weight:bold; margin-top:10px;"></div>
+    </div>
+
+    <!-- 2단계: 인증 성공 시 열리는 세부 가이드 & 출입로그 -->
+    <div id="main-content">
+      
+      <!-- 기능실 기본 정보 -->
+      <table class="info-table">
+        <tr>
+          <th>기능실 ID</th>
+          <td id="disp-id">-</td>
+        </tr>
+        <tr>
+          <th>위치 / 층</th>
+          <td id="disp-loc">-</td>
+        </tr>
+        <tr>
+          <th>주관 기술부서</th>
+          <td id="disp-dept">-</td>
+        </tr>
+        <tr>
+          <th>비상 연락망</th>
+          <td id="disp-contact">-</td>
+        </tr>
+      </table>
+
+      <!-- 이례상황 대응 핵심 시설 안내 -->
+      <div class="section-title">🚨 이례상황 대응 핵심 설비 안내</div>
+      <div class="facility-box" id="disp-emergency-info">
+        데이터 로딩 중...
+      </div>
+
+      <!-- 현장 시각 가이드 (사진/영상 링크) -->
+      <div class="section-title">📷 현장 내부 시각 자료 (사진·도면·영상)</div>
+      <div class="media-grid">
+        <a id="btn-photo" href="#" target="_blank" class="btn-media">🖼️ 내부 시설 사진</a>
+        <a id="btn-manual" href="#" target="_blank" class="btn-media">📄 조작 매뉴얼(PDF)</a>
+        <a id="btn-video" href="#" target="_blank" class="btn-media">🎬 비상조치 영상</a>
+      </div>
+
+      <!-- 현장 순찰/출입 점검 기록 (구글 시트 연동) -->
+      <div class="section-title">📝 기능실 순찰 및 상태 기록</div>
+      <form id="inspect-form">
+        <div class="form-group">
+          <label>점검/출입자 성명</label>
+          <input type="text" id="inspector" placeholder="예: 김방배" required>
+        </div>
+
+        <div class="form-group">
+          <label>내부 소방설비 / 누수 / 이음 상태</label>
+          <div class="radio-group">
+            <input type="radio" name="facilityState" id="st-ok" value="정상" checked>
+            <label class="radio-label" for="st-ok">정상 (이상없음)</label>
+            <input type="radio" name="facilityState" id="st-warn" value="조치요" class="radio-danger">
+            <label class="radio-label" for="st-warn">조치요 (누수/소방결함 등)</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>출입 목적 및 현장 인계/조치 메모</label>
+          <textarea id="notes" rows="2" placeholder="예: 일상 순찰 이상무, 환기덕트 미세진동 기술센터 통보 등"></textarea>
+        </div>
+
+        <button type="submit" id="btn-sub" class="btn-submit">현장 출입·순찰 완료 등록</button>
+        <div id="status-msg"></div>
+      </form>
+
+    </div>
+  </div>
+
+  <script>
+    var GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpcuxK5KCopoRzgt2OrzwJZo22617X7jkn7Ly5Womr_sUlHYvfaRZqKiV1Genqd7qv/exec";
+    var CORRECT_PIN = "2251";
+
+    // 방배역 주요 기능실 마스터 DB (자유롭게 확장 가능)
+    var roomDB = {
+      "ROOM-VENT-A": {
+        name: "A환기실 (송풍·배기)",
+        loc: "대합실 만남의광장 뒤편",
+        dept: "기계사업소 (환기)",
+        contact: "기계당직실 02-6110-XXXX",
+        emergency: "• <strong>소방설비:</strong> 입구 우측 하론/가스계 소화설비 수동조작함 거치<br>• <strong>비상조치:</strong> 화재 시 댐퍼 연동 차단 확인, 침수 징후 시 배수펌프 제어반 확인<br>• <strong>안전유의:</strong> 대형 송풍기 가동 중 접근 금지, 귀마개 착용",
+        photoUrl: "https://drive.google.com", // 구글 드라이브 사진 폴더 링크
+        manualUrl: "https://drive.google.com", // 매뉴얼 링크
+        videoUrl: "https://youtube.com" // 조치 영상 링크
+      },
+      "ROOM-VENT-B": {
+        name: "B환기실 (배기실)",
+        loc: "대합실 3번출구 방면",
+        dept: "기계사업소 (환기)",
+        contact: "기계당직실 02-6110-XXXX",
+        emergency: "• <strong>소방설비:</strong> 출입문 좌측 분말소화기 2기 및 비상조명등 비치<br>• <strong>비상조치:</strong> 배기팬 제어반 수동/자동 전환 스위치 위치 확인",
+        photoUrl: "https://drive.google.com",
+        manualUrl: "https://drive.google.com",
+        videoUrl: "https://youtube.com"
+      },
+      "ROOM-ELEC": {
+        name: "변전실 / 전기실",
+        loc: "대합실 전기실 복도 구내",
+        dept: "전기사업소",
+        contact: "전기사령 02-6110-XXXX",
+        emergency: "• <strong>소방설비:</strong> 수동 청정/가스계 소화설비, 내부 물청소 절대 금지<br>• <strong>비상조치:</strong> 정전 시 비상발전기 연동반 및 무정전전원장치(UPS) 상태 확인<br>• <strong>안전유의:</strong> 특고압 차단기 주변 2인 1조 입회 필수",
+        photoUrl: "https://drive.google.com",
+        manualUrl: "https://drive.google.com",
+        videoUrl: "https://youtube.com"
+      },
+      "ROOM-COMM": {
+        name: "통신·신호 기계실",
+        loc: "대합실 다게이트 내측",
+        dept: "전자/신호사업소",
+        contact: "신호통신사령 02-6110-XXXX",
+        emergency: "• <strong>소방설비:</strong> 통신실 내부 청정 소화약제 설비 구비<br>• <strong>비상조치:</strong> 역사 방송 앰프 랙 및 비상 인터폰 주장치 전원 상태 확인",
+        photoUrl: "https://drive.google.com",
+        manualUrl: "https://drive.google.com",
+        videoUrl: "https://youtube.com"
+      },
+      "ROOM-PUMP": {
+        name: "집수정 / 배수펌프실",
+        loc: "본선 승강장 하부",
+        dept: "토목/기계사업소",
+        contact: "토목당직실 02-6110-XXXX",
+        emergency: "• <strong>소방설비:</strong> 방수형 이동식 비상등 구비<br>• <strong>비상조치:</strong> 집중호우 시 집수정 수위 경보등 확인, 수중펌프 수동 가동 레버 확인",
+        photoUrl: "https://drive.google.com",
+        manualUrl: "https://drive.google.com",
+        videoUrl: "https://youtube.com"
+      }
+    };
+
+    var urlParams = new URLSearchParams(window.location.search);
+    var roomId = urlParams.get('id') || "ROOM-VENT-A";
+    var item = roomDB[roomId] || {
+      name: "방배역 주요 기능실 (" + roomId + ")",
+      loc: "역사 구내",
+      dept: "해당 기술사업소",
+      contact: "고객안전실 02-6110-2251",
+      emergency: "등록된 비상설비 가이드가 없습니다. 안전관리자에게 문의바랍니다.",
+      photoUrl: "#", manualUrl: "#", videoUrl: "#"
+    };
+
+    // 상단 타이틀 미리 로드
+    document.getElementById('disp-room-name').innerText = item.name;
+
+    // PIN 번호 인증 로직 (First Gateway)
+    function verifyPin() {
+      var pin = document.getElementById('pin-input').value.trim();
+      var err = document.getElementById('pin-error');
+      
+      if (pin === CORRECT_PIN) {
+        document.getElementById('lock-screen').style.display = "none";
+        document.getElementById('main-content').style.display = "block";
+        loadRoomData();
+      } else {
+        err.innerText = "❌ 보안 PIN 번호가 일치하지 않습니다.";
+        document.getElementById('pin-input').value = "";
+        document.getElementById('pin-input').focus();
+      }
+    }
+
+    // 엔터키 입력 지원
+    document.getElementById('pin-input').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') verifyPin();
+    });
+
+    // 인증 후 상세 데이터 세팅
+    function loadRoomData() {
+      document.getElementById('disp-id').innerText = roomId;
+      document.getElementById('disp-loc').innerText = item.loc;
+      document.getElementById('disp-dept').innerText = item.dept;
+      document.getElementById('disp-contact').innerText = item.contact;
+      document.getElementById('disp-emergency-info').innerHTML = item.emergency;
+
+      document.getElementById('btn-photo').href = item.photoUrl;
+      document.getElementById('btn-manual').href = item.manualUrl;
+      document.getElementById('btn-video').href = item.videoUrl;
+    }
+
+    // 순찰/출입 이력 등록
+    document.getElementById('inspect-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      var btn = document.getElementById('btn-sub');
+      var msg = document.getElementById('status-msg');
+
+      btn.disabled = true;
+      btn.innerText = "기록 전송 중...";
+      msg.innerText = "";
+
+      var payload = {
+        sheetName: "기능실", // 구글 시트의 기능실 탭으로 라우팅
+        facilityId: roomId,
+        roomName: item.name,
+        location: item.loc,
+        dept: item.dept,
+        inspector: document.getElementById('inspector').value.trim(),
+        facilityState: document.querySelector('input[name="facilityState"]:checked').value,
+        notes: document.getElementById('notes').value.trim()
+      };
+
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+      .then(function() {
+        btn.innerText = "✅ 출입·순찰 기록 완료";
+        btn.style.background = "#2c3e50";
+        msg.style.color = "#27ae60";
+        msg.innerText = item.name + " 현장 확인 기록이 클라우드 대장에 저장되었습니다.";
+      })
+      .catch(function(err) {
+        btn.disabled = false;
+        btn.innerText = "전송 실패 (재시도)";
+        msg.style.color = "#e74c3c";
+        msg.innerText = "오류 발생: " + err;
+      });
+    });
+  </script>
+</body>
+</html>
