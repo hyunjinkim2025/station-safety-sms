@@ -25,7 +25,6 @@
   }
   .facility-title { font-size: 15px; color: #444; font-weight: bold; margin-top: 4px; word-break: keep-all; }
 
-  /* 시설 정보 테이블 */
   .info-table {
     width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 16px;
   }
@@ -37,7 +36,6 @@
     padding: 8px 6px; font-weight: 600; color: #222; border-bottom: 1px solid #eee; word-break: keep-all;
   }
 
-  /* 입력 그룹 */
   .form-group { margin-bottom: 15px; }
   label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 6px; color: #444; }
   input[type="text"], input[type="password"], textarea {
@@ -46,7 +44,6 @@
   }
   input[type="text"]:focus, input[type="password"]:focus, textarea:focus { border-color: #e74c3c; }
 
-  /* 라디오 토글 버튼 */
   .radio-group { display: flex; gap: 6px; }
   .radio-label {
     padding: 8px 12px; border: 1.5px solid #ddd; border-radius: 6px;
@@ -61,7 +58,6 @@
     border-color: #e74c3c !important; background: #fdf2f2 !important; color: #c0392b !important;
   }
 
-  /* 제출 버튼 */
   .btn-submit {
     width: 100%; padding: 15px; background: #e74c3c; color: #fff;
     border: none; border-radius: 10px; font-size: 15.5px; font-weight: bold;
@@ -79,11 +75,11 @@
   <div class="card">
     <div class="header-box">
       <h1>방배역 스마트 소방시설 점검</h1>
-      <span class="badge">수동식 소화기</span>
+      <!-- 동적 뱃지: 1~68번 분말소화기 / 69번 청정소화기 자동 현시 -->
+      <span class="badge" id="disp-badge">분말소화기</span>
       <div class="facility-title" id="disp-title">소화기 정보를 조회 중...</div>
     </div>
 
-    <!-- 소화기 제원 자동 표출 -->
     <table class="info-table">
       <tr>
         <th>관리번호</th>
@@ -120,38 +116,35 @@
         <input type="password" id="pin" placeholder="직원 인증 PIN 번호 입력" maxlength="4" required>
       </div>
 
-      <!-- 핵심 점검 1: 지시압력계 (청정소화기 등 가압식 제외 대상도 고려) -->
       <div class="form-group">
         <label>지시압력계 상태 (녹색 정상범위)</label>
         <div class="radio-group">
           <input type="radio" name="gaugeStatus" id="g-ok" value="정상" checked>
-          <label class="radio-label" for="g-ok">정상 (녹색범위)</label>
+          <label class="radio-label" for="g-ok">정상 (녹색)</label>
           <input type="radio" name="gaugeStatus" id="g-low" value="불량(압력저하)" class="radio-danger">
-          <label class="radio-label" for="g-low">불량 (압력저하)</label>
+          <label class="radio-label" for="g-low">불량(저하)</label>
           <input type="radio" name="gaugeStatus" id="g-high" value="불량(과압)" class="radio-danger">
-          <label class="radio-label" for="g-high">불량 (과압)</label>
+          <label class="radio-label" for="g-high">불량(과압)</label>
         </div>
       </div>
 
-      <!-- 핵심 점검 2: 외관, 호스, 안전핀 체결 상태 -->
       <div class="form-group">
         <label>외관 / 안전핀 / 호스 상태</label>
         <div class="radio-group">
           <input type="radio" name="visualStatus" id="v-ok" value="양호" checked>
-          <label class="radio-label" for="v-ok">양호 (부식/파손없음)</label>
+          <label class="radio-label" for="v-ok">양호 (이상없음)</label>
           <input type="radio" name="visualStatus" id="v-no" value="불량" class="radio-danger">
-          <label class="radio-label" for="v-no">불량 (핀이탈/호스균열/부식)</label>
+          <label class="radio-label" for="v-no">불량 (파손/부식)</label>
         </div>
       </div>
 
-      <!-- 종합 판정 -->
       <div class="form-group">
         <label>종합 점검 판정</label>
         <div class="radio-group">
           <input type="radio" name="finalResult" id="fr-ok" value="적합" checked>
           <label class="radio-label" for="fr-ok">적합 (사용가능)</label>
           <input type="radio" name="finalResult" id="fr-no" value="조치요" class="radio-danger">
-          <label class="radio-label" for="fr-no">조치요 (교체/정비필요)</label>
+          <label class="radio-label" for="fr-no">조치요 (정비필요)</label>
         </div>
       </div>
 
@@ -166,11 +159,9 @@
   </div>
 
   <script>
-    // ⚠️ 구글 Apps Script Web App URL을 입력하세요
     var GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpcuxK5KCopoRzgt2OrzwJZo22617X7jkn7Ly5Womr_sUlHYvfaRZqKiV1Genqd7qv/exec";
     var CORRECT_PIN = "2251";
 
-    // [방배역 소화기 69개 전수 마스터 DB]
     var extinguisherDB = {
       "225-01": { area: "대합실", loc: "화장실 앞", type: "ABC 3.3kg", mfgDate: "2017.4" },
       "225-02": { area: "대합실", loc: "화장실 앞", type: "ABC 3.3kg", mfgDate: "2015.5" },
@@ -221,7 +212,7 @@
       "225-47": { area: "내선", loc: "소화전 5(하)2-2", type: "ABC 3.3kg", mfgDate: "2020.3" },
       "225-48": { area: "내선", loc: "SOS(1-4)", type: "ABC 3.3kg", mfgDate: "2020.3" },
       "225-49": { area: "내선", loc: "내선(1-2)", type: "ABC 3.3kg", mfgDate: "2020.10" },
-      "225-50": { area: "외선", loc: "외선(1-1)", type: "ABC 20kg", mfgDate: "2016.4" },
+      "225-50": { area: "외선", loc: "외선(1-1)", type: "ABC 3.3kg", mfgDate: "2016.4" }, // 3.3kg 정정 완료
       "225-51": { area: "외선", loc: "소화전 6(상)1-4", type: "ABC 3.3kg", mfgDate: "2020.3" },
       "225-52": { area: "외선", loc: "소화전 6(하)1-4", type: "ABC 3.3kg", mfgDate: "2020.3" },
       "225-53": { area: "외선", loc: "SOS(2-2)외선", type: "ABC 3.3kg", mfgDate: "2017.4" },
@@ -246,6 +237,10 @@
     var urlParams = new URLSearchParams(window.location.search);
     var extId = urlParams.get('id') || "225-01";
     var item = extinguisherDB[extId] || { area: "역사구내", loc: "미등록 위치 (" + extId + ")", type: "ABC 3.3kg", mfgDate: "-" };
+
+    // 69번만 청정소화기, 그 외 1~68번은 분말소화기 뱃지 자동 설정
+    var badgeText = (extId === "225-69" || (item.type && item.type.indexOf("청정") !== -1)) ? "청정소화기" : "분말소화기";
+    document.getElementById('disp-badge').innerText = badgeText;
 
     document.getElementById('disp-id').innerText = extId;
     document.getElementById('disp-title').innerText = item.area + " [" + item.loc + "]";
@@ -272,7 +267,7 @@
       msg.innerText = "";
 
       var payload = {
-        sheetName: "소화기", // Apps Script에서 소화기 월별 탭으로 자동 라우팅
+        sheetName: "소화기",
         facilityId: extId,
         area: item.area,
         location: item.loc,
