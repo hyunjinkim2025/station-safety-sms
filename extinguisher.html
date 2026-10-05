@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>방배역 스마트 소방시설 점검 (소화기)</title>
+<style>
+  body {
+    margin: 0; padding: 20px 16px 40px;
+    background-color: #f4f6f9;
+    font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
+    color: #333; display: flex; flex-direction: column; align-items: center;
+    box-sizing: border-box; min-height: 100vh;
+  }
+  .card {
+    width: 100%; max-width: 420px; background: #ffffff;
+    border-radius: 14px; padding: 22px 18px; box-sizing: border-box;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.06); margin-bottom: 16px;
+  }
+  .header-box { text-align: center; margin-bottom: 18px; }
+  h1 { font-size: 20px; margin: 0 0 10px; color: #1a1a1a; letter-spacing: -0.5px; }
+  .badge {
+    display: inline-block; padding: 5px 14px; border-radius: 20px;
+    background: #e74c3c; color: #fff; font-size: 13px; font-weight: bold; margin-bottom: 8px;
+  }
+  .facility-title { font-size: 15px; color: #444; font-weight: bold; margin-top: 4px; word-break: keep-all; }
+
+  /* 시설 정보 테이블 */
+  .info-table {
+    width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 16px;
+  }
+  .info-table th {
+    text-align: left; padding: 8px 6px; color: #777; width: 30%; background: #fbfbfb;
+    border-bottom: 1px solid #eee;
+  }
+  .info-table td {
+    padding: 8px 6px; font-weight: 600; color: #222; border-bottom: 1px solid #eee; word-break: keep-all;
+  }
+
+  /* 입력 그룹 */
+  .form-group { margin-bottom: 15px; }
+  label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 6px; color: #444; }
+  input[type="text"], input[type="password"], textarea {
+    width: 100%; padding: 11px 12px; border: 1.5px solid #ddd; border-radius: 8px;
+    box-sizing: border-box; font-size: 13.5px; outline: none; font-family: inherit;
+  }
+  input[type="text"]:focus, input[type="password"]:focus, textarea:focus { border-color: #e74c3c; }
+
+  /* 라디오 토글 버튼 */
+  .radio-group { display: flex; gap: 6px; }
+  .radio-label {
+    padding: 8px 12px; border: 1.5px solid #ddd; border-radius: 6px;
+    font-size: 12.5px; font-weight: bold; cursor: pointer; background: #fff; color: #666;
+    flex: 1; text-align: center;
+  }
+  input[type="radio"] { display: none; }
+  input[type="radio"]:checked + .radio-label {
+    border-color: #27ae60; background: #eafaf1; color: #27ae60;
+  }
+  .radio-danger:checked + .radio-label {
+    border-color: #e74c3c !important; background: #fdf2f2 !important; color: #c0392b !important;
+  }
+
+  /* 제출 버튼 */
+  .btn-submit {
+    width: 100%; padding: 15px; background: #e74c3c; color: #fff;
+    border: none; border-radius: 10px; font-size: 15.5px; font-weight: bold;
+    cursor: pointer; box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3); margin-top: 10px;
+  }
+  .btn-submit:disabled { background: #bbb; box-shadow: none; cursor: not-allowed; }
+
+  #status-msg {
+    text-align: center; font-size: 13.5px; font-weight: bold; margin-top: 12px; word-break: keep-all;
+  }
+</style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="header-box">
+      <h1>방배역 스마트 소방시설 점검</h1>
+      <span class="badge">수동식 소화기</span>
+      <div class="facility-title" id="disp-title">소화기 정보를 조회 중...</div>
+    </div>
+
+    <!-- 소화기 제원 자동 표출 -->
+    <table class="info-table">
+      <tr>
+        <th>관리번호</th>
+        <td id="disp-id">-</td>
+      </tr>
+      <tr>
+        <th>설치구역</th>
+        <td id="disp-area">-</td>
+      </tr>
+      <tr>
+        <th>상세위치</th>
+        <td id="disp-loc">-</td>
+      </tr>
+      <tr>
+        <th>소화기 종류</th>
+        <td id="disp-type">-</td>
+      </tr>
+      <tr>
+        <th>제조연월</th>
+        <td id="disp-mfg">-</td>
+      </tr>
+    </table>
+
+    <hr style="border:0; border-top:1px dashed #ddd; margin:16px 0;">
+
+    <form id="inspect-form">
+      <div class="form-group">
+        <label>점검자 성명</label>
+        <input type="text" id="inspector" placeholder="예: 김방배" required>
+      </div>
+
+      <div class="form-group">
+        <label>관리자 보안 PIN (4자리)</label>
+        <input type="password" id="pin" placeholder="직원 인증 PIN 번호 입력" maxlength="4" required>
+      </div>
+
+      <!-- 핵심 점검 1: 지시압력계 (청정소화기 등 가압식 제외 대상도 고려) -->
+      <div class="form-group">
+        <label>지시압력계 상태 (녹색 정상범위)</label>
+        <div class="radio-group">
+          <input type="radio" name="gaugeStatus" id="g-ok" value="정상" checked>
+          <label class="radio-label" for="g-ok">정상 (녹색범위)</label>
+          <input type="radio" name="gaugeStatus" id="g-low" value="불량(압력저하)" class="radio-danger">
+          <label class="radio-label" for="g-low">불량 (압력저하)</label>
+          <input type="radio" name="gaugeStatus" id="g-high" value="불량(과압)" class="radio-danger">
+          <label class="radio-label" for="g-high">불량 (과압)</label>
+        </div>
+      </div>
+
+      <!-- 핵심 점검 2: 외관, 호스, 안전핀 체결 상태 -->
+      <div class="form-group">
+        <label>외관 / 안전핀 / 호스 상태</label>
+        <div class="radio-group">
+          <input type="radio" name="visualStatus" id="v-ok" value="양호" checked>
+          <label class="radio-label" for="v-ok">양호 (부식/파손없음)</label>
+          <input type="radio" name="visualStatus" id="v-no" value="불량" class="radio-danger">
+          <label class="radio-label" for="v-no">불량 (핀이탈/호스균열/부식)</label>
+        </div>
+      </div>
+
+      <!-- 종합 판정 -->
+      <div class="form-group">
+        <label>종합 점검 판정</label>
+        <div class="radio-group">
+          <input type="radio" name="finalResult" id="fr-ok" value="적합" checked>
+          <label class="radio-label" for="fr-ok">적합 (사용가능)</label>
+          <input type="radio" name="finalResult" id="fr-no" value="조치요" class="radio-danger">
+          <label class="radio-label" for="fr-no">조치요 (교체/정비필요)</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>특이사항 메모</label>
+        <textarea id="notes" rows="2" placeholder="이상 징후 및 정비 요구사항 기재"></textarea>
+      </div>
+
+      <button type="submit" id="btn-sub" class="btn-submit">현장 점검 완료 제출</button>
+      <div id="status-msg"></div>
+    </form>
+  </div>
+
+  <script>
+    // ⚠️ 구글 Apps Script Web App URL을 입력하세요
+    var GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpcuxK5KCopoRzgt2OrzwJZo22617X7jkn7Ly5Womr_sUlHYvfaRZqKiV1Genqd7qv/exec";
+    var CORRECT_PIN = "2251";
+
+    // [방배역 소화기 69개 전수 마스터 DB]
+    var extinguisherDB = {
+      "225-01": { area: "대합실", loc: "화장실 앞", type: "ABC 3.3kg", mfgDate: "2017.4" },
+      "225-02": { area: "대합실", loc: "화장실 앞", type: "ABC 3.3kg", mfgDate: "2015.5" },
+      "225-03": { area: "대합실", loc: "사복대기실 내", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-04": { area: "대합실", loc: "가게이트(G계단)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-05": { area: "대합실", loc: "나게이트 소화전12(상)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-06": { area: "대합실", loc: "나게이트 소화전12(하)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-07": { area: "대합실", loc: "역 창고(관리장실)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-08": { area: "대합실", loc: "역 창고 앞", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-09": { area: "대합실", loc: "메트로환경", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-10": { area: "대합실", loc: "비품 창고", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-11": { area: "대합실", loc: "여직원 대기실", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-12": { area: "대합실", loc: "직원 대기실", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-13": { area: "대합실", loc: "직원 침실", type: "ABC 3.3kg", mfgDate: "2017.4" },
+      "225-14": { area: "대합실", loc: "1번출구 방풍문 옆", type: "ABC 3.3kg", mfgDate: "2017.4" },
+      "225-15": { area: "대합실", loc: "고객안전실", type: "ABC 3.3kg", mfgDate: "2018.3" },
+      "225-16": { area: "대합실", loc: "고객안전실", type: "ABC 3.3kg", mfgDate: "2018.3" },
+      "225-17": { area: "대합실", loc: "고객안전실", type: "ABC 3.3kg", mfgDate: "2019.3" },
+      "225-18": { area: "대합실", loc: "3번출구 쪽문 옆", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-19": { area: "대합실", loc: "만남의 장소 소화전13(상)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-20": { area: "대합실", loc: "만남의 장소 소화전13(하)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-21": { area: "대합실", loc: "만남의 장소 좌측 옆", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-22": { area: "대합실", loc: "전기실 앞 소화전14(상)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-23": { area: "대합실", loc: "전기실 앞 소화전14(하)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-24": { area: "대합실", loc: "안내부스", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-25": { area: "대합실", loc: "민원실(역장실)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-26": { area: "대합실", loc: "C계단", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-27": { area: "대합실", loc: "F계단 소화전15(상)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-28": { area: "대합실", loc: "F계단 소화전15(하)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-29": { area: "대합실", loc: "수방자재 창고", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-30": { area: "대합실", loc: "SOS(A환기실 앞)", type: "ABC 3.3kg", mfgDate: "2021.7" },
+      "225-31": { area: "대합실", loc: "SOS(B환기실 앞)", type: "ABC 3.3kg", mfgDate: "2021.7" },
+      "225-32": { area: "내선", loc: "내선10-4", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-33": { area: "내선", loc: "소화전 1상(9-4)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-34": { area: "내선", loc: "소화전 1하(9-5)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-35": { area: "내선", loc: "SOS(9-3)", type: "ABC 3.3kg", mfgDate: "2017.4" },
+      "225-36": { area: "내선", loc: "소화전 2상(8-2)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-37": { area: "내선", loc: "소화전 2하(8-2)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-38": { area: "내선", loc: "방송실(8-1)", type: "ABC 3.3kg", mfgDate: "2017.4" },
+      "225-39": { area: "내선", loc: "소화전 3상(6-1)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-40": { area: "내선", loc: "소화전 3하(6-1)", type: "ABC 3.3kg", mfgDate: "2016.4" },
+      "225-41": { area: "내선", loc: "SOS(5-3)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-42": { area: "내선", loc: "소화전 4상(4-1)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-43": { area: "내선", loc: "소화전 4하(4-1)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-44": { area: "내선", loc: "12번창고(3-2)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-45": { area: "내선", loc: "11번 창고(2-4)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-46": { area: "내선", loc: "소화전 5(상)2-1", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-47": { area: "내선", loc: "소화전 5(하)2-2", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-48": { area: "내선", loc: "SOS(1-4)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-49": { area: "내선", loc: "내선(1-2)", type: "ABC 3.3kg", mfgDate: "2020.10" },
+      "225-50": { area: "외선", loc: "외선(1-1)", type: "ABC 20kg", mfgDate: "2016.4" },
+      "225-51": { area: "외선", loc: "소화전 6(상)1-4", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-52": { area: "외선", loc: "소화전 6(하)1-4", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-53": { area: "외선", loc: "SOS(2-2)외선", type: "ABC 3.3kg", mfgDate: "2017.4" },
+      "225-54": { area: "외선", loc: "소화전 7(상)3-3", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-55": { area: "외선", loc: "소화전 7(하)3-3", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-56": { area: "외선", loc: "7번 창고(3-2)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-57": { area: "외선", loc: "8번 창고(3-4)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-58": { area: "외선", loc: "소화전 8(5-3)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-59": { area: "외선", loc: "소화전 8(5-3)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-60": { area: "외선", loc: "SOS(6-1)외선", type: "ABC 3.3kg", mfgDate: "2017.4" },
+      "225-61": { area: "외선", loc: "소화전 9상(7-4)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-62": { area: "외선", loc: "소화전 9하(7-4)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-63": { area: "외선", loc: "9번 창고(8-3)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-64": { area: "외선", loc: "10번 창고(9-1)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-65": { area: "외선", loc: "소화전 10(상)9-4", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-66": { area: "외선", loc: "소화전 10(하)9-4", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-67": { area: "외선", loc: "SOS(10-2)", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-68": { area: "외선", loc: "외선10-3", type: "ABC 3.3kg", mfgDate: "2020.3" },
+      "225-69": { area: "대합실", loc: "고객안전실", type: "청정 3kg", mfgDate: "2014.7" }
+    };
+
+    var urlParams = new URLSearchParams(window.location.search);
+    var extId = urlParams.get('id') || "225-01";
+    var item = extinguisherDB[extId] || { area: "역사구내", loc: "미등록 위치 (" + extId + ")", type: "ABC 3.3kg", mfgDate: "-" };
+
+    document.getElementById('disp-id').innerText = extId;
+    document.getElementById('disp-title').innerText = item.area + " [" + item.loc + "]";
+    document.getElementById('disp-area').innerText = item.area;
+    document.getElementById('disp-loc').innerText = item.loc;
+    document.getElementById('disp-type').innerText = item.type;
+    document.getElementById('disp-mfg').innerText = item.mfgDate;
+
+    document.getElementById('inspect-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      var pinInput = document.getElementById('pin').value.trim();
+      var btn = document.getElementById('btn-sub');
+      var msg = document.getElementById('status-msg');
+
+      if (pinInput !== CORRECT_PIN) {
+        alert("관리자 보안 PIN 번호가 일치하지 않습니다.");
+        document.getElementById('pin').focus();
+        return;
+      }
+      
+      btn.disabled = true;
+      btn.innerText = "데이터 전송 중...";
+      msg.innerText = "";
+
+      var payload = {
+        sheetName: "소화기", // Apps Script에서 소화기 월별 탭으로 자동 라우팅
+        facilityId: extId,
+        area: item.area,
+        location: item.loc,
+        type: item.type,
+        mfgDate: item.mfgDate,
+        inspector: document.getElementById('inspector').value.trim(),
+        gaugeStatus: document.querySelector('input[name="gaugeStatus"]:checked').value,
+        visualStatus: document.querySelector('input[name="visualStatus"]:checked').value,
+        finalResult: document.querySelector('input[name="finalResult"]:checked').value,
+        notes: document.getElementById('notes').value.trim()
+      };
+
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+      .then(function() {
+        btn.innerText = "✅ 소화기 점검 등록 완료";
+        btn.style.background = "#2c3e50";
+        msg.style.color = "#27ae60";
+        msg.innerText = extId + " (" + item.loc + ") 점검 결과가 최신 대장에 저장되었습니다.";
+      })
+      .catch(function(err) {
+        btn.disabled = false;
+        btn.innerText = "제출 실패 (재시도)";
+        msg.style.color = "#e74c3c";
+        msg.innerText = "전송 오류: " + err;
+      });
+    });
+  </script>
+</body>
+</html>
