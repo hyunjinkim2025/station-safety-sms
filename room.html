@@ -3,111 +3,55 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>방배역 스마트 기능실 가이드 & 출입순찰</title>
+<title>방배역 스마트 소방시설 점검 (비상조명등)</title>
 <style>
   body {
-    margin: 0; padding: 20px 16px 50px;
-    background-color: #f0f3f8;
+    margin: 0; padding: 20px 16px 40px;
+    background-color: #f4f6f9;
     font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
     color: #333; display: flex; flex-direction: column; align-items: center;
     box-sizing: border-box; min-height: 100vh;
   }
   .card {
-    width: 100%; max-width: 440px; background: #ffffff;
-    border-radius: 16px; padding: 22px 18px; box-sizing: border-box;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.06); margin-bottom: 16px;
+    width: 100%; max-width: 420px; background: #ffffff;
+    border-radius: 14px; padding: 22px 18px; box-sizing: border-box;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.06); margin-bottom: 16px;
   }
-  .header-box { text-align: center; margin-bottom: 16px; }
-  h1 { font-size: 19px; margin: 0 0 8px; color: #111; letter-spacing: -0.5px; }
+  .header-box { text-align: center; margin-bottom: 18px; }
+  h1 { font-size: 20px; margin: 0 0 10px; color: #1a1a1a; letter-spacing: -0.5px; }
   .badge {
     display: inline-block; padding: 5px 14px; border-radius: 20px;
-    background: #2980b9; color: #fff; font-size: 13px; font-weight: bold; margin-bottom: 6px;
+    background: #e67e22; color: #fff; font-size: 13px; font-weight: bold; margin-bottom: 8px;
   }
-  .room-title { font-size: 17px; color: #2c3e50; font-weight: 800; margin-top: 4px; word-break: keep-all; }
+  .facility-title { font-size: 15px; color: #444; font-weight: bold; margin-top: 4px; word-break: keep-all; }
 
-  /* 1단계 잠금 화면 */
-  #lock-screen { text-align: center; padding: 24px 10px; }
-  .lock-icon { font-size: 46px; margin-bottom: 14px; }
-  .lock-desc { font-size: 14px; color: #555; margin-bottom: 20px; line-height: 1.6; word-break: keep-all; }
-  .pin-input {
-    width: 180px; padding: 12px; font-size: 24px; text-align: center;
-    letter-spacing: 10px; border: 2px solid #2980b9; border-radius: 10px;
-    outline: none; margin-bottom: 18px; font-weight: bold;
-  }
-  .btn-unlock {
-    width: 100%; padding: 14px; background: #2980b9; color: #fff;
-    border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer;
-    box-shadow: 0 4px 10px rgba(41, 128, 185, 0.3);
-  }
-
-  /* 2단계 본문 화면 */
-  #main-content { display: none; }
-
-  .section-title {
-    font-size: 14px; font-weight: bold; color: #1b4f72;
-    border-left: 4px solid #2980b9; padding-left: 8px; margin: 18px 0 10px;
-  }
   .info-table {
-    width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 14px;
+    width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 16px;
   }
   .info-table th {
-    text-align: left; padding: 8px 6px; color: #666; width: 28%; background: #f8f9fa;
-    border-bottom: 1px solid #edf0f2;
+    text-align: left; padding: 8px 6px; color: #777; width: 30%; background: #fbfbfb;
+    border-bottom: 1px solid #eee;
   }
   .info-table td {
-    padding: 8px 6px; font-weight: 600; color: #222; border-bottom: 1px solid #edf0f2; word-break: keep-all;
+    padding: 8px 6px; font-weight: 600; color: #222; border-bottom: 1px solid #eee; word-break: keep-all;
   }
 
-  /* 도어락 비밀번호 보안 박스 */
-  .security-box {
-    background: #fef9e7; border: 1.5px solid #f9e79f; border-radius: 10px;
-    padding: 13px; margin-bottom: 16px;
+  .lamp-group {
+    background: #fdfaf6; border: 1.5px solid #fae5d3; border-radius: 10px;
+    padding: 14px; margin-bottom: 18px;
   }
-  .sec-header {
-    display: flex; justify-content: space-between; align-items: center;
-    font-weight: bold; color: #7d6608; font-size: 13px; margin-bottom: 8px;
+  .lamp-group-title { font-size: 13.5px; font-weight: bold; color: #d35400; margin-bottom: 12px; }
+  .lamp-item {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #eedbc9;
   }
-  .pass-row { display: flex; align-items: center; gap: 8px; }
-  .pass-display {
-    flex: 1; padding: 8px 12px; font-size: 20px; font-weight: 900;
-    letter-spacing: 5px; color: #c0392b; background: #fff; border: 1px solid #f39c12;
-    border-radius: 6px; text-align: center;
-  }
-  .btn-pass-view {
-    padding: 9px 12px; background: #f39c12; color: #fff; border: none;
-    border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; white-space: nowrap;
-  }
-
-  /* 핵심 설비 가이드 */
-  .facility-box {
-    background: #eef7fc; border: 1.5px solid #d4e6f1; border-radius: 10px;
-    padding: 12px; margin-bottom: 14px; font-size: 13px; line-height: 1.6; color: #244158;
-  }
-  .facility-box strong { color: #1a5276; }
-
-  /* 시각자료 링크 버튼 */
-  .media-grid { display: flex; gap: 8px; margin-bottom: 16px; }
-  .btn-media {
-    flex: 1; padding: 10px 6px; border-radius: 8px; text-decoration: none;
-    font-size: 12.5px; font-weight: bold; text-align: center; display: inline-flex;
-    align-items: center; justify-content: center; gap: 4px;
-    background: #ffffff; border: 1.5px solid #2980b9; color: #2980b9;
-  }
-
-  /* 출입 순찰 폼 */
-  .form-group { margin-bottom: 13px; }
-  label { display: block; font-size: 12.5px; font-weight: bold; margin-bottom: 5px; color: #444; }
-  input[type="text"], textarea {
-    width: 100%; padding: 10px 12px; border: 1.5px solid #ddd; border-radius: 8px;
-    box-sizing: border-box; font-size: 13px; outline: none; font-family: inherit;
-  }
-  input[type="text"]:focus, textarea:focus { border-color: #2980b9; }
+  .lamp-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+  .lamp-name { font-size: 13px; font-weight: bold; color: #444; }
 
   .radio-group { display: flex; gap: 6px; }
   .radio-label {
-    padding: 8px 10px; border: 1.5px solid #ddd; border-radius: 6px;
-    font-size: 12px; font-weight: bold; cursor: pointer; background: #fff; color: #666;
-    flex: 1; text-align: center;
+    padding: 7px 14px; border: 1.5px solid #ddd; border-radius: 6px;
+    font-size: 12.5px; font-weight: bold; cursor: pointer; background: #fff; color: #666;
   }
   input[type="radio"] { display: none; }
   input[type="radio"]:checked + .radio-label {
@@ -117,251 +61,289 @@
     border-color: #e74c3c !important; background: #fdf2f2 !important; color: #c0392b !important;
   }
 
-  .btn-submit {
-    width: 100%; padding: 14px; background: #2980b9; color: #fff;
-    border: none; border-radius: 10px; font-size: 15px; font-weight: bold;
-    cursor: pointer; box-shadow: 0 4px 10px rgba(41, 128, 185, 0.3); margin-top: 8px;
+  .form-group { margin-bottom: 15px; }
+  label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 6px; color: #444; }
+  input[type="text"], input[type="password"], textarea {
+    width: 100%; padding: 11px 12px; border: 1.5px solid #ddd; border-radius: 8px;
+    box-sizing: border-box; font-size: 13.5px; outline: none; font-family: inherit;
   }
-  .btn-submit:disabled { background: #bbb; cursor: not-allowed; box-shadow: none; }
-  #status-msg { text-align: center; font-size: 13px; font-weight: bold; margin-top: 10px; word-break: keep-all; }
+  input[type="text"]:focus, input[type="password"]:focus, textarea:focus { border-color: #e67e22; }
+
+  /* 사진 첨부 스타일 */
+  .photo-upload-box {
+    border: 2px dashed #d5dbdb; border-radius: 8px; padding: 12px;
+    text-align: center; background: #fafbfc; margin-top: 6px;
+  }
+  .btn-photo-pick {
+    display: inline-block; padding: 8px 16px; background: #fff;
+    border: 1.5px solid #bdc3c7; border-radius: 6px; font-size: 13px;
+    font-weight: bold; color: #555; cursor: pointer;
+  }
+  .photo-preview-wrap {
+    display: none; margin-top: 10px; position: relative; text-align: center;
+  }
+  .photo-preview-img {
+    max-width: 100%; max-height: 180px; border-radius: 8px;
+    border: 1px solid #ddd; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  .btn-photo-remove {
+    position: absolute; top: -8px; right: calc(50% - 95px);
+    background: #e74c3c; color: #fff; border: none; border-radius: 50%;
+    width: 24px; height: 24px; font-size: 12px; font-weight: bold; cursor: pointer;
+  }
+  .photo-hint { font-size: 11.5px; color: #888; margin-top: 6px; }
+
+  .btn-submit {
+    width: 100%; padding: 15px; background: #e67e22; color: #fff;
+    border: none; border-radius: 10px; font-size: 15.5px; font-weight: bold;
+    cursor: pointer; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3); margin-top: 10px;
+  }
+  .btn-submit:disabled { background: #bbb; box-shadow: none; cursor: not-allowed; }
+  #status-msg { text-align: center; font-size: 13.5px; font-weight: bold; margin-top: 12px; word-break: keep-all; }
 </style>
 </head>
 <body>
 
   <div class="card">
     <div class="header-box">
-      <h1>방배역 스마트 기능실 관리</h1>
-      <span class="badge">통제구역 · 시설가이드</span>
-      <div class="room-title" id="disp-room-name">기능실 정보를 조회 중...</div>
+      <h1>방배역 스마트 소방시설 점검</h1>
+      <span class="badge">휴대용 비상조명등</span>
+      <div class="facility-title" id="disp-title">보관함 정보를 조회 중...</div>
     </div>
 
-    <!-- 1단계: 보안 PIN 인증 화면 (First Gateway) -->
-    <div id="lock-screen">
-      <div class="lock-icon">🔒</div>
-      <div class="lock-desc">
-        본 구역은 역무 보안 통제구역입니다.<br>
-        역직원 인증 PIN 번호를 입력하십시오.
-      </div>
-      <input type="password" id="pin-input" class="pin-input" maxlength="4" placeholder="••••" autofocus>
-      <button type="button" class="btn-unlock" onclick="verifyPin()">직원 인증 및 가이드 열람</button>
-      <div id="pin-error" style="color:#e74c3c; font-size:13px; font-weight:bold; margin-top:10px;"></div>
-    </div>
+    <table class="info-table">
+      <tr>
+        <th>시설 ID</th>
+        <td id="disp-id">-</td>
+      </tr>
+      <tr>
+        <th>설치구역</th>
+        <td id="disp-area">-</td>
+      </tr>
+      <tr>
+        <th>상세위치</th>
+        <td id="disp-loc">-</td>
+      </tr>
+      <tr>
+        <th>관리수량</th>
+        <td id="disp-count">3 개 (1개 함 세트)</td>
+      </tr>
+    </table>
 
-    <!-- 2단계: 인증 성공 시 열리는 세부 가이드 & 출입로그 -->
-    <div id="main-content">
-      
-      <!-- 기능실 기본 정보 -->
-      <table class="info-table">
-        <tr>
-          <th>기능실 ID</th>
-          <td id="disp-id">-</td>
-        </tr>
-        <tr>
-          <th>설치구역</th>
-          <td id="disp-area">-</td>
-        </tr>
-        <tr>
-          <th>세부위치</th>
-          <td id="disp-loc">-</td>
-        </tr>
-        <tr>
-          <th>주관부서</th>
-          <td id="disp-dept">기계사업소 (환기)</td>
-        </tr>
-      </table>
+    <hr style="border:0; border-top:1px dashed #ddd; margin:16px 0;">
 
-      <!-- 실시간 클라우드 동기화 도어락 비밀번호 확인 카드 -->
-      <div class="security-box">
-        <div class="sec-header">
-          <span>🔐 출입문 도어락 비밀번호 (보안)</span>
-          <span style="font-size:11px; color:#b7950b;">실시간 Cloud 동기화</span>
-        </div>
-        <div class="pass-row">
-          <div id="disp-doorpass" class="pass-display">••••••</div>
-          <button type="button" class="btn-pass-view" id="btn-toggle-pass" onclick="togglePassView()">비번 확인</button>
-        </div>
-        <div style="font-size:11px; color:#8c6d1f; margin-top:6px;">
-          ※ 외부 유출 금지 (구글 시트에서 비번 변경 시 실시간 반영)
-        </div>
+    <form id="inspect-form">
+      <div class="form-group">
+        <label>점검자 성명</label>
+        <input type="text" id="inspector" placeholder="예: 김방배" required>
       </div>
 
-      <!-- 이례상황 대응 핵심 시설 안내 -->
-      <div class="section-title">🚨 이례상황 대응 핵심 설비 안내</div>
-      <div class="facility-box" id="disp-emergency-info">
-        데이터 로딩 중...
+      <div class="form-group">
+        <label>관리자 보안 PIN (4자리)</label>
+        <input type="password" id="pin" placeholder="직원 인증 PIN 번호 입력" maxlength="4" required>
       </div>
 
-      <!-- 현장 시각 가이드 (사진/영상 링크) -->
-      <div class="section-title">📷 현장 내부 시각 자료 (사진·도면·영상)</div>
-      <div class="media-grid">
-        <a id="btn-photo" href="#" target="_blank" class="btn-media">🖼️ 내부 설비 사진</a>
-        <a id="btn-manual" href="#" target="_blank" class="btn-media">📄 조작 매뉴얼(PDF)</a>
-        <a id="btn-video" href="#" target="_blank" class="btn-media">🎬 비상조치 영상</a>
-      </div>
+      <div class="lamp-group">
+        <div class="lamp-group-title">🔦 휴대용 비상조명등 개별 점등 상태</div>
 
-      <!-- 현장 순찰/출입 점검 기록 (구글 시트 연동) -->
-      <div class="section-title">📝 기능실 순찰 및 상태 기록</div>
-      <form id="inspect-form">
-        <div class="form-group">
-          <label>점검/출입자 성명</label>
-          <input type="text" id="inspector" placeholder="예: 김방배" required>
-        </div>
-
-        <div class="form-group">
-          <label>내부 소방설비 / 누수 / 이음 상태</label>
+        <div class="lamp-item">
+          <span class="lamp-name">1호 조명등</span>
           <div class="radio-group">
-            <input type="radio" name="facilityState" id="st-ok" value="정상" checked>
-            <label class="radio-label" for="st-ok">정상 (이상없음)</label>
-            <input type="radio" name="facilityState" id="st-warn" value="조치요" class="radio-danger">
-            <label class="radio-label" for="st-warn">조치요 (누수/결함 등)</label>
+            <input type="radio" name="l1" id="l1-ok" value="정상" checked>
+            <label class="radio-label" for="l1-ok">점등정상</label>
+            <input type="radio" name="l1" id="l1-no" value="불량" class="radio-danger">
+            <label class="radio-label" for="l1-no">점등불량</label>
           </div>
         </div>
 
-        <div class="form-group">
-          <label>출입 목적 및 현장 인계/조치 메모</label>
-          <textarea id="notes" rows="2" placeholder="예: 일상 순찰 이상무, 환기댐퍼 연동 상태 확인 등"></textarea>
+        <div class="lamp-item">
+          <span class="lamp-name">2호 조명등</span>
+          <div class="radio-group">
+            <input type="radio" name="l2" id="l2-ok" value="정상" checked>
+            <label class="radio-label" for="l2-ok">점등정상</label>
+            <input type="radio" name="l2" id="l2-no" value="불량" class="radio-danger">
+            <label class="radio-label" for="l2-no">점등불량</label>
+          </div>
         </div>
 
-        <button type="submit" id="btn-sub" class="btn-submit">현장 출입·순찰 완료 등록</button>
-        <div id="status-msg"></div>
-      </form>
+        <div class="lamp-item">
+          <span class="lamp-name">3호 조명등</span>
+          <div class="radio-group">
+            <input type="radio" name="l3" id="l3-ok" value="정상" checked>
+            <label class="radio-label" for="l3-ok">점등정상</label>
+            <input type="radio" name="l3" id="l3-no" value="불량" class="radio-danger">
+            <label class="radio-label" for="l3-no">점등불량</label>
+          </div>
+        </div>
+      </div>
 
-    </div>
+      <div class="form-group">
+        <label>보관함 외관 / 거치 상태</label>
+        <div class="radio-group">
+          <input type="radio" name="boxVisual" id="bv-ok" value="양호" checked>
+          <label class="radio-label" for="bv-ok" style="flex:1; text-align:center;">양호 (파손없음)</label>
+          <input type="radio" name="boxVisual" id="bv-no" value="불량" class="radio-danger">
+          <label class="radio-label" for="bv-no" style="flex:1; text-align:center;">불량 (함체파손/유실)</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>종합 점검 판정</label>
+        <div class="radio-group">
+          <input type="radio" name="finalResult" id="fr-ok" value="적합" checked>
+          <label class="radio-label" for="fr-ok" style="flex:1; text-align:center;">적합 (이상없음)</label>
+          <input type="radio" name="finalResult" id="fr-no" value="조치요" class="radio-danger">
+          <label class="radio-label" for="fr-no" style="flex:1; text-align:center;">조치요 (정비필요)</label>
+        </div>
+      </div>
+
+      <!-- [신규] 현장 사진 첨부 및 자동 압축 모듈 -->
+      <div class="form-group">
+        <label>현장 결함 / 증빙 사진 첨부 (선택)</label>
+        <div class="photo-upload-box">
+          <input type="file" id="photo-input" accept="image/*" capture="environment" style="display:none;" onchange="handlePhotoSelect(event)">
+          <label for="photo-input" class="btn-photo-pick">📷 사진 촬영 또는 앨범 선택</label>
+          <div class="photo-hint">※ 첨부 시 고화질 사진이 전송용으로 자동 최적화 압축됩니다.</div>
+          
+          <div id="preview-wrap" class="photo-preview-wrap">
+            <img id="preview-img" class="photo-preview-img" src="">
+            <button type="button" class="btn-photo-remove" onclick="removePhoto()">✕</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>특이사항 메모</label>
+        <textarea id="notes" rows="2" placeholder="이상 징후 및 정비 조치사항 기재"></textarea>
+      </div>
+
+      <button type="submit" id="btn-sub" class="btn-submit">현장 점검 완료 제출</button>
+      <div id="status-msg"></div>
+    </form>
   </div>
 
   <script>
-    // ⚠️ 운영 중이신 Google Apps Script Web App URL을 입력하세요
     var GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpcuxK5KCopoRzgt2OrzwJZo22617X7jkn7Ly5Womr_sUlHYvfaRZqKiV1Genqd7qv/exec";
     var CORRECT_PIN = "2251";
 
-    // 방배역 핵심 환기실 2개소 마스터 DB
-    var roomDB = {
-      "ROOM-VENT-A": {
-        name: "환기실 A (송풍·배기)",
-        area: "대합실",
-        loc: "화장실 방향",
-        emergency: "• <strong>소방설비:</strong> 입구 우측 하론/가스계 소화설비 수동조작함 거치<br>• <strong>비상조치:</strong> 화재 시 댐퍼 연동 차단 상태 확인, 침수 시 배수펌프 가동 확인<br>• <strong>안전유의:</strong> 대형 송풍팬 가동 중 접근 금지, 귀마개 착용",
-        photoUrl: "https://drive.google.com",
-        manualUrl: "https://drive.google.com",
-        videoUrl: "https://youtube.com"
-      },
-      "ROOM-VENT-B": {
-        name: "환기실 B (배기실)",
-        area: "대합실",
-        loc: "다게이트 내측",
-        emergency: "• <strong>소방설비:</strong> 출입문 좌측 분말소화기 비치 및 비상조명등 구비<br>• <strong>비상조치:</strong> 배기팬 제어반 수동/자동 전환 스위치 위치 확인<br>• <strong>안전유의:</strong> 고전압 제어반 인근 물기 접촉 절대 금지",
-        photoUrl: "https://drive.google.com",
-        manualUrl: "https://drive.google.com",
-        videoUrl: "https://youtube.com"
-      }
+    var facilityDB = {
+      "BOX-LGT-01": { area: "내선", loc: "내선10-2벽체", count: 3 },
+      "BOX-LGT-02": { area: "내선", loc: "내선9-1벽체", count: 3 },
+      "BOX-LGT-03": { area: "내선", loc: "내선7-3벽체", count: 3 },
+      "BOX-LGT-04": { area: "내선", loc: "내선6-1벽체", count: 3 },
+      "BOX-LGT-05": { area: "내선", loc: "내선5-1벽체", count: 3 },
+      "BOX-LGT-06": { area: "내선", loc: "내선4-2벽체", count: 3 },
+      "BOX-LGT-07": { area: "내선", loc: "내선3-2벽체", count: 3 },
+      "BOX-LGT-08": { area: "내선", loc: "내선2-2벽체", count: 3 },
+      "BOX-LGT-09": { area: "내선", loc: "내선1-3벽체", count: 3 },
+      "BOX-LGT-10": { area: "외선", loc: "외선10-1벽체", count: 3 },
+      "BOX-LGT-11": { area: "외선", loc: "외선8-3벽체", count: 3 },
+      "BOX-LGT-12": { area: "외선", loc: "외선7-3벽체", count: 3 },
+      "BOX-LGT-13": { area: "외선", loc: "외선6-4벽체", count: 3 },
+      "BOX-LGT-14": { area: "외선", loc: "외선5-3벽체", count: 3 },
+      "BOX-LGT-15": { area: "외선", loc: "외선4-4벽체", count: 3 },
+      "BOX-LGT-16": { area: "외선", loc: "외선3-4벽체", count: 3 },
+      "BOX-LGT-17": { area: "외선", loc: "외선2-4벽체", count: 3 },
+      "BOX-LGT-18": { area: "외선", loc: "외선1-3벽체", count: 3 },
+      "BOX-LGT-19": { area: "대합실", loc: "14번기둥 우측(화장실 방향)", count: 3 },
+      "BOX-LGT-20": { area: "대합실", loc: "가게이트 좌측(내선 방향)", count: 3 },
+      "BOX-LGT-21": { area: "대합실", loc: "21번기둥 중앙(전실 인근)", count: 3 },
+      "BOX-LGT-22": { area: "대합실", loc: "26번기둥 우측(고객안전실 인근)", count: 3 },
+      "BOX-LGT-23": { area: "대합실", loc: "30번기둥 좌측(전기실 인근)", count: 3 },
+      "BOX-LGT-24": { area: "대합실", loc: "34번기둥 중앙(다가게이트 앞)", count: 3 },
+      "BOX-LGT-25": { area: "대합실", loc: "다가게이트 내측(통신실 인근)", count: 3 }
     };
 
     var urlParams = new URLSearchParams(window.location.search);
-    var roomId = urlParams.get('id') || "ROOM-VENT-A";
-    var item = roomDB[roomId] || {
-      name: "환기실 (" + roomId + ")",
-      area: "대합실",
-      loc: "역사 구내",
-      emergency: "등록된 설비 가이드가 없습니다.",
-      photoUrl: "#", manualUrl: "#", videoUrl: "#"
-    };
+    var boxId = urlParams.get('id') || "BOX-LGT-01";
+    var item = facilityDB[boxId] || { area: "역사구내", loc: "미등록 위치 (" + boxId + ")", count: 3 };
 
-    document.getElementById('disp-room-name').innerText = item.name;
+    document.getElementById('disp-id').innerText = boxId;
+    document.getElementById('disp-title').innerText = item.area + " [" + item.loc + "]";
+    document.getElementById('disp-area').innerText = item.area;
+    document.getElementById('disp-loc').innerText = item.loc;
+    document.getElementById('disp-count').innerText = item.count + " 개";
 
-    var fetchedDoorPass = "";
+    var compressedPhotoBase64 = "";
 
-    // 1단계 PIN 검증 및 구글 시트 비번 실시간 fetch
-    function verifyPin() {
-      var pin = document.getElementById('pin-input').value.trim();
-      var err = document.getElementById('pin-error');
-      
-      if (pin === CORRECT_PIN) {
-        document.getElementById('lock-screen').style.display = "none";
-        document.getElementById('main-content').style.display = "block";
-        loadRoomData();
-        
-        // 백엔드 시트에서 실시간 비밀번호 조회 호출
-        fetchDoorPassword(pin, roomId);
-      } else {
-        err.innerText = "❌ 보안 PIN 번호가 일치하지 않습니다.";
-        document.getElementById('pin-input').value = "";
-        document.getElementById('pin-input').focus();
-      }
-    }
+    // ⚡ 클라이언트 브라우저 즉각 리사이징 및 압축 함수
+    function handlePhotoSelect(e) {
+      var file = e.target.files[0];
+      if (!file) return;
 
-    document.getElementById('pin-input').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') verifyPin();
-    });
+      var reader = new FileReader();
+      reader.onload = function(event) {
+        var img = new Image();
+        img.onload = function() {
+          var canvas = document.createElement("canvas");
+          var maxDim = 1000; // 가로/세로 최대 1000px로 축소
+          var width = img.width;
+          var height = img.height;
 
-    function loadRoomData() {
-      document.getElementById('disp-id').innerText = roomId;
-      document.getElementById('disp-area').innerText = item.area;
-      document.getElementById('disp-loc').innerText = item.loc;
-      document.getElementById('disp-emergency-info').innerHTML = item.emergency;
-
-      document.getElementById('btn-photo').href = item.photoUrl;
-      document.getElementById('btn-manual').href = item.manualUrl;
-      document.getElementById('btn-video').href = item.videoUrl;
-    }
-
-    // 구글 시트에서 최신 비번 가져오기
-    function fetchDoorPassword(pin, rId) {
-      var url = GOOGLE_SCRIPT_URL + "?pin=" + encodeURIComponent(pin) + "&roomId=" + encodeURIComponent(rId);
-      fetch(url)
-        .then(function(res) { return res.json(); })
-        .then(function(data) {
-          if (data.result === "success") {
-            fetchedDoorPass = data.doorPass;
+          if (width > height) {
+            if (width > maxDim) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            }
           } else {
-            fetchedDoorPass = "인증실패";
+            if (height > maxDim) {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
           }
-        })
-        .catch(function() {
-          fetchedDoorPass = "통신오류";
-        });
+
+          canvas.width = width;
+          canvas.height = height;
+          var ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // JPEG 품질 0.7 압축 (약 100~200KB로 경량화)
+          compressedPhotoBase64 = canvas.toDataURL("image/jpeg", 0.7);
+
+          document.getElementById('preview-img').src = compressedPhotoBase64;
+          document.getElementById('preview-wrap').style.display = "block";
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
     }
 
-    // 5초간만 보여주고 자동 마스킹하는 영리한 UI
-    function togglePassView() {
-      var disp = document.getElementById('disp-doorpass');
-      var btn = document.getElementById('btn-toggle-pass');
-      
-      if (!fetchedDoorPass) {
-        alert("비밀번호 데이터를 동기화하는 중입니다. 1~2초 후 다시 눌러주세요.");
-        return;
-      }
-      
-      disp.innerText = fetchedDoorPass;
-      btn.disabled = true;
-      btn.innerText = "5초 후 숨김";
-      
-      setTimeout(function() {
-        disp.innerText = "••••••";
-        btn.disabled = false;
-        btn.innerText = "비번 확인";
-      }, 5000);
+    function removePhoto() {
+      compressedPhotoBase64 = "";
+      document.getElementById('photo-input').value = "";
+      document.getElementById('preview-wrap').style.display = "none";
     }
 
-    // 순찰 및 출입 기록 등록
     document.getElementById('inspect-form').addEventListener('submit', function(e) {
       e.preventDefault();
       
+      var pinInput = document.getElementById('pin').value.trim();
       var btn = document.getElementById('btn-sub');
       var msg = document.getElementById('status-msg');
 
+      if (pinInput !== CORRECT_PIN) {
+        alert("관리자 보안 PIN 번호가 일치하지 않습니다.");
+        document.getElementById('pin').focus();
+        return;
+      }
+      
       btn.disabled = true;
-      btn.innerText = "기록 전송 중...";
+      btn.innerText = "데이터 및 사진 전송 중...";
       msg.innerText = "";
 
       var payload = {
-        sheetName: "기능실",
-        facilityId: roomId,
-        roomName: item.name,
+        sheetName: "휴대용 비상조명등",
+        boxId: boxId,
         area: item.area,
         location: item.loc,
         inspector: document.getElementById('inspector').value.trim(),
-        facilityState: document.querySelector('input[name="facilityState"]:checked').value,
-        notes: document.getElementById('notes').value.trim()
+        l1Status: document.querySelector('input[name="l1"]:checked').value,
+        l2Status: document.querySelector('input[name="l2"]:checked').value,
+        l3Status: document.querySelector('input[name="l3"]:checked').value,
+        boxVisual: document.querySelector('input[name="boxVisual"]:checked').value,
+        finalResult: document.querySelector('input[name="finalResult"]:checked').value,
+        notes: document.getElementById('notes').value.trim(),
+        photoBase64: compressedPhotoBase64 // 압축된 사진 데이터 전송
       };
 
       fetch(GOOGLE_SCRIPT_URL, {
@@ -371,16 +353,16 @@
         body: JSON.stringify(payload)
       })
       .then(function() {
-        btn.innerText = "✅ 출입·순찰 기록 완료";
+        btn.innerText = "✅ 점검 및 사진 등록 완료";
         btn.style.background = "#2c3e50";
         msg.style.color = "#27ae60";
-        msg.innerText = item.name + " 순찰 기록이 클라우드 대장에 저장되었습니다.";
+        msg.innerText = item.loc + " 점검 결과와 현장 사진이 정상 반영되었습니다.";
       })
       .catch(function(err) {
         btn.disabled = false;
-        btn.innerText = "전송 실패 (재시도)";
+        btn.innerText = "제출 실패 (재시도)";
         msg.style.color = "#e74c3c";
-        msg.innerText = "오류 발생: " + err;
+        msg.innerText = "전송 오류: " + err;
       });
     });
   </script>
