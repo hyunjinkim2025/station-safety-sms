@@ -7,7 +7,6 @@
   <style>
     :root {
       --metro-red: #D32F2F;
-      --metro-green: #2E7D32;
       --metro-dark: #1E1E1E;
       --bg-light: #F8F9FA;
     }
@@ -32,13 +31,13 @@
       border-radius: 20px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.12);
       overflow: hidden;
-      border: 2px solid #E0E0E0;
+      border: 1px solid #EAEAEA;
     }
     .sos-header {
       background: var(--metro-red);
       color: #FFFFFF;
       text-align: center;
-      padding: 24px 16px;
+      padding: 26px 16px;
     }
     .sos-header h1 {
       font-size: 26px;
@@ -48,27 +47,27 @@
     }
     .sos-header p {
       font-size: 14px;
-      opacity: 0.9;
+      opacity: 0.95;
     }
     .location-box {
-      background: #FFF3E0;
-      border-left: 6px solid #FF9800;
+      background: #FFF8E1;
+      border-left: 6px solid #FFA000;
       margin: 20px;
       padding: 16px;
       border-radius: 8px;
     }
     .location-label {
-      font-size: 12px;
+      font-size: 13px;
       color: #E65100;
-      font-weight: bold;
-      text-transform: uppercase;
-      margin-bottom: 4px;
+      font-weight: 700;
+      margin-bottom: 6px;
     }
     .location-value {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 800;
       color: #BF360C;
       word-break: keep-all;
+      line-height: 1.3;
     }
     .location-guide {
       font-size: 12px;
@@ -85,19 +84,19 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
+      gap: 8px;
       width: 100%;
       background: var(--metro-red);
       color: #FFFFFF;
-      text-decoration: none;
-      padding: 20px;
+      padding: 18px;
       border-radius: 14px;
-      font-size: 20px;
+      font-size: 19px;
       font-weight: 800;
-      box-shadow: 0 6px 16px rgba(211, 47, 47, 0.35);
+      box-shadow: 0 6px 16px rgba(211, 47, 47, 0.3);
       border: none;
       cursor: pointer;
       transition: transform 0.1s, background 0.2s;
+      -webkit-tap-highlight-color: transparent;
     }
     .btn-call:active {
       transform: scale(0.98);
@@ -111,12 +110,16 @@
       width: 100%;
       background: #ECEFF1;
       color: #37474F;
-      text-decoration: none;
-      padding: 14px;
+      padding: 15px;
       border-radius: 12px;
-      font-size: 15px;
-      font-weight: 600;
+      font-size: 16px;
+      font-weight: 700;
       border: none;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-call-sub:active {
+      background: #CFD8DC;
     }
     .info-footer {
       background: #FAFAFA;
@@ -125,6 +128,7 @@
       text-align: center;
       font-size: 12px;
       color: #757575;
+      font-weight: 500;
     }
   </style>
 </head>
@@ -138,62 +142,89 @@
 
     <div class="location-box">
       <div class="location-label">현재 고객님의 위치</div>
-      <div class="location-value" id="locDisplay">위치 확인 중...</div>
+      <div class="location-value" id="locDisplay">내선승강장(사당방면) 4-2</div>
       <div class="location-guide">※ 통화 연결 시 역무원에게 위 위치를 말씀해 주세요.</div>
     </div>
 
     <div class="action-area">
-      <!-- 방배역 역무실 직통 전화 연결 (실제 방배역 번호로 수정 가능) -->
-      <a href="tel:02-6110-2251" id="mainCallBtn" class="btn-call" onclick="handleCallClick('EMERGENCY')">
+      <!-- 방배역 역무실 긴급 통화 -->
+      <button type="button" class="btn-call" onclick="handleCallClick('EMERGENCY', '02-6110-2251')">
         <span>🚨 역무실 긴급 통화 연결</span>
-      </a>
+      </button>
 
-      <!-- 119 다이렉트 통화 버튼 (필요 시 선택) -->
-      <a href="tel:119" class="btn-call-sub" onclick="handleCallClick('119')">
+      <!-- 119 다이렉트 신고 -->
+      <button type="button" class="btn-call-sub" onclick="handleCallClick('119', '119')">
         <span>🚑 119 구급·구조 다이렉트 신고</span>
-      </a>
+      </button>
     </div>
 
     <div class="info-footer">
-      서울교통공사 방배역 스마트 안전망 360°
+      서울교통공사 방배역 360° 스마트 안전망
     </div>
   </div>
 
   <script>
-    // 독립 백엔드 Web App URL (GAS 배포 후 교체)
+    // [설정] 독립 Google Apps Script 웹앱 URL을 입력하세요.
     const SOS_API_URL = "https://script.google.com/macros/s/AKfycbwsK_lxaQhnyfhxWmQ-yMARREJf9yPtgdu7xq-X1bvoxr8Z8VnYOSPZtvZmiroS77B2yA/exec";
 
-    // URL 파라미터에서 위치 정보 추출
+    // 1. 사전 위치 매핑 테이블 (코드 기반 간소화 지원)
+    const LOCATION_PRESETS = {
+      '402': '내선승강장(사당방면) 4-2',
+      '402-OUT': '외선승강장(서초방면) 4-2'
+    };
+
+    // 2. URL 파라미터 파싱 및 인코딩(%20 등) 완벽 복원 처리
     const urlParams = new URLSearchParams(window.location.search);
-    const locName = urlParams.get('loc') || '방배역 역사 내 (위치 미지정)';
-    const locCode = urlParams.get('code') || 'UNKNOWN';
+    const rawCode = urlParams.get('code') || '402';
+    const rawLoc = urlParams.get('loc');
 
-    document.getElementById('locDisplay').innerText = locName;
+    let resolvedLocation = LOCATION_PRESETS['402']; // 기본값 고정
 
-    // 통화 버튼 클릭 시 백그라운드로 로그 전송
-    function handleCallClick(callType) {
-      if (!SOS_API_URL || SOS_API_URL.includes("여기에")) {
-        return; // 배포 전 로컬 테스트 예외 처리
+    if (rawLoc) {
+      // 직접 한글 loc 전달 시 %20 등 디코딩 처리
+      try {
+        resolvedLocation = decodeURIComponent(rawLoc.replace(/\+/g, ' '));
+      } catch (e) {
+        resolvedLocation = rawLoc;
       }
+    } else if (LOCATION_PRESETS[rawCode]) {
+      // 코드 기반 매핑 지원
+      resolvedLocation = LOCATION_PRESETS[rawCode];
+    }
 
+    // 화면 표출 적용
+    document.getElementById('locDisplay').innerText = resolvedLocation;
+
+    // 3. 통화 연결 및 백그라운드 DB 로그 전송 함수
+    function handleCallClick(callType, targetTel) {
       const payload = {
         type: callType,
-        locName: locName,
-        locCode: locCode,
+        locCode: rawCode,
+        locName: resolvedLocation,
         userAgent: navigator.userAgent
       };
 
-      // 화면 전환/전화 앱 전환에 영향 주지 않는 비동기 navigator.sendBeacon 또는 no-cors fetch
-      try {
-        fetch(SOS_API_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-      } catch (e) {
-        console.error("Log error", e);
+      // 독립 백엔드로 데이터 비동기 발송
+      if (SOS_API_URL && !SOS_API_URL.includes("여기에")) {
+        const jsonString = JSON.stringify(payload);
+        
+        // 브라우저 탭/전화 전환 시 전송 중단 방지용 beacon 적용
+        if (navigator.sendBeacon) {
+          const blobData = new Blob([jsonString], { type: 'text/plain' });
+          navigator.sendBeacon(SOS_API_URL, blobData);
+        } else {
+          fetch(SOS_API_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: jsonString
+          }).catch(function(err) { console.error(err); });
+        }
       }
+
+      // 통신 패킷 송출 확보를 위한 200ms 후 다이얼러 호출
+      setTimeout(function() {
+        window.location.href = "tel:" + targetTel;
+      }, 200);
     }
   </script>
 </body>
