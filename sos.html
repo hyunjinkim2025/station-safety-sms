@@ -207,16 +207,16 @@
     // 페이지 열리자마자 즉시 실행
     const currentLocName = updateLocation();
 
-    // 3. 통화 연결 및 로그 전송
+   // 3. 통화 연결 및 백그라운드 DB 로그 전송 (개인정보 무수집 클린 전송)
     function handleCallClick(callType, targetTel) {
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code') || '402';
 
+      // 개인정보(단말기 정보, IP 등) 일체 배제
       const payload = {
         type: callType,
         locCode: code,
-        locName: currentLocName,
-        userAgent: navigator.userAgent
+        locName: currentLocName
       };
 
       if (SOS_API_URL && !SOS_API_URL.includes("여기에")) {
