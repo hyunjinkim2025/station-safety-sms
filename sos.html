@@ -167,65 +167,17 @@
     // [설정] 독립 Google Apps Script 웹앱 URL을 입력하세요.
     const SOS_API_URL = "https://script.google.com/macros/s/AKfycbwsK_lxaQhnyfhxWmQ-yMARREJf9yPtgdu7xq-X1bvoxr8Z8VnYOSPZtvZmiroS77B2yA/exec";
 
-    // 1. 사전 위치 매핑 테이블 (코드 기반 간소화 지원)
+    // 1. 사전 위치 매핑 테이블 (소문자로 정규화 등록)
     const LOCATION_PRESETS = {
       '402': '내선승강장(사당방면) 4-2',
-      '402-OUT': '외선승강장(서초방면) 4-2'
+      '402-in': '내선승강장(사당방면) 4-2',
+      '402-out': '외선승강장(서초방면) 4-2'
     };
 
-    // 2. URL 파라미터 파싱 및 인코딩(%20 등) 완벽 복원 처리
+    // 2. URL 파라미터 파싱
     const urlParams = new URLSearchParams(window.location.search);
-    const rawCode = urlParams.get('code') || '402';
     const rawLoc = urlParams.get('loc');
+    const inputCode = urlParams.get('code');
 
-    let resolvedLocation = LOCATION_PRESETS['402']; // 기본값 고정
-
-    if (rawLoc) {
-      // 직접 한글 loc 전달 시 %20 등 디코딩 처리
-      try {
-        resolvedLocation = decodeURIComponent(rawLoc.replace(/\+/g, ' '));
-      } catch (e) {
-        resolvedLocation = rawLoc;
-      }
-    } else if (LOCATION_PRESETS[rawCode]) {
-      // 코드 기반 매핑 지원
-      resolvedLocation = LOCATION_PRESETS[rawCode];
-    }
-
-    // 화면 표출 적용
-    document.getElementById('locDisplay').innerText = resolvedLocation;
-
-    // 3. 통화 연결 및 백그라운드 DB 로그 전송 함수
-    function handleCallClick(callType, targetTel) {
-      const payload = {
-        type: callType,
-        locCode: rawCode,
-        locName: resolvedLocation,
-        userAgent: navigator.userAgent
-      };
-
-      // 독립 백엔드로 데이터 비동기 발송
-      if (SOS_API_URL && !SOS_API_URL.includes("여기에")) {
-        const jsonString = JSON.stringify(payload);
-        
-        // 브라우저 탭/전화 전환 시 전송 중단 방지용 beacon 적용
-        if (navigator.sendBeacon) {
-          const blobData = new Blob([jsonString], { type: 'text/plain' });
-          navigator.sendBeacon(SOS_API_URL, blobData);
-        } else {
-          fetch(SOS_API_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: jsonString
-          }).catch(function(err) { console.error(err); });
-        }
-      }
-
-      // 통신 패킷 송출 확보를 위한 200ms 후 다이얼러 호출
-      setTimeout(function() {
-        window.location.href = "tel:" + targetTel;
-      }, 200);
-    }
-  </script>
-</body>
-</html>
+    // 입력값을 무조건 소문자로 변환하여 비교 (브라우저 자동 변환 완벽 대응)
+    const
