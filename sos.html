@@ -142,7 +142,8 @@
 
     <div class="location-box">
       <div class="location-label">현재 고객님의 위치</div>
-      <div class="location-value" id="locDisplay">내선승강장(사당방면) 4-2</div>
+      <!-- 기본 텍스트를 비워두거나 안내문으로 설정 -->
+      <div class="location-value" id="locDisplay">위치 확인 중...</div>
       <div class="location-guide">※ 통화 연결 시 역무원에게 위 위치를 말씀해 주세요.</div>
     </div>
 
@@ -163,21 +164,76 @@
     </div>
   </div>
 
-  <script>
-    // [설정] 독립 Google Apps Script 웹앱 URL을 입력하세요.
-    const SOS_API_URL = "https://script.google.com/macros/s/AKfycbwsK_lxaQhnyfhxWmQ-yMARREJf9yPtgdu7xq-X1bvoxr8Z8VnYOSPZtvZmiroS77B2yA/exec";
+ <script>
+    const SOS_API_URL = "여기에_발급받은_GAS_WEBAPP_URL_입력";
 
-    // 1. 사전 위치 매핑 테이블 (소문자로 정규화 등록)
+    // 1. 매핑 테이블
     const LOCATION_PRESETS = {
       '402': '내선승강장(사당방면) 4-2',
       '402-in': '내선승강장(사당방면) 4-2',
       '402-out': '외선승강장(서초방면) 4-2'
     };
 
-    // 2. URL 파라미터 파싱
-    const urlParams = new URLSearchParams(window.location.search);
-    const rawLoc = urlParams.get('loc');
-    const inputCode = urlParams.get('code');
+    // 2. 파라미터 파싱
+    function updateLocation() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const inputCode = urlParams.get('code');
+      const rawLoc = urlParams.get('loc');
 
-    // 입력값을 무조건 소문자로 변환하여 비교 (브라우저 자동 변환 완벽 대응)
-    const
+      let resolved = '내선승강장(사당방면) 4-2'; // 최종 기본값
+
+      if (rawLoc) {
+        try {
+          resolved = decodeURIComponent(rawLoc.replace(/\+/g, ' '));
+        } catch (e) {
+          resolved = rawLoc;
+        }
+      } else if (inputCode) {
+        const key = inputCode.toLowerCase().trim();
+        if (LOCATION_PRESETS[key]) {
+          resolved = LOCATION_PRESETS[key];
+        } else {
+          resolved = inputCode; // 등록 안 된 코드면 코드값 그대로 표시
+        }
+      }
+
+      const displayEl = document.getElementById('locDisplay');
+      if (displayEl) {
+        displayEl.innerText = resolved;
+      }
+      return resolved;
+    }
+
+    // 페이지 열리자마자 즉시 실행
+    const currentLocName = updateLocation();
+
+    // 3. 통화 연결 및 로그 전송
+    function handleCallClick(callType, targetTel) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code') || '402';
+
+      const payload = {
+        type: callType,
+        locCode: code,
+        locName: currentLocName,
+        userAgent: navigator.userAgent
+      };
+
+      if (SOS_API_URL && !SOS_API_URL.includes("여기에")) {
+        const jsonStr = JSON.stringify(payload);
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon(SOS_API_URL, new Blob([jsonStr], { type: 'text/plain' }));
+        } else {
+          fetch(SOS_API_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: jsonStr
+          }).catch(function(e){ console.error(e); });
+        }
+      }
+
+      setTimeout(function() {
+        window.location.href = "tel:" + targetTel;
+      }, 200);
+    }
+  </script>
