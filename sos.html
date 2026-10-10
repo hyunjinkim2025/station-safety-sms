@@ -3,393 +3,236 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>방배역 스마트 안심·응급 케어 (SOS)</title>
+  <title>방배역 SOS 긴급 비상호출</title>
   <style>
     :root {
-      --primary-red: #d32f2f;
-      --dark-red: #b71c1c;
-      --accent-blue: #1976d2;
-      --bg-color: #f8f9fa;
-      --card-bg: #ffffff;
-      --text-main: #212529;
-      --text-muted: #6c757d;
-      --border-color: #e9ecef;
+      --metro-red: #D32F2F;
+      --metro-dark: #1E1E1E;
+      --bg-light: #F8F9FA;
     }
-
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
     }
-
     body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      padding: 16px;
+      background-color: var(--bg-light);
       display: flex;
-      flex-direction: column;
+      justify-content: center;
       align-items: center;
+      min-height: 100vh;
+      padding: 16px;
     }
-
-    .container {
+    .sos-card {
       width: 100%;
-      max-width: 440px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    /* 상단 헤더 및 위치 안내 */
-    .header-card {
-      background: var(--card-bg);
-      border-radius: 14px;
-      padding: 16px;
-      text-align: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      border-top: 4px solid var(--primary-red);
-    }
-
-    .title {
-      font-size: 1.25rem;
-      font-weight: 800;
-      color: var(--dark-red);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-
-    .location-box {
-      margin-top: 10px;
-      background: #fff3f3;
-      padding: 10px;
-      border-radius: 8px;
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: #c62828;
-      border: 1px dashed #ef9a9a;
-    }
-
-    /* 긴급 SOS 호출 버튼 */
-    .sos-button-area {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .btn-sos {
-      background: linear-gradient(135deg, #e53935, #b71c1c);
-      color: #ffffff;
-      border: none;
-      border-radius: 12px;
-      padding: 18px;
-      font-size: 1.2rem;
-      font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(211, 47, 47, 0.35);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
-      text-decoration: none;
-      transition: transform 0.1s;
-    }
-
-    .btn-sos:active {
-      transform: scale(0.98);
-    }
-
-    .btn-sub-call {
-      background: #ffffff;
-      color: var(--text-main);
-      border: 1.5px solid #ced4da;
-      border-radius: 10px;
-      padding: 12px;
-      font-size: 0.95rem;
-      font-weight: 700;
-      text-align: center;
-      text-decoration: none;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 6px;
-    }
-
-    /* 카드 공통 스타일 */
-    .section-card {
-      background: var(--card-bg);
-      border-radius: 14px;
-      padding: 16px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    }
-
-    .section-title {
-      font-size: 1.05rem;
-      font-weight: 700;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    /* AED 안내 섹션 */
-    .aed-badge {
-      background: #e8f5e9;
-      color: #2e7d32;
-      font-size: 0.75rem;
-      padding: 3px 8px;
+      max-width: 420px;
+      background: #FFFFFF;
       border-radius: 20px;
-      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+      overflow: hidden;
+      border: 1px solid #EAEAEA;
     }
-
-    .aed-info-box {
-      background: #f1f8e9;
-      border-left: 4px solid #43a047;
-      padding: 12px;
-      border-radius: 6px;
-      margin-bottom: 10px;
-    }
-
-    .aed-location-text {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: #1b5e20;
-    }
-
-    .aed-sub-text {
-      font-size: 0.85rem;
-      color: #388e3c;
-      margin-top: 4px;
-    }
-
-    /* CPR 가이드 및 메트로놈 */
-    .metronome-box {
-      background: #e3f2fd;
-      border-radius: 10px;
-      padding: 14px;
+    .sos-header {
+      background: var(--metro-red);
+      color: #FFFFFF;
       text-align: center;
-      margin-bottom: 12px;
+      padding: 26px 16px;
     }
-
-    .pulse-circle {
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      background: #90caf9;
-      margin: 10px auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8rem;
-      color: #ffffff;
-      transition: transform 0.1s ease-out, background-color 0.1s;
+    .sos-header h1 {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
     }
-
-    .pulse-circle.active {
-      background: #e53935;
-      transform: scale(1.18);
+    .sos-header p {
+      font-size: 14px;
+      opacity: 0.95;
     }
-
-    .btn-metronome {
-      background: var(--accent-blue);
-      color: #ffffff;
-      border: none;
-      padding: 10px 20px;
-      font-size: 0.95rem;
+    .location-box {
+      background: #FFF8E1;
+      border-left: 6px solid #FFA000;
+      margin: 20px;
+      padding: 16px;
+      border-radius: 8px;
+    }
+    .location-label {
+      font-size: 13px;
+      color: #E65100;
       font-weight: 700;
-      border-radius: 25px;
-      cursor: pointer;
+      margin-bottom: 6px;
+    }
+    .location-value {
+      font-size: 20px;
+      font-weight: 800;
+      color: #BF360C;
+      word-break: keep-all;
+      line-height: 1.3;
+    }
+    .location-guide {
+      font-size: 12px;
+      color: #616161;
       margin-top: 6px;
     }
-
-    .btn-metronome.running {
-      background: #424242;
-    }
-
-    .cpr-steps {
+    .action-area {
+      padding: 0 20px 24px 20px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      margin-top: 10px;
+      gap: 14px;
     }
-
-    .step-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      font-size: 0.88rem;
-      padding: 8px;
-      background: #f8f9fa;
-      border-radius: 6px;
-    }
-
-    .step-num {
-      background: #495057;
-      color: #ffffff;
-      border-radius: 50%;
-      min-width: 20px;
-      height: 20px;
-      font-size: 0.75rem;
-      font-weight: 700;
+    .btn-call {
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 8px;
+      width: 100%;
+      background: var(--metro-red);
+      color: #FFFFFF;
+      padding: 18px;
+      border-radius: 14px;
+      font-size: 19px;
+      font-weight: 800;
+      box-shadow: 0 6px 16px rgba(211, 47, 47, 0.3);
+      border: none;
+      cursor: pointer;
+      transition: transform 0.1s, background 0.2s;
+      -webkit-tap-highlight-color: transparent;
     }
-
-    .footer {
+    .btn-call:active {
+      transform: scale(0.98);
+      background: #B71C1C;
+    }
+    .btn-call-sub {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      background: #ECEFF1;
+      color: #37474F;
+      padding: 15px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-call-sub:active {
+      background: #CFD8DC;
+    }
+    .info-footer {
+      background: #FAFAFA;
+      padding: 14px 20px;
+      border-top: 1px solid #EEEEEE;
       text-align: center;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-top: 8px;
-      margin-bottom: 16px;
+      font-size: 12px;
+      color: #757575;
+      font-weight: 500;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <!-- 헤더 & 위치 정보 -->
-    <div class="header-card">
-      <div class="title">🚨 방배역 스마트 안심케어</div>
-      <div class="location-box" id="loc-display">
-        현재 위치: 방배역 승강장 3-2 (위치 자동확인)
-      </div>
+  <div class="sos-card">
+    <div class="sos-header">
+      <h1>SOS 비상 호출</h1>
+      <p>방배역 역무실 직통 비상 연결</p>
     </div>
 
-    <!-- 1단계: 긴급 SOS 신고 -->
-    <div class="sos-button-area">
-      <!-- 역무실 전화 연결 (방배역 역무실 대표번호 또는 행선지 직통) -->
-      <a href="tel:02-6110-2251" class="btn-sos" id="btn-call-station">
-        📞 방배역 역무실 긴급 통화
-      </a>
-      
-      <!-- 문자(SMS) 신고: 태그 위치가 본문에 자동 입력됨 -->
-      <a href="sms:0261102251?body=[방배역 응급호출] 방배역 승강장 3-2 위치에서 응급 상황이 발생했습니다. 즉시 출동 바랍니다." class="btn-sub-call" id="btn-sms-station">
-        ✉️ 조용한 문자 SOS 신고 (위치 자동전송)
-      </a>
+    <div class="location-box">
+      <div class="location-label">현재 고객님의 위치</div>
+      <div class="location-value" id="locDisplay">위치 확인 중...</div>
+      <div class="location-guide">※ 통화 연결 시 역무원에게 위 위치를 말씀해 주세요.</div>
     </div>
 
-    <!-- 2단계: AED 위치 안내 -->
-    <div class="section-card">
-      <div class="section-title">
-        <span>⚡ 자동심장충격기(AED) 위치</span>
-        <span class="aed-badge">골든타임 4분</span>
-      </div>
-      <div class="aed-info-box">
-        <div class="aed-location-text">📍 대합실 고객안내센터(역무실) 정면</div>
-        <div class="aed-sub-text">• 상선(사당 방면) 3번 계단 상부 개찰구 바로 옆</div>
-        <div class="aed-sub-text">• 하선(서초 방면) 승강장 비상용품보관함 비치</div>
-      </div>
-      <div style="font-size: 0.82rem; color: #616161;">
-        ※ 주변 시민에게 "AED를 가져와 달라"고 명확히 지목하여 요청하세요.
-      </div>
+    <div class="action-area">
+      <!-- 방배역 역무실 직통 통화 (EMERGENCY) -->
+      <button type="button" class="btn-call" onclick="handleCallClick('EMERGENCY', '02-6110-2251')">
+        <span>🚨 역무실 긴급 통화 연결</span>
+      </button>
+
+      <!-- 119 다이렉트 신고 -->
+      <button type="button" class="btn-call-sub" onclick="handleCallClick('119', '119')">
+        <span>🚑 119 구급·구조 다이렉트 신고</span>
+      </button>
     </div>
 
-    <!-- 3단계: 실시간 CPR 가이드 & 메트로놈 -->
-    <div class="section-card">
-      <div class="section-title">
-        <span>💓 심폐소생술(CPR) 박자 가이드</span>
-        <span style="font-size: 0.8rem; color: var(--accent-blue); font-weight: 600;">분당 110회 템포</span>
-      </div>
-
-      <div class="metronome-box">
-        <div style="font-size: 0.85rem; color: #455a64; font-weight: 600;">박자에 맞춰 가슴 중앙을 강하게 압박하세요</div>
-        <div class="pulse-circle" id="pulse-box">❤️</div>
-        <button type="button" class="btn-metronome" id="metro-toggle-btn" onclick="toggleMetronome()">
-          ▶ CPR 박자 시작하기
-        </button>
-      </div>
-
-      <div class="cpr-steps">
-        <div class="step-item">
-          <div class="step-num">1</div>
-          <div><strong>반응 및 호흡 확인:</strong> 어깨를 두드리며 의식을 확인하고, 숨을 쉬지 않으면 즉시 도움 요청.</div>
-        </div>
-        <div class="step-item">
-          <div class="step-num">2</div>
-          <div><strong>가슴 압박 위치:</strong> 가슴 정중앙(흉골 아래 1/2 지점)에 두 손을 깍지 끼고 위치.</div>
-        </div>
-        <div class="step-item">
-          <div class="step-num">3</div>
-          <div><strong>압박 속도와 깊이:</strong> 체중을 실어 수직으로 <strong>약 5cm 깊이</strong>로 빠르고 강하게 압박.</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="footer">
-      서울교통공사 방배역 현장 자율 스마트 안전망 시스템
+    <div class="info-footer">
+      서울교통공사 방배역 360° 스마트 안전망
     </div>
   </div>
 
   <script>
-    // URL 파라미터로 위치(loc)를 받아 동적으로 표시 (예: sos.html?loc=승강장 3-2)
-    const urlParams = new URLSearchParams(window.location.search);
-    const locParam = urlParams.get('loc');
-    if (locParam) {
-      const locText = decodeURIComponent(locParam);
-      document.getElementById('loc-display').innerText = `현재 위치: 방배역 ${locText}`;
-      
-      // SMS 링크 본문에도 위치 자동 반영
-      const smsLink = document.getElementById('btn-sms-station');
-      smsLink.href = `sms:0261102251?body=[방배역 응급호출] 방배역 ${locText} 위치에서 응급 상황이 발생했습니다. 즉시 출동 바랍니다.`;
+    // ★ [핵심] 여기에 구글 Apps Script Web App URL을 붙여넣으세요! ★
+    const SOS_API_URL = "https://script.google.com/macros/s/AKfycbwsK_lxaQhnyfhxWmQ-yMARREJf9yPtgdu7xq-X1bvoxr8Z8VnYOSPZtvZmiroS77B2yA/exec";
+
+    // 위치 코드 사전 매핑
+    const LOCATION_PRESETS = {
+      '402': '내선승강장(사당방면) 4-2',
+      '402-in': '내선승강장(사당방면) 4-2',
+      '402-out': '외선승강장(서초방면) 4-2'
+    };
+
+    // 파라미터 자동 분석 및 화면 표시
+    function updateLocation() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const inputCode = urlParams.get('code');
+      const rawLoc = urlParams.get('loc');
+
+      let resolved = '내선승강장(사당방면) 4-2';
+
+      if (rawLoc) {
+        try {
+          resolved = decodeURIComponent(rawLoc.replace(/\+/g, ' '));
+        } catch (e) {
+          resolved = rawLoc;
+        }
+      } else if (inputCode) {
+        const key = inputCode.toLowerCase().trim();
+        if (LOCATION_PRESETS[key]) {
+          resolved = LOCATION_PRESETS[key];
+        } else {
+          resolved = inputCode;
+        }
+      }
+
+      const displayEl = document.getElementById('locDisplay');
+      if (displayEl) {
+        displayEl.innerText = resolved;
+      }
+      return resolved;
     }
 
-    // CPR 메트로놈 (Web Audio API 사용으로 스마트폰 무음모드 등에서도 명확한 비프음 지원)
-    let audioCtx = null;
-    let isRunning = false;
-    let timerId = null;
-    const bpm = 110; // 분당 110회 권장 압박 속도
-    const intervalMs = (60 / bpm) * 1000;
+    const currentLocName = updateLocation();
 
-    function playBeep() {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-      
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      
-      osc.type = 'sine';
-      osc.frequency.value = 880; // 명확하게 들리는 A5 주파수
-      
-      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
-      
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.08);
-    }
+    // 버튼 클릭 시 통화 연결 및 백그라운드 데이터 전송
+    function handleCallClick(callType, targetTel) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code') || '402';
 
-    function triggerPulse() {
-      const pulseBox = document.getElementById('pulse-box');
-      pulseBox.classList.add('active');
-      playBeep();
-      setTimeout(() => {
-        pulseBox.classList.remove('active');
-      }, 120);
-    }
+      const payload = {
+        type: callType,
+        locCode: code,
+        locName: currentLocName
+      };
 
-    function toggleMetronome() {
-      const btn = document.getElementById('metro-toggle-btn');
-      
-      if (!isRunning) {
-        isRunning = true;
-        btn.innerText = '⏹ 박자 멈추기';
-        btn.classList.add('running');
-        triggerPulse();
-        timerId = setInterval(triggerPulse, intervalMs);
-      } else {
-        isRunning = false;
-        clearInterval(timerId);
-        btn.innerText = '▶ CPR 박자 시작하기';
-        btn.classList.remove('running');
+      if (SOS_API_URL && !SOS_API_URL.includes("여기에")) {
+        const jsonStr = JSON.stringify(payload);
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon(SOS_API_URL, new Blob([jsonStr], { type: 'text/plain' }));
+        } else {
+          fetch(SOS_API_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: jsonStr
+          }).catch(function(e){ console.error(e); });
+        }
       }
+
+      setTimeout(function() {
+        window.location.href = "tel:" + targetTel;
+      }, 200);
     }
   </script>
 </body>
