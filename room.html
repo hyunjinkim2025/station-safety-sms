@@ -6,69 +6,100 @@
   <title>방배역 스마트 기능실 관리</title>
   <style>
     :root {
-      --primary-color: #0070f3;
-      --navy-color: #1a365d;
-      --bg-color: #f7fafc;
-      --card-bg: #ffffff;
-      --border-color: #e2e8f0;
-      --text-main: #2d3748;
-      --text-sub: #4a5568;
-      --danger-color: #e53e3e;
-      --success-color: #38a169;
+      --primary-blue: #1e70ba;
+      --navy-text: #1a365d;
+      --bg-gray: #f8fafc;
+      --border-gray: #e2e8f0;
+      --gold-bg: #fffdf5;
+      --gold-border: #f6e05e;
+      --orange-btn: #ea8c10;
+      --green-active-bg: #e6fffa;
+      --green-active-border: #38b2ac;
+      --green-active-text: #234e52;
+      --red-active-bg: #fff5f5;
+      --red-active-border: #e53e3e;
+      --red-active-text: #9b2c2c;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
-    body { background-color: var(--bg-color); color: var(--text-main); line-height: 1.5; padding: 16px; display: flex; justify-content: center; }
-    .container { width: 100%; max-width: 480px; background: var(--card-bg); border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 20px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple SD Gothic Neo", sans-serif; }
+    body { background-color: #f1f5f9; color: #2d3748; line-height: 1.5; padding: 12px; display: flex; justify-content: center; }
+    .container { width: 100%; max-width: 420px; background: #ffffff; border-radius: 14px; box-shadow: 0 3px 12px rgba(0,0,0,0.06); padding: 18px 16px; }
 
-    .header { text-align: center; margin-bottom: 20px; }
-    .header h1 { font-size: 20px; font-weight: 800; color: #1a202c; letter-spacing: -0.5px; }
-    .badge { display: inline-block; background: #2b6cb0; color: #fff; font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 20px; margin-top: 6px; }
-    .sub-title { font-size: 17px; font-weight: 700; color: #2d3748; margin-top: 10px; }
+    /* 헤더 */
+    .header { text-align: center; margin-bottom: 14px; }
+    .header h1 { font-size: 19px; font-weight: 800; color: #1a202c; letter-spacing: -0.5px; }
+    .badge { display: inline-block; background: #2275b8; color: #ffffff; font-size: 11.5px; font-weight: 700; padding: 3px 12px; border-radius: 20px; margin-top: 5px; }
+    .sub-title { font-size: 16px; font-weight: 800; color: #2b3a4a; margin-top: 8px; }
 
-    .info-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13.5px; border-top: 1px solid var(--border-color); }
-    .info-table th { width: 30%; text-align: left; padding: 8px 10px; color: var(--text-sub); font-weight: 600; background: #f8fafc; border-bottom: 1px solid var(--border-color); }
-    .info-table td { width: 70%; padding: 8px 10px; color: #1a202c; font-weight: 600; border-bottom: 1px solid var(--border-color); }
+    /* 제원 테이블 */
+    .info-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12.5px; border-top: 1px solid #edf2f7; }
+    .info-table th { width: 28%; text-align: left; padding: 7px 6px; color: #718096; font-weight: 600; background: #fcfcfd; border-bottom: 1px solid #edf2f7; }
+    .info-table td { width: 72%; padding: 7px 6px; color: #1a202c; font-weight: 700; border-bottom: 1px solid #edf2f7; }
 
-    .card { background: #fff; border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; margin-top: 16px; }
-    .card-title { font-size: 14px; font-weight: 700; color: var(--navy-color); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    /* 도어락 비밀번호 골드 카드 */
+    .door-card { background: var(--gold-bg); border: 1.5px solid var(--gold-border); border-radius: 10px; padding: 12px 14px; margin-top: 14px; }
+    .door-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .door-title { font-size: 12.5px; font-weight: 700; color: #975a16; display: flex; align-items: center; gap: 4px; }
+    .door-sync { font-size: 10.5px; color: #d69e2e; font-weight: 600; }
+    .door-action-row { display: flex; gap: 8px; align-items: center; }
+    .door-display-box { flex: 1; height: 38px; background: #ffffff; border: 1.5px solid #ecc94b; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 900; color: #c53030; letter-spacing: 4px; }
+    .btn-check-pass { width: 78px; height: 38px; background: var(--orange-btn); border: none; border-radius: 6px; color: #ffffff; font-size: 12.5px; font-weight: 700; cursor: pointer; }
+    .btn-check-pass:active { filter: brightness(0.9); }
+    .door-desc { font-size: 10.5px; color: #b7791f; margin-top: 6px; }
+
+    /* 섹션 공통 타이틀 */
+    .section-title { font-size: 13px; font-weight: 800; color: #2d3748; margin-top: 16px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .section-bar { width: 3px; height: 13px; background: var(--primary-blue); border-radius: 2px; display: inline-block; }
+
+    /* 이례상황 대응 안내 박스 */
+    .emergency-box { background: #f0f7ff; border: 1px solid #bee3f8; border-radius: 8px; padding: 10px 12px; font-size: 11.5px; color: #2c5282; line-height: 1.6; }
+    .emergency-box ul { list-style: none; }
+    .emergency-box li { position: relative; padding-left: 10px; margin-bottom: 3px; }
+    .emergency-box li::before { content: "•"; position: absolute; left: 0; font-weight: bold; }
 
     /* 시각 자료 버튼군 */
-    .btn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
-    .btn-visual { background: #fff; border: 1.5px solid #3182ce; color: #2b6cb0; font-size: 12px; font-weight: 700; padding: 10px 4px; border-radius: 8px; text-align: center; text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+    .visual-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .btn-visual { background: #ffffff; border: 1.5px solid #4299e1; color: #2b6cb0; border-radius: 8px; padding: 8px 2px; text-decoration: none; font-size: 11.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 4px; text-align: center; }
     .btn-visual:active { background: #ebf8ff; }
 
-    /* 보안 PIN 인증 */
-    .pin-box { background: #edf2f7; border-radius: 10px; padding: 12px; text-align: center; }
-    .pin-input { width: 120px; height: 38px; text-align: center; font-size: 18px; font-weight: 800; letter-spacing: 4px; border: 1.5px solid #cbd5e0; border-radius: 6px; outline: none; }
-    .pin-btn { background: #2b6cb0; color: #fff; border: none; font-size: 13px; font-weight: 700; padding: 0 14px; height: 38px; border-radius: 6px; cursor: pointer; margin-left: 6px; }
-    .pass-display { margin-top: 10px; font-size: 15px; font-weight: 800; color: #2c5282; min-height: 24px; }
+    /* 폼 입력 필드 */
+    .form-group { margin-top: 10px; }
+    .form-label { font-size: 11.5px; font-weight: 700; color: #4a5568; margin-bottom: 4px; display: block; }
+    .input-text { width: 100%; height: 38px; border: 1px solid #cbd5e0; border-radius: 6px; padding: 0 10px; font-size: 13px; outline: none; }
+    .input-text::placeholder { color: #a0aec0; }
+    .textarea-box { width: 100%; height: 60px; border: 1px solid #cbd5e0; border-radius: 6px; padding: 8px 10px; font-size: 12.5px; outline: none; resize: none; }
+    .textarea-box::placeholder { color: #a0aec0; }
 
-    /* 점검 및 출입 등록 폼 */
-    .form-group { margin-top: 12px; }
-    .form-label { font-size: 13px; font-weight: 700; color: var(--text-sub); display: block; margin-bottom: 4px; }
-    .input-text, .select-box, .textarea-box { width: 100%; padding: 10px; font-size: 14px; border: 1px solid #cbd5e0; border-radius: 8px; outline: none; }
-    .textarea-box { height: 70px; resize: none; }
+    /* 양자택일 라디오 버튼 */
+    .state-toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .btn-state { height: 36px; border: 1px solid #cbd5e0; background: #ffffff; border-radius: 6px; font-size: 12px; font-weight: 700; color: #4a5568; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .btn-state.active-good { background: #edfbf7; border: 1.5px solid #319795; color: #234e52; }
+    .btn-state.active-bad { background: #fff5f5; border: 1.5px solid #e53e3e; color: #9b2c2c; }
 
-    /* 사진 촬영 무결성 모듈 (Direct Capture) */
-    .photo-area { border: 1.5px dashed #a0aec0; border-radius: 8px; padding: 12px; text-align: center; margin-top: 8px; background: #fafafa; }
-    .photo-btn { background: #4a5568; color: #fff; border: none; font-size: 12.5px; font-weight: 700; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
-    .preview-img { max-width: 100%; max-height: 140px; margin-top: 10px; border-radius: 6px; display: none; }
+    /* 점선 사진 첨부 박스 */
+    .photo-dash-box { border: 1.5px dashed #cbd5e0; border-radius: 8px; padding: 12px 10px; text-align: center; background: #fcfdfd; }
+    .btn-photo-pick { background: #ffffff; border: 1px solid #a0aec0; border-radius: 6px; padding: 6px 14px; font-size: 11.5px; font-weight: 700; color: #4a5568; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+    .btn-photo-pick:active { background: #edf2f7; }
+    .photo-info-text { font-size: 10px; color: #a0aec0; margin-top: 6px; }
+    .preview-img { max-width: 100%; max-height: 120px; border-radius: 6px; margin-top: 8px; display: none; }
 
-    .submit-btn { width: 100%; background: #2b6cb0; color: #fff; font-size: 15px; font-weight: 800; padding: 13px; border: none; border-radius: 8px; cursor: pointer; margin-top: 18px; box-shadow: 0 2px 6px rgba(43,108,176,0.3); }
-    .submit-btn:disabled { background: #a0aec0; cursor: not-allowed; }
+    /* 하단 전폭 제출 버튼 */
+    .btn-submit { width: 100%; height: 44px; background: #2275b8; border: none; border-radius: 8px; color: #ffffff; font-size: 14px; font-weight: 800; cursor: pointer; margin-top: 14px; box-shadow: 0 2px 6px rgba(34,117,184,0.3); }
+    .btn-submit:active { filter: brightness(0.9); }
+    .btn-submit:disabled { background: #a0aec0; cursor: not-allowed; }
   </style>
 </head>
 <body>
 
 <div class="container">
+  <!-- 상단 타이틀 -->
   <div class="header">
     <h1>방배역 스마트 기능실 관리</h1>
     <div class="badge">통제구역 · 시설가이드</div>
-    <div class="sub-title" id="room-title">환기실 B (소방시설·급배기 시설)</div>
+    <div class="sub-title" id="room-name-display">환기실 B (소방시설·급배기 시설)</div>
   </div>
 
-  <!-- 제원 안내 테이블 -->
+  <!-- 제원 테이블 -->
   <table class="info-table">
     <tr>
       <th>기능실 ID</th>
@@ -80,67 +111,4 @@
     </tr>
     <tr>
       <th>세부위치</th>
-      <td id="info-loc">다게이트 내측</td>
-    </tr>
-    <tr>
-      <th>주관부서</th>
-      <td id="info-dept">종합운동장 기계관리소</td>
-    </tr>
-  </table>
-
-  <!-- 시각 자료 직통 뷰어 카드 -->
-  <div class="card">
-    <div class="card-title">📷 현장 내부 시각 자료 (사진·도면·영상)</div>
-    <div class="btn-grid">
-      <a href="#" id="link-photo" target="_blank" class="btn-visual">
-        <span>🖼️</span> 내부 설비 사진
-      </a>
-      <a href="#" id="link-manual" target="_blank" class="btn-visual">
-        <span>📄</span> 조작 매뉴얼 (PDF)
-      </a>
-      <a href="#" id="link-video" target="_blank" class="btn-visual">
-        <span>🎬</span> 비상조치 영상
-      </a>
-    </div>
-  </div>
-
-  <!-- 도어락 비밀번호 보안 조회 카드 -->
-  <div class="card">
-    <div class="card-title">🔐 출입문 도어락 비밀번호 조회</div>
-    <div class="pin-box">
-      <div style="font-size:12px; color:#718096; margin-bottom:6px;">역사 공통 보안 PIN 4자리를 입력하세요</div>
-      <input type="password" id="input-pin" class="pin-input" maxlength="4" placeholder="••••" inputmode="numeric">
-      <button type="button" class="pin-btn" onclick="fetchDoorPassword()">조회</button>
-      <div id="doorpass-display" class="pass-display"></div>
-    </div>
-  </div>
-
-  <!-- 순찰 및 출입 기록 등록 -->
-  <div class="card">
-    <div class="card-title">📝 순찰 점검 및 출입 등록</div>
-    
-    <div class="form-group">
-      <label class="form-label">점검·출입자 성명</label>
-      <input type="text" id="inspector-name" class="input-text" placeholder="성명을 입력하세요 (자동완성)">
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">시설 점검 상태</label>
-      <select id="facility-state" class="select-box">
-        <option value="정상 (이상없음)">정상 (이상없음)</option>
-        <option value="누수/이물 발견 (조치요)">누수/이물 발견 (조치요)</option>
-        <option value="송풍·배기팬 이상소음 (조치요)">송풍·배기팬 이상소음 (조치요)</option>
-        <option value="소방설비 불량 (조치요)">소방설비 불량 (조치요)</option>
-        <option value="기타 결함 (조치요)">기타 결함 (조치요)</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">점검·인계 메모 (특이사항)</label>
-      <textarea id="notes-memo" class="textarea-box" placeholder="설비 가동 상태, 이상 유무 또는 인계사항 기재"></textarea>
-    </div>
-
-    <!-- Direct Capture 무결성 사진 모듈 -->
-    <div class="form-group">
-      <label class="form-label">현장 실시간 촬영 증빙 (결함 시 필수)</label>
-      <div class="photo-area">
+      <td id="info-loc">다게이트 내측
