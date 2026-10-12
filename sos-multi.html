@@ -59,15 +59,36 @@
       gap: 6px;
     }
 
+    /* 위치 박스 개선: 모바일에서도 줄바꿈 어색함 없이 2단 정렬 */
     .location-box {
       margin-top: 10px;
       background: #fff3f3;
-      padding: 10px;
+      padding: 10px 12px;
       border-radius: 8px;
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: #c62828;
       border: 1px dashed #ef9a9a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .loc-main-text {
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: #c62828;
+      letter-spacing: -0.3px;
+      word-break: keep-all;
+      text-align: center;
+    }
+
+    .loc-sub-tag {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #e53935;
+      background: rgba(229, 57, 53, 0.08);
+      padding: 2px 8px;
+      border-radius: 12px;
+      display: inline-block;
     }
 
     /* 긴급 SOS 호출 버튼 */
@@ -245,10 +266,12 @@
 
     .footer {
       text-align: center;
-      font-size: 0.8rem;
+      font-size: 0.83rem;
+      font-weight: 700;
       color: var(--text-muted);
       margin-top: 8px;
       margin-bottom: 16px;
+      letter-spacing: -0.3px;
     }
   </style>
 </head>
@@ -258,7 +281,11 @@
     <!-- 헤더 & 위치 정보 -->
     <div class="header-card">
       <div class="title" id="main-title">🚨 방배역 스마트 안심케어</div>
-      <div class="location-box" id="loc-display">현재 위치: 확인 중...</div>
+      <!-- 모바일 최적화 2단 위치 박스 -->
+      <div class="location-box">
+        <div class="loc-main-text" id="loc-main-text">현재 위치: 확인 중...</div>
+        <div class="loc-sub-tag">⚡ 위치 자동확인됨</div>
+      </div>
     </div>
 
     <!-- 1단계: 긴급 SOS 호출 버튼 -->
@@ -318,6 +345,7 @@
       </div>
     </div>
 
+    <!-- 공모전 정규 타이틀에 맞춘 푸터 -->
     <div class="footer" id="footer-text">
       서울교통공사 방배역 360° 스마트 시민 안심망
     </div>
@@ -325,46 +353,45 @@
 
   <script>
     // =========================================================================
-    // ★ [방배역 단일 백엔드 공통 사용] 방배역 GAS 배포 Web App URL 입력
+    // ★ [횡단전개 새 스프레드시트 배포 URL 입력]
     // =========================================================================
-    const COMMON_GAS_API_URL = "https://script.google.com/macros/s/AKfycbyzrsIu45C5gzLqB_7xMM4Gea0NkRJyljlyQFdmKEPW96s3j-X5JRztvM1jnGcTrz-2/exec";
+    const COMMON_GAS_API_URL = "여기에_횡단전개_새_스프레드시트_배포_URL_입력";
 
-    // 신대방영업사업소 횡단전개 대상 역사 메타데이터 (사당역 제외 / 강남역·신림역 탑재)
+    // 신대방영업사업소 횡단전개 대상 역사 메타데이터
     const STATION_REGISTRY = {
-      // 1. 방배역 (기본 관할역)
+      // 1. 방배역
       "bangbae": {
         stationName: "방배역",
         tel: "02-6110-2251",
         apiUrl: COMMON_GAS_API_URL,
-        aedMain: "📍 지하 1층 대합실 고객안전실(역무실) 우측",
+        aedMain: "📍 지하1층 대합실 고객안전실(역무실) 우측",
         aedSub1: "",
         aedSub2: "",
         presets: {
-          '302': '방배역 승강장 3-2',
-          '402': '내선승강장(사당방면) 4-2',
+
           '402-in': '내선승강장(사당방면) 4-2',
           '402-out': '외선승강장(서초방면) 4-2'
         }
       },
-      // 2. 강남역 (횡단전개 테스트 1) - 지하 1층 고객안전실 앞 단일 비치
+      // 2. 강남역
       "gangnam": {
         stationName: "강남역",
         tel: "02-6110-2221",
         apiUrl: COMMON_GAS_API_URL,
-        aedMain: "📍 지하 1층 대합실 고객안전실(역무실) 우측",
+        aedMain: "📍 지하1층 대합실 고객안전실(역무실) 우측",
         aedSub1: "",
         aedSub2: "",
         presets: {
           '204-in': '내선승강장(교대방면) 2-4',
-          '701-0ut': '외선승강장(역삼방면) 7-1'
+          '701-out': '외선승강장(역삼방면) 7-1'
         }
       },
-      // 3. 신림역 (횡단전개 테스트 2) - 지하 1층 고객안전실 앞 단일 비치
+      // 3. 신림역
       "sillim": {
         stationName: "신림역",
         tel: "02-6110-2301",
         apiUrl: COMMON_GAS_API_URL,
-        aedMain: "📍 지하 1층 대합실 고객안전실(역무실) 좌측",
+        aedMain: "📍 지하1층 대합실 고객안전실(역무실) 좌측",
         aedSub1: "",
         aedSub2: "",
         presets: {
@@ -374,7 +401,7 @@
       }
     };
 
-    // 1. 파라미터 분석 (?station=gangnam&code=204)
+    // 1. 파라미터 분석 (?station=sillim&code=302)
     const urlParams = new URLSearchParams(window.location.search);
     const stationParam = (urlParams.get('station') || 'bangbae').toLowerCase();
     const currentStation = STATION_REGISTRY[stationParam] || STATION_REGISTRY['bangbae'];
@@ -399,7 +426,10 @@
     // 2. 동적 UI 반영
     document.title = `${currentStation.stationName} 스마트 안심·응급 케어 (SOS)`;
     document.getElementById('main-title').innerText = `🚨 ${currentStation.stationName} 스마트 안심케어`;
-    document.getElementById('loc-display').innerText = `현재 위치: ${resolvedLocation} (위치 자동확인)`;
+    
+    // ★ 개선된 2단 위치 텍스트 렌더링
+    document.getElementById('loc-main-text').innerText = `현재 위치: ${resolvedLocation}`;
+    
     document.getElementById('btn-call-label').innerText = `${currentStation.stationName} 역무실`;
     
     // AED 위치 렌더링
@@ -421,13 +451,14 @@
       sub2El.style.display = 'none';
     }
 
-    document.getElementById('footer-text').innerText = `서울교통공사 ${currentStation.stationName} 360° 스마트 안전망`;
+    // ★ 공모전 정규 타이틀 반영 (서울교통공사 [역명] 360° 스마트 시민 안심망)
+    document.getElementById('footer-text').innerText = `서울교통공사 ${currentStation.stationName} 360° 스마트 시민 안심망`;
 
     // 3. 호출 동작 처리
     function handleEmergencyAction(actionType) {
       const callTypeKor = (actionType === 'SMS') ? "문자 신고" : "역무실 호출";
       const payload = {
-        station: currentStation.stationName, // ★ 역사 이름 포함 전달
+        station: currentStation.stationName,
         type: callTypeKor,
         locCode: normalizedCode,
         locName: resolvedLocation
@@ -457,7 +488,7 @@
       }, 200);
     }
 
-    // 4. CPR 메트로놈 (110 BPM Web Audio)
+    // 4. CPR 메트로놈 (Web Audio API)
     let audioCtx = null;
     let isRunning = false;
     let timerId = null;
