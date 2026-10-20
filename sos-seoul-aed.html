@@ -304,6 +304,7 @@
       </div>
     </div>
 
+    <!-- 1단계: 긴급 SOS 호출 버튼 -->
     <div class="sos-button-area">
       <button type="button" class="btn-sos" id="btn-call-station" onclick="handleEmergencyAction('CALL')">
         📞 <span id="btn-call-label">역무실</span> 긴급 통화
@@ -320,26 +321,26 @@
         <span class="aed-badge">골든타임 4분</span>
       </div>
       
-      <!-- 역사 내부 최우선 거점 (상황 발생 시 0초 즉시 확인) -->
+      <!-- 역사 내부 최우선 거점 (상황 발생 시 0초 즉각 이용) -->
       <div class="aed-info-box">
         <div style="font-size: 0.8rem; color: #2e7d32; font-weight: 800; margin-bottom: 2px;">[역사 내부 최우선 거점 - 즉시 이용]</div>
         <div class="aed-location-text" id="aed-main">📍 지하1층 대합실 고객안전실(역무실) 우측</div>
       </div>
 
-      <!-- 평소 위치 학습 및 예방 인지용 버튼 -->
+      <!-- 실시간 공공데이터 최근접 AED 정렬 버튼 -->
       <button type="button" class="btn-seoulmap" id="btn-toggle-public-aed" onclick="fetchAndDisplayNearestAed()">
         🧭 [평소 알아두기] 내 위치 기준 가장 가까운 공공 AED (거리순 정렬) ▼
       </button>
 
-      <!-- 인라인 거리순 자동 정렬 리스트 -->
+      <!-- 인라인 펼쳐짐 영역 -->
       <div id="public-aed-container" style="display: none; margin-top: 10px; flex-direction: column; gap: 8px;">
         <div id="aed-calc-status" style="font-size: 0.82rem; font-weight: 700; color: #1565c0; margin-bottom: 2px;">
-          📍 GPS 계산 중...
+          📍 GPS 위치 계산 중...
         </div>
-        <div id="public-aed-list" style="display: flex; flex-direction: column; gap: 6px;">
+        <div id="public-aed-list" style="display: flex; flex-direction: column; gap: 8px;">
         </div>
         <div style="font-size: 0.76rem; color: #757575; line-height: 1.35; margin-top: 4px;">
-          ※ 공공데이터 기준이며, 평소 생활 반경 내 AED 위치를 사전 숙지하여 위기 상황 시 신속히 대처하기 위한 사전 안심 서비스입니다.
+          ※ 서울시 공공데이터 기준이며, 평소 생활 반경 내 AED 위치를 사전 숙지하여 비상시 신속히 대처하기 위한 안심 서비스입니다.
         </div>
       </div>
     </div>
@@ -383,7 +384,7 @@
   <script>
     const COMMON_GAS_API_URL = "https://script.google.com/macros/s/AKfycbyzrsIu45C5gzLqB_7xMM4Gea0NkRJyljlyQFdmKEPW96s3j-X5JRztvM1jnGcTrz-2/exec";
 
-    // 1. 역사별 기본 메타데이터 및 중심 좌표(위경도) - 지하 GPS 음영 시 자동 보정 기준점
+    // 1. 역사별 기본 메타데이터 및 중심 좌표(위경도)
     const STATION_REGISTRY = {
       "bangbae": {
         stationName: "방배역",
@@ -414,31 +415,57 @@
       }
     };
 
-    // 2. 통합 공공데이터 AED 마스터 풀 (위경도 포함, 전사 확장 시 단일 JSON 대체 가능)
-    const PUBLIC_AED_MASTER_POOL = [
-      // 서초구 / 방배 권역
-      { place: "방배1동 주민센터", lat: 37.4828, lon: 126.9961, detailLoc: "1층 민원실 입구 민원안내데스크 좌측 벽면", mapQuery: "방배1동주민센터" },
-      { place: "방배파출소", lat: 37.4839, lon: 126.9982, detailLoc: "1층 민원접수대 전면 (24시간 이용 가능)", mapQuery: "방배파출소" },
-      { place: "서초대로변 공영주차장 관리동", lat: 37.4845, lon: 126.9954, detailLoc: "지하 1층 주차관리실 정면", mapQuery: "방배역 공영주차장" },
-      { place: "방배3동 주민센터", lat: 37.4785, lon: 127.0012, detailLoc: "1층 행정복지센터 안내데스크 옆", mapQuery: "방배3동주민센터" },
+    // 2. 서울 공공 AED 기본 데이터 풀 (양천·서초·강남·관악 주요 공공시설)
+    let dynamicAedPool = [
+      // 양천구 / 신월 / 신정 권역
+      { name: "신월4동 주민센터", address: "서울 양천구 오목로 45", place: "1층 민원실 입구 민원안내데스크 좌측", hours: "평일 09:00~18:00", lat: 37.5218, lon: 126.8532 },
+      { name: "양천구민체육센터", address: "서울 양천구 목동서로 357", place: "1층 안내데스크 정면 벽면", hours: "연중무휴 06:00~22:00", lat: 37.5195, lon: 126.8665 },
+      { name: "신정네거리역 (2호선)", address: "서울 양천구 중앙로 지하 261", place: "지하 1층 고객안내센터(역무실) 앞", hours: "첫차~막차 (05:30~24:30)", lat: 37.5202, lon: 126.8598 },
+      { name: "신월7동 주민센터", address: "서울 양천구 지양로 37", place: "1층 로비 자동문 우측 비치", hours: "평일 09:00~18:00", lat: 37.5165, lon: 126.8402 },
+      { name: "신정4동 주민센터", address: "서울 양천구 중앙로43길 14", place: "1층 종합민원실 안내창구 우측", hours: "평일 09:00~18:00", lat: 37.5225, lon: 126.8621 },
+      { name: "목동역 (5호선)", address: "서울 양천구 오목로 지하 245", place: "지하 1층 대합실 i센터 정면", hours: "첫차~막차", lat: 37.5260, lon: 126.8648 },
+      { name: "양천구청 종합청사", address: "서울 양천구 목동동로 105", place: "1층 모자건강센터 출입구 옆", hours: "상시 개방", lat: 37.5169, lon: 126.8665 },
+      { name: "신월보건지소", address: "서울 양천구 남부순환로 407", place: "1층 보건민원실 입구", hours: "평일 09:00~18:00", lat: 37.5310, lon: 126.8375 },
+      { name: "신정동 동일하이빌 관리동", address: "서울 양천구 신정동 1317", place: "관리사무소 1층 안내데스크", hours: "24시간", lat: 37.5182, lon: 126.8550 },
 
-      // 강남 권역
-      { place: "역삼1동 주민센터", lat: 37.4954, lon: 127.0332, detailLoc: "1층 종합민원실 안내창구 우측 벽면", mapQuery: "역삼1동주민센터" },
-      { place: "강남역 서초플라자 보행통로", lat: 37.4985, lon: 127.0261, detailLoc: "지하 1층 연결통로 비상용품함", mapQuery: "강남역 서초플라자" },
-      { place: "역삼지구대", lat: 37.5002, lon: 127.0365, detailLoc: "1층 안내데스크 전면 (24시간)", mapQuery: "역삼지구대" },
+      // 서초구 / 방배역 권역
+      { name: "방배역 (2호선)", address: "서울 서초구 방배로 지하 80", place: "지하 1층 고객안전실(역무실) 정면 우측", hours: "첫차~막차 (05:30~24:30)", lat: 37.4814, lon: 126.9976 },
+      { name: "방배1동 주민센터", address: "서울 서초구 방배로 89", place: "1층 민원실 입구 안내데스크 좌측", hours: "평일 09:00~18:00", lat: 37.4828, lon: 126.9961 },
+      { name: "방배파출소", address: "서울 서초구 방배로 104", place: "1층 민원접수대 전면 (24시간 상시)", hours: "24시간 연중무휴", lat: 37.4839, lon: 126.9982 },
+      { name: "서초대로 공영주차장 관리동", address: "서울 서초구 방배동 909-1", place: "지하 1층 주차관리실 출입문 앞", hours: "24시간", lat: 37.4845, lon: 126.9954 },
+      { name: "방배3동 주민센터", address: "서울 서초구 방배로10길 10", place: "1층 행정복지센터 안내데스크 옆", hours: "평일 09:00~18:00", lat: 37.4785, lon: 127.0012 },
+      { name: "서초구민체육센터", address: "서울 서초구 사평대로 55", place: "1층 로비 고객안내실 벽면", hours: "06:00~22:00", lat: 37.4980, lon: 126.9960 },
+      { name: "사당역 (2·4호선)", address: "서울 동작구 동작대로 지하 3", place: "지하 1층 환승통로 안내센터 옆", hours: "첫차~막차", lat: 37.4765, lon: 126.9816 },
 
-      // 관악 / 신림 권역
-      { place: "신림동 주민센터", lat: 37.4825, lon: 126.9315, detailLoc: "1층 행정복지센터 민원안내대 바로 옆", mapQuery: "신림동주민센터" },
-      { place: "관악우체국", lat: 37.4868, lon: 126.9271, detailLoc: "1층 금융창구 고객쉼터 코너", mapQuery: "관악우체국" },
-      { place: "신원치안센터", lat: 37.4812, lon: 126.9284, detailLoc: "1층 민원접수실 입구", mapQuery: "신원치안센터" },
+      // 강남구 / 강남역 권역
+      { name: "강남역 (2호선·신분당선)", address: "서울 강남구 강남대로 지하 396", place: "지하 1층 고객안전실 출입구 우측", hours: "첫차~막차", lat: 37.4979, lon: 127.0276 },
+      { name: "역삼1동 주민센터", address: "서울 강남구 역삼로7길 16", place: "1층 종합민원실 안내창구 우측 벽면", hours: "평일 09:00~18:00", lat: 37.4954, lon: 127.0332 },
+      { name: "서초플라자 보행통로", address: "서울 서초구 서초대로78길 5", place: "지하 1층 연결통로 비상용품함 비치", hours: "상시 개방", lat: 37.4985, lon: 127.0261 },
+      { name: "역삼지구대", address: "서울 강남구 테헤란로8길 36", place: "1층 안내데스크 전면", hours: "24시간 연중무휴", lat: 37.5002, lon: 127.0365 },
+      { name: "국기원 (세계태권도본부)", address: "서울 강남구 테헤란로7길 32", place: "중앙 안내실 정면 벽체", hours: "09:00~18:00", lat: 37.5020, lon: 127.0298 },
 
-      // 양천구 / 신정·신월 권역 (자택 / 외출 위치 테스트용)
-      { place: "신월4동 주민센터", lat: 37.5218, lon: 126.8532, detailLoc: "1층 민원실 입구 벽면", mapQuery: "신월4동주민센터" },
-      { place: "신정네거리역", lat: 37.5202, lon: 126.8598, detailLoc: "지하 1층 고객안내센터 앞", mapQuery: "신정네거리역" },
-      { place: "신정4동 주민센터", lat: 37.5225, lon: 126.8621, detailLoc: "1층 종합민원실 안내데스크 우측", mapQuery: "신정4동주민센터" }
+      // 관악구 / 신림역 권역
+      { name: "신림역 (2호선·신림선)", address: "서울 관악구 남부순환로 지하 1614", place: "지하 1층 고객안전실 출입구 좌측", hours: "첫차~막차", lat: 37.4842, lon: 126.9298 },
+      { name: "신림동 주민센터", address: "서울 관악구 신림로 282", place: "1층 행정복지센터 민원안내대 바로 옆", hours: "평일 09:00~18:00", lat: 37.4825, lon: 126.9315 },
+      { name: "관악우체국", address: "서울 관악구 시흥대로 568", place: "1층 금융영업창구 고객쉼터 코너", hours: "평일 09:00~18:00", lat: 37.4868, lon: 126.9271 },
+      { name: "신원치안센터", address: "서울 관악구 신원로 35", place: "1층 민원접수실 입구 안내창구", hours: "24시간", lat: 37.4812, lon: 126.9284 },
+      { name: "보라매병원 (서울대병원운영)", address: "서울 동작구 보라매로5길 20", place: "본관 1층 로비 원무과 출입구 옆", hours: "24시간", lat: 37.4925, lon: 126.9248 }
     ];
 
-    // 3. 파라미터 분석 및 화면 바인딩
+    // 3. 백그라운드 데이터 확장 (seoul_aed_sample.json 동적 연동)
+    fetch("seoul_aed_sample.json")
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          dynamicAedPool = data;
+          console.log("공공 AED 데이터셋 로드 완료:", data.length, "개소");
+        }
+      })
+      .catch(err => {
+        console.log("기본 내장 데이터셋으로 안정 구동:", dynamicAedPool.length, "개소");
+      });
+
+    // 4. URL 파라미터 분석 및 화면 바인딩
     const urlParams = new URLSearchParams(window.location.search);
     const stationParam = (urlParams.get('station') || 'bangbae').toLowerCase();
     const currentStation = STATION_REGISTRY[stationParam] || STATION_REGISTRY['bangbae'];
@@ -449,7 +476,7 @@
 
     let resolvedLocation = `${currentStation.stationName} 승강장`;
     if (rawLoc) {
-      try { resolvedLocation = decodeURIComponent(rawLoc.replace(/\\+/g, ' ')); } catch (e) { resolvedLocation = rawLoc; }
+      try { resolvedLocation = decodeURIComponent(rawLoc.replace(/\+/g, ' ')); } catch (e) { resolvedLocation = rawLoc; }
     } else if (currentStation.presets[normalizedCode]) {
       resolvedLocation = currentStation.presets[normalizedCode];
     } else if (inputCode) {
@@ -463,23 +490,18 @@
     document.getElementById('aed-main').innerText = currentStation.aedMain;
     document.getElementById('footer-text').innerText = `서울교통공사 ${currentStation.stationName} 360° 스마트 시민 안심망`;
 
-    // 4. 하버사인(Haversine) 구면삼각 거리 연산 함수 (단위: 미터)
-    function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
-      const R = 6371e3; // 지구 반경
-      const phi1 = lat1 * Math.PI / 180;
-      const phi2 = lat2 * Math.PI / 180;
-      const deltaPhi = (lat2 - lat1) * Math.PI / 180;
-      const deltaLambda = (lon2 - lon1) * Math.PI / 180;
-
-      const a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
-                Math.cos(phi1) * Math.cos(phi2) *
-                Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-      return Math.round(R * c);
+    // 5. 하버사인(Haversine) 공식 거리 계산 함수
+    function haversineDist(lat1, lon1, lat2, lon2) {
+      const R = 6371; // km
+      const rad = x => x * Math.PI / 180;
+      const dLat = rad(lat2 - lat1);
+      const dLon = rad(lon2 - lon1);
+      const a = Math.sin(dLat / 2) ** 2 +
+                Math.cos(rad(lat1)) * Math.cos(rad(lat2)) * Math.sin(dLon / 2) ** 2;
+      return 2 * R * Math.asin(Math.sqrt(a)); // km 단위
     }
 
-    // 5. [핵심 알고리즘] 현재 좌표 기반 실시간 최근접 AED 연산 및 렌더링
+    // 6. 실시간 위치 탐색 및 거리순 정렬 렌더링
     let isAedOpen = false;
 
     function fetchAndDisplayNearestAed() {
@@ -497,77 +519,87 @@
       }
 
       container.style.display = "flex";
-      statusEl.innerText = "⏳ 현재 GPS 위치 확인 중...";
+      statusEl.innerText = "⏳ 스마트폰 GPS 위치 확인 중...";
       listEl.innerHTML = "";
       btn.innerText = "🧭 공공 AED 위치 목록 닫기 ▲";
       btn.style.background = "#c8e6c9";
       isAedOpen = true;
 
-      // 1순위: 실시간 스마트폰 GPS 시도
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           function(pos) {
-            renderSortedAeds(pos.coords.latitude, pos.coords.longitude, "실시간 스마트폰 GPS 위치");
+            renderNearestAeds(pos.coords.latitude, pos.coords.longitude, "실시간 스마트폰 GPS 위치");
           },
           function(err) {
-            // 2순위 (지하 음영 / 권한 거부 시): 현재 태그된 역사 중심 좌표로 자동 보정!
-            console.log("GPS 신호 없음 -> 역사 기준 좌표로 연산:", err);
-            renderSortedAeds(currentStation.lat, currentStation.lon, `${currentStation.stationName} (역사 기준)`);
+            console.log("GPS 수신 불가 -> 역사 기준 보정:", err);
+            renderNearestAeds(currentStation.lat, currentStation.lon, `${currentStation.stationName} (역사 기준)`);
           },
-          { timeout: 3500, enableHighAccuracy: true }
+          { enableHighAccuracy: true, timeout: 5000, maximumAge: 10000 }
         );
       } else {
-        renderSortedAeds(currentStation.lat, currentStation.lon, `${currentStation.stationName} (역사 기준)`);
+        renderNearestAeds(currentStation.lat, currentStation.lon, `${currentStation.stationName} (역사 기준)`);
       }
     }
 
-    function renderSortedAeds(userLat, userLon, sourceName) {
+    function renderNearestAeds(userLat, userLon, sourceName) {
       const statusEl = document.getElementById("aed-calc-status");
       const listEl = document.getElementById("public-aed-list");
 
-      statusEl.innerHTML = `📍 <strong>기준 위치:</strong> ${sourceName} <span style="font-size:0.75rem; color:#616161;">(반경 최근접 실시간 정렬)</span>`;
+      statusEl.innerHTML = `📍 <strong>기준 위치:</strong> ${sourceName} <span style="font-size:0.75rem; color:#616161;">(총 ${dynamicAedPool.length}개소 중 최근접 정렬)</span>`;
 
-      // 1) 전체 풀에서 현재 좌표와의 거리를 각각 실시간 계산
-      const calculatedList = PUBLIC_AED_MASTER_POOL.map(item => {
-        const dist = calculateDistanceMeters(userLat, userLon, item.lat, item.lon);
+      // 1) 전체 풀에서 거리 계산
+      const calculated = dynamicAedPool.map(item => {
+        const km = haversineDist(userLat, userLon, item.lat, item.lon);
         return {
           ...item,
-          distanceM: dist,
-          walkMin: Math.max(1, Math.round(dist / 65)) // 도보 소요시간 환산
+          km: km,
+          distStr: km < 1 ? Math.round(km * 1000) + "m" : km.toFixed(2) + "km",
+          walkMin: Math.max(1, Math.round((km * 1000) / 65))
         };
       });
 
       // 2) 거리 기준 오름차순 정렬
-      calculatedList.sort((a, b) => a.distanceM - b.distanceM);
+      calculated.sort((a, b) => a.km - b.km);
 
-      // 3) 최단거리 상위 3곳 인라인 렌더링
-      const top3 = calculatedList.slice(0, 3);
+      // 3) 상위 3곳 추출
+      const top3 = calculated.slice(0, 3);
       listEl.innerHTML = "";
 
       top3.forEach((item, index) => {
         const itemBox = document.createElement("div");
         itemBox.style.background = "#ffffff";
         itemBox.style.border = index === 0 ? "2px solid #2e7d32" : "1.5px solid #c8e6c9";
-        itemBox.style.borderRadius = "8px";
-        itemBox.style.padding = "10px 12px";
+        itemBox.style.borderRadius = "10px";
+        itemBox.style.padding = "12px 14px";
         itemBox.style.display = "flex";
         itemBox.style.flexDirection = "column";
-        itemBox.style.gap = "3px";
+        itemBox.style.gap = "4px";
 
-        const badgeHtml = index === 0 ? `<span style="background:#2e7d32; color:#fff; font-size:0.7rem; font-weight:800; padding:1px 5px; border-radius:4px; margin-right:4px;">최근접</span>` : "";
+        // 네이버지도 및 카카오맵 정밀 도보 길찾기 딥링크
+        const naverWalkUrl = `https://map.naver.com/p/directions/-/${item.lon},${item.lat},${encodeURIComponent(item.name)},PLACE_POI/-/walk`;
+        const kakaoWalkUrl = `https://map.kakao.com/link/to/${encodeURIComponent(item.name)},${item.lat},${item.lon}`;
+
+        const rankBadge = index === 0 
+          ? `<span style="background:#2e7d32; color:#fff; font-size:0.72rem; font-weight:800; padding:2px 6px; border-radius:4px; margin-right:5px;">1위 (최근접)</span>`
+          : `<span style="background:#455a64; color:#fff; font-size:0.72rem; font-weight:800; padding:2px 6px; border-radius:4px; margin-right:5px;">${index+1}위</span>`;
 
         itemBox.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-weight: 800; font-size: 0.93rem; color: #1b5e20;">${badgeHtml}🏥 ${item.place}</span>
-            <span style="font-size: 0.78rem; color: #d32f2f; font-weight: 800; background: #ffebee; padding: 2px 7px; border-radius: 10px;">${item.distanceM}m (도보 ${item.walkMin}분)</span>
+            <span style="font-weight: 800; font-size: 0.95rem; color: #1b5e20;">${rankBadge}${item.name}</span>
+            <span style="font-size: 0.8rem; color: #d32f2f; font-weight: 800; background: #ffebee; padding: 2px 7px; border-radius: 10px;">${item.distStr} (도보 ${item.walkMin}분)</span>
           </div>
-          <div style="font-size: 0.8rem; color: #424242; margin-top: 2px;">
-            • 상세위치: <strong>${item.detailLoc}</strong>
+          <div style="font-size: 0.82rem; color: #37474f; margin-top: 2px; line-height: 1.4;">
+            • 설치위치: <strong>${item.place || item.address}</strong><br>
+            • 주소/운영: ${item.address} ${item.hours ? '· ' + item.hours : ''}
           </div>
-          <div style="text-align: right; margin-top: 4px;">
-            <a href="https://m.map.naver.com/search2/search.naver?query=${encodeURIComponent(item.mapQuery)}" target="_blank" 
-               style="font-size: 0.75rem; color: #1976d2; text-decoration: none; font-weight: 700; border: 1px solid #90caf9; padding: 3px 8px; border-radius: 4px; background: #e3f2fd;">
-              🗺️ 지도 보기 >
+          <div style="display: flex; justify-content: flex-end; gap: 6px; margin-top: 6px;">
+            <a href="${naverWalkUrl}" target="_blank" 
+               style="font-size: 0.74rem; color: #0288d1; text-decoration: none; font-weight: 700; border: 1px solid #b3e5fc; padding: 3px 8px; border-radius: 4px; background: #e1f5fe;">
+              🚶 네이버 도보길찾기
+            </a>
+            <a href="${kakaoWalkUrl}" target="_blank" 
+               style="font-size: 0.74rem; color: #e65100; text-decoration: none; font-weight: 700; border: 1px solid #ffe0b2; padding: 3px 8px; border-radius: 4px; background: #fff3e0;">
+              🗺️ 카카오맵
             </a>
           </div>
         `;
@@ -575,7 +607,7 @@
       });
     }
 
-    // 호출 처리
+    // 7. 비상 호출 핸들러
     function handleEmergencyAction(actionType) {
       const callTypeKor = (actionType === 'SMS') ? "문자 신고" : "역무실 호출";
       const payload = {
@@ -605,7 +637,7 @@
       }, 200);
     }
 
-    // CPR 메트로놈
+    // 8. CPR 110 BPM 메트로놈 (Web Audio API)
     let audioCtx = null, isRunning = false, timerId = null;
     const bpm = 110, intervalMs = (60 / bpm) * 1000;
 
