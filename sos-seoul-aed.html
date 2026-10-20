@@ -184,7 +184,7 @@
       color: #1b5e20;
     }
 
-    /* 공공데이터 AED 토글 버튼 스타일 */
+    /* 평소 알아두기 공공데이터 버튼 */
     .btn-seoulmap {
       background: #e8f5e9;
       color: #1b5e20;
@@ -296,7 +296,6 @@
 <body>
 
   <div class="container">
-    <!-- 상단 헤더 & 위치 안내 -->
     <div class="header-card">
       <div class="title" id="main-title">🚨 방배역 스마트 안심케어</div>
       <div class="location-box">
@@ -305,7 +304,6 @@
       </div>
     </div>
 
-    <!-- 1단계: 긴급 SOS 호출 버튼 -->
     <div class="sos-button-area">
       <button type="button" class="btn-sos" id="btn-call-station" onclick="handleEmergencyAction('CALL')">
         📞 <span id="btn-call-label">역무실</span> 긴급 통화
@@ -315,36 +313,38 @@
       </button>
     </div>
 
-    <!-- 2단계: AED 위치 안내 (역사 내 AED + 주변 공공 AED 원터치 인라인 표출) -->
+    <!-- 2단계: AED 위치 안내 -->
     <div class="section-card">
       <div class="section-title">
         <span>⚡ 자동심장충격기(AED) 위치 안내</span>
         <span class="aed-badge">골든타임 4분</span>
       </div>
       
-      <!-- 1. 역사 내 최우선 AED (0초 즉시 확인) -->
+      <!-- 역사 내부 최우선 거점 (상황 발생 시 0초 즉시 확인) -->
       <div class="aed-info-box">
-        <div style="font-size: 0.8rem; color: #2e7d32; font-weight: 800; margin-bottom: 2px;">[역사 내부 최우선 거점]</div>
+        <div style="font-size: 0.8rem; color: #2e7d32; font-weight: 800; margin-bottom: 2px;">[역사 내부 최우선 거점 - 즉시 이용]</div>
         <div class="aed-location-text" id="aed-main">📍 지하1층 대합실 고객안전실(역무실) 우측</div>
       </div>
 
-      <!-- 2. 공공데이터 기반 주변 공공 AED 인라인 펼치기 버튼 -->
-      <button type="button" class="btn-seoulmap" id="btn-toggle-public-aed" onclick="togglePublicAedList()">
-        🏢 [공공데이터] 이 위치에서 가장 가까운 공공 AED (동네/주변) 보기 ▼
+      <!-- 평소 위치 학습 및 예방 인지용 버튼 -->
+      <button type="button" class="btn-seoulmap" id="btn-toggle-public-aed" onclick="fetchAndDisplayNearestAed()">
+        🧭 [평소 알아두기] 내 위치 기준 가장 가까운 공공 AED (거리순 정렬) ▼
       </button>
 
-      <!-- 터치 시 외부 사이트 이동 없이 화면 안에서 즉시 펼쳐지는 상세 리스트 -->
+      <!-- 인라인 거리순 자동 정렬 리스트 -->
       <div id="public-aed-container" style="display: none; margin-top: 10px; flex-direction: column; gap: 8px;">
-        <div style="font-size: 0.82rem; font-weight: 700; color: #1565c0; margin-bottom: 2px;">
-          📍 공공데이터 기준 최단거리 공공 AED 현황:
+        <div id="aed-calc-status" style="font-size: 0.82rem; font-weight: 700; color: #1565c0; margin-bottom: 2px;">
+          📍 GPS 계산 중...
         </div>
         <div id="public-aed-list" style="display: flex; flex-direction: column; gap: 6px;">
-          <!-- 자바스크립트로 자동 생성 -->
+        </div>
+        <div style="font-size: 0.76rem; color: #757575; line-height: 1.35; margin-top: 4px;">
+          ※ 공공데이터 기준이며, 평소 생활 반경 내 AED 위치를 사전 숙지하여 위기 상황 시 신속히 대처하기 위한 사전 안심 서비스입니다.
         </div>
       </div>
     </div>
 
-    <!-- 3단계: 실시간 CPR 가이드 & 메트로놈 -->
+    <!-- 3단계: CPR 가이드 & 메트로놈 -->
     <div class="section-card">
       <div class="section-title">
         <span>💓 심폐소생술(CPR) 박자 가이드</span>
@@ -375,103 +375,70 @@
       </div>
     </div>
 
-    <!-- 공모전 정규 타이틀 반영 푸터 -->
     <div class="footer" id="footer-text">
       서울교통공사 방배역 360° 스마트 시민 안심망
     </div>
   </div>
 
   <script>
-    // 1. 공통 백엔드 GAS API 엔드포인트
     const COMMON_GAS_API_URL = "https://script.google.com/macros/s/AKfycbyzrsIu45C5gzLqB_7xMM4Gea0NkRJyljlyQFdmKEPW96s3j-X5JRztvM1jnGcTrz-2/exec";
 
-    // 2. 신대방영업사업소 횡단전개 메타데이터 레지스트리
+    // 1. 역사별 기본 메타데이터 및 중심 좌표(위경도) - 지하 GPS 음영 시 자동 보정 기준점
     const STATION_REGISTRY = {
       "bangbae": {
         stationName: "방배역",
         tel: "02-6110-2251",
+        lat: 37.4814,
+        lon: 126.9976,
         apiUrl: COMMON_GAS_API_URL,
         aedMain: "📍 지하1층 대합실 고객안전실(역무실) 우측",
-        presets: {
-          '402-in': '내선승강장(사당방면) 4-2',
-          '402-out': '외선승강장(서초방면) 4-2'
-        }
+        presets: { '402-in': '내선승강장(사당방면) 4-2', '402-out': '외선승강장(서초방면) 4-2' }
       },
       "gangnam": {
         stationName: "강남역",
         tel: "02-6110-2221",
+        lat: 37.4979,
+        lon: 127.0276,
         apiUrl: COMMON_GAS_API_URL,
         aedMain: "📍 지하1층 대합실 고객안전실(역무실) 우측",
-        presets: {
-          '204-in': '내선승강장(교대방면) 2-4',
-          '701-out': '외선승강장(역삼방면) 7-1'
-        }
+        presets: { '204-in': '내선승강장(교대방면) 2-4', '701-out': '외선승강장(역삼방면) 7-1' }
       },
       "sillim": {
         stationName: "신림역",
         tel: "02-6110-2301",
+        lat: 37.4842,
+        lon: 126.9298,
         apiUrl: COMMON_GAS_API_URL,
         aedMain: "📍 지하1층 대합실 고객안전실(역무실) 좌측",
-        presets: {
-          '302-in': '내선승강장(신대방방면) 3-2',
-          '803-out': '외선승강장(봉천방면) 8-3'
-        }
+        presets: { '302-in': '내선승강장(신대방방면) 3-2', '803-out': '외선승강장(봉천방면) 8-3' }
       }
     };
 
-    // 3. 역사 및 주변 공공데이터 정밀 AED DB (외부 사이트 헛걸음 없이 인앱 즉시 표출)
-    const PUBLIC_AED_DATABASE = {
-      "bangbae": [
-        {
-          place: "방배1동 주민센터",
-          distance: "도보 약 3분 (210m)",
-          detailLoc: "1층 민원실 입구 민원안내데스크 좌측 벽면",
-          mapQuery: "방배1동주민센터"
-        },
-        {
-          place: "방배파출소",
-          distance: "도보 약 4분 (280m)",
-          detailLoc: "1층 민원접수대 전면 비치 (24시간 이용 가능)",
-          mapQuery: "방배파출소"
-        },
-        {
-          place: "서초대로변 공영주차장 관리동",
-          distance: "도보 약 5분 (340m)",
-          detailLoc: "지하 1층 주차관리실 정면",
-          mapQuery: "방배역 공영주차장"
-        }
-      ],
-      "gangnam": [
-        {
-          place: "역삼1동 주민센터",
-          distance: "도보 약 4분 (290m)",
-          detailLoc: "1층 종합민원실 안내창구 우측 벽면",
-          mapQuery: "역삼1동주민센터"
-        },
-        {
-          place: "강남역 서초플라자 공공보행통로",
-          distance: "도보 약 2분 (150m)",
-          detailLoc: "지하 1층 연결통로 비상용품함",
-          mapQuery: "강남역"
-        }
-      ],
-      "sillim": [
-        {
-          place: "신림동 주민센터",
-          distance: "도보 약 3분 (220m)",
-          detailLoc: "1층 행정복지센터 민원안내대 바로 옆",
-          mapQuery: "신림동주민센터"
-        },
-        {
-          place: "관악우체국",
-          distance: "도보 약 5분 (350m)",
-          detailLoc: "1층 금융창구 고객쉼터 코너",
-          mapQuery: "관악우체국"
-        }
-      ]
-    };
+    // 2. 통합 공공데이터 AED 마스터 풀 (위경도 포함, 전사 확장 시 단일 JSON 대체 가능)
+    const PUBLIC_AED_MASTER_POOL = [
+      // 서초구 / 방배 권역
+      { place: "방배1동 주민센터", lat: 37.4828, lon: 126.9961, detailLoc: "1층 민원실 입구 민원안내데스크 좌측 벽면", mapQuery: "방배1동주민센터" },
+      { place: "방배파출소", lat: 37.4839, lon: 126.9982, detailLoc: "1층 민원접수대 전면 (24시간 이용 가능)", mapQuery: "방배파출소" },
+      { place: "서초대로변 공영주차장 관리동", lat: 37.4845, lon: 126.9954, detailLoc: "지하 1층 주차관리실 정면", mapQuery: "방배역 공영주차장" },
+      { place: "방배3동 주민센터", lat: 37.4785, lon: 127.0012, detailLoc: "1층 행정복지센터 안내데스크 옆", mapQuery: "방배3동주민센터" },
 
-    // 4. URL 파라미터 분석 및 동적 바인딩
+      // 강남 권역
+      { place: "역삼1동 주민센터", lat: 37.4954, lon: 127.0332, detailLoc: "1층 종합민원실 안내창구 우측 벽면", mapQuery: "역삼1동주민센터" },
+      { place: "강남역 서초플라자 보행통로", lat: 37.4985, lon: 127.0261, detailLoc: "지하 1층 연결통로 비상용품함", mapQuery: "강남역 서초플라자" },
+      { place: "역삼지구대", lat: 37.5002, lon: 127.0365, detailLoc: "1층 안내데스크 전면 (24시간)", mapQuery: "역삼지구대" },
+
+      // 관악 / 신림 권역
+      { place: "신림동 주민센터", lat: 37.4825, lon: 126.9315, detailLoc: "1층 행정복지센터 민원안내대 바로 옆", mapQuery: "신림동주민센터" },
+      { place: "관악우체국", lat: 37.4868, lon: 126.9271, detailLoc: "1층 금융창구 고객쉼터 코너", mapQuery: "관악우체국" },
+      { place: "신원치안센터", lat: 37.4812, lon: 126.9284, detailLoc: "1층 민원접수실 입구", mapQuery: "신원치안센터" },
+
+      // 양천구 / 신정·신월 권역 (자택 / 외출 위치 테스트용)
+      { place: "신월4동 주민센터", lat: 37.5218, lon: 126.8532, detailLoc: "1층 민원실 입구 벽면", mapQuery: "신월4동주민센터" },
+      { place: "신정네거리역", lat: 37.5202, lon: 126.8598, detailLoc: "지하 1층 고객안내센터 앞", mapQuery: "신정네거리역" },
+      { place: "신정4동 주민센터", lat: 37.5225, lon: 126.8621, detailLoc: "1층 종합민원실 안내데스크 우측", mapQuery: "신정4동주민센터" }
+    ];
+
+    // 3. 파라미터 분석 및 화면 바인딩
     const urlParams = new URLSearchParams(window.location.search);
     const stationParam = (urlParams.get('station') || 'bangbae').toLowerCase();
     const currentStation = STATION_REGISTRY[stationParam] || STATION_REGISTRY['bangbae'];
@@ -482,18 +449,13 @@
 
     let resolvedLocation = `${currentStation.stationName} 승강장`;
     if (rawLoc) {
-      try {
-        resolvedLocation = decodeURIComponent(rawLoc.replace(/\\+/g, ' '));
-      } catch (e) {
-        resolvedLocation = rawLoc;
-      }
+      try { resolvedLocation = decodeURIComponent(rawLoc.replace(/\\+/g, ' ')); } catch (e) { resolvedLocation = rawLoc; }
     } else if (currentStation.presets[normalizedCode]) {
       resolvedLocation = currentStation.presets[normalizedCode];
     } else if (inputCode) {
       resolvedLocation = `${currentStation.stationName} ${inputCode}`;
     }
 
-    // 5. 동적 UI 렌더링
     document.title = `${currentStation.stationName} 스마트 안심·응급 케어 (SOS)`;
     document.getElementById('main-title').innerText = `🚨 ${currentStation.stationName} 스마트 안심케어`;
     document.getElementById('loc-main-text').innerText = `현재 위치: ${resolvedLocation}`;
@@ -501,7 +463,119 @@
     document.getElementById('aed-main').innerText = currentStation.aedMain;
     document.getElementById('footer-text').innerText = `서울교통공사 ${currentStation.stationName} 360° 스마트 시민 안심망`;
 
-    // 6. 비상 호출 핸들러
+    // 4. 하버사인(Haversine) 구면삼각 거리 연산 함수 (단위: 미터)
+    function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
+      const R = 6371e3; // 지구 반경
+      const phi1 = lat1 * Math.PI / 180;
+      const phi2 = lat2 * Math.PI / 180;
+      const deltaPhi = (lat2 - lat1) * Math.PI / 180;
+      const deltaLambda = (lon2 - lon1) * Math.PI / 180;
+
+      const a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+                Math.cos(phi1) * Math.cos(phi2) *
+                Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+      return Math.round(R * c);
+    }
+
+    // 5. [핵심 알고리즘] 현재 좌표 기반 실시간 최근접 AED 연산 및 렌더링
+    let isAedOpen = false;
+
+    function fetchAndDisplayNearestAed() {
+      const container = document.getElementById("public-aed-container");
+      const btn = document.getElementById("btn-toggle-public-aed");
+      const statusEl = document.getElementById("aed-calc-status");
+      const listEl = document.getElementById("public-aed-list");
+
+      if (isAedOpen) {
+        container.style.display = "none";
+        btn.innerText = "🧭 [평소 알아두기] 내 위치 기준 가장 가까운 공공 AED (거리순 정렬) ▼";
+        btn.style.background = "#e8f5e9";
+        isAedOpen = false;
+        return;
+      }
+
+      container.style.display = "flex";
+      statusEl.innerText = "⏳ 현재 GPS 위치 확인 중...";
+      listEl.innerHTML = "";
+      btn.innerText = "🧭 공공 AED 위치 목록 닫기 ▲";
+      btn.style.background = "#c8e6c9";
+      isAedOpen = true;
+
+      // 1순위: 실시간 스마트폰 GPS 시도
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function(pos) {
+            renderSortedAeds(pos.coords.latitude, pos.coords.longitude, "실시간 스마트폰 GPS 위치");
+          },
+          function(err) {
+            // 2순위 (지하 음영 / 권한 거부 시): 현재 태그된 역사 중심 좌표로 자동 보정!
+            console.log("GPS 신호 없음 -> 역사 기준 좌표로 연산:", err);
+            renderSortedAeds(currentStation.lat, currentStation.lon, `${currentStation.stationName} (역사 기준)`);
+          },
+          { timeout: 3500, enableHighAccuracy: true }
+        );
+      } else {
+        renderSortedAeds(currentStation.lat, currentStation.lon, `${currentStation.stationName} (역사 기준)`);
+      }
+    }
+
+    function renderSortedAeds(userLat, userLon, sourceName) {
+      const statusEl = document.getElementById("aed-calc-status");
+      const listEl = document.getElementById("public-aed-list");
+
+      statusEl.innerHTML = `📍 <strong>기준 위치:</strong> ${sourceName} <span style="font-size:0.75rem; color:#616161;">(반경 최근접 실시간 정렬)</span>`;
+
+      // 1) 전체 풀에서 현재 좌표와의 거리를 각각 실시간 계산
+      const calculatedList = PUBLIC_AED_MASTER_POOL.map(item => {
+        const dist = calculateDistanceMeters(userLat, userLon, item.lat, item.lon);
+        return {
+          ...item,
+          distanceM: dist,
+          walkMin: Math.max(1, Math.round(dist / 65)) // 도보 소요시간 환산
+        };
+      });
+
+      // 2) 거리 기준 오름차순 정렬
+      calculatedList.sort((a, b) => a.distanceM - b.distanceM);
+
+      // 3) 최단거리 상위 3곳 인라인 렌더링
+      const top3 = calculatedList.slice(0, 3);
+      listEl.innerHTML = "";
+
+      top3.forEach((item, index) => {
+        const itemBox = document.createElement("div");
+        itemBox.style.background = "#ffffff";
+        itemBox.style.border = index === 0 ? "2px solid #2e7d32" : "1.5px solid #c8e6c9";
+        itemBox.style.borderRadius = "8px";
+        itemBox.style.padding = "10px 12px";
+        itemBox.style.display = "flex";
+        itemBox.style.flexDirection = "column";
+        itemBox.style.gap = "3px";
+
+        const badgeHtml = index === 0 ? `<span style="background:#2e7d32; color:#fff; font-size:0.7rem; font-weight:800; padding:1px 5px; border-radius:4px; margin-right:4px;">최근접</span>` : "";
+
+        itemBox.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-weight: 800; font-size: 0.93rem; color: #1b5e20;">${badgeHtml}🏥 ${item.place}</span>
+            <span style="font-size: 0.78rem; color: #d32f2f; font-weight: 800; background: #ffebee; padding: 2px 7px; border-radius: 10px;">${item.distanceM}m (도보 ${item.walkMin}분)</span>
+          </div>
+          <div style="font-size: 0.8rem; color: #424242; margin-top: 2px;">
+            • 상세위치: <strong>${item.detailLoc}</strong>
+          </div>
+          <div style="text-align: right; margin-top: 4px;">
+            <a href="https://m.map.naver.com/search2/search.naver?query=${encodeURIComponent(item.mapQuery)}" target="_blank" 
+               style="font-size: 0.75rem; color: #1976d2; text-decoration: none; font-weight: 700; border: 1px solid #90caf9; padding: 3px 8px; border-radius: 4px; background: #e3f2fd;">
+              🗺️ 지도 보기 >
+            </a>
+          </div>
+        `;
+        listEl.appendChild(itemBox);
+      });
+    }
+
+    // 호출 처리
     function handleEmergencyAction(actionType) {
       const callTypeKor = (actionType === 'SMS') ? "문자 신고" : "역무실 호출";
       const payload = {
@@ -516,11 +590,7 @@
         if (navigator.sendBeacon) {
           navigator.sendBeacon(currentStation.apiUrl, new Blob([jsonStr], { type: 'text/plain' }));
         } else {
-          fetch(currentStation.apiUrl, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: jsonStr
-          }).catch(console.error);
+          fetch(currentStation.apiUrl, { method: 'POST', mode: 'no-cors', body: jsonStr }).catch(console.error);
         }
       }
 
@@ -535,87 +605,26 @@
       }, 200);
     }
 
-    // 7. [핵심 기능] 공공데이터 AED 목록 인라인 토글 표출 함수
-    function togglePublicAedList() {
-      const container = document.getElementById("public-aed-container");
-      const btn = document.getElementById("btn-toggle-public-aed");
-      const listEl = document.getElementById("public-aed-list");
-      const currentKey = (urlParams.get('station') || 'bangbae').toLowerCase();
-      const aedData = PUBLIC_AED_DATABASE[currentKey] || PUBLIC_AED_DATABASE["bangbae"];
-
-      if (container.style.display === "none") {
-        listEl.innerHTML = "";
-        aedData.forEach(item => {
-          const itemBox = document.createElement("div");
-          itemBox.style.background = "#ffffff";
-          itemBox.style.border = "1.5px solid #c8e6c9";
-          itemBox.style.borderRadius = "8px";
-          itemBox.style.padding = "9px 11px";
-          itemBox.style.display = "flex";
-          itemBox.style.flexDirection = "column";
-          itemBox.style.gap = "2px";
-
-          itemBox.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <span style="font-weight: 800; font-size: 0.92rem; color: #1b5e20;">🏥 ${item.place}</span>
-              <span style="font-size: 0.75rem; color: #d32f2f; font-weight: 700; background: #ffebee; padding: 2px 6px; border-radius: 10px;">${item.distance}</span>
-            </div>
-            <div style="font-size: 0.8rem; color: #424242; margin-top: 2px;">
-              • 상세위치: <strong>${item.detailLoc}</strong>
-            </div>
-            <div style="text-align: right; margin-top: 4px;">
-              <a href="https://m.map.naver.com/search2/search.naver?query=${encodeURIComponent(item.mapQuery)}" target="_blank" 
-                 style="font-size: 0.75rem; color: #1976d2; text-decoration: none; font-weight: 700; border: 1px solid #90caf9; padding: 2px 7px; border-radius: 4px; background: #e3f2fd;">
-                🗺️ 도보 길찾기 안내 >
-              </a>
-            </div>
-          `;
-          listEl.appendChild(itemBox);
-        });
-
-        container.style.display = "flex";
-        btn.innerText = "🏢 [공공데이터] 가장 가까운 공공 AED (동네/주변) 닫기 ▲";
-        btn.style.background = "#c8e6c9";
-      } else {
-        container.style.display = "none";
-        btn.innerText = "🏢 [공공데이터] 이 위치에서 가장 가까운 공공 AED (동네/주변) 보기 ▼";
-        btn.style.background = "#e8f5e9";
-      }
-    }
-
-    // 8. CPR 110 BPM 메트로놈 (Web Audio API)
-    let audioCtx = null;
-    let isRunning = false;
-    let timerId = null;
-    const bpm = 110;
-    const intervalMs = (60 / bpm) * 1000;
+    // CPR 메트로놈
+    let audioCtx = null, isRunning = false, timerId = null;
+    const bpm = 110, intervalMs = (60 / bpm) * 1000;
 
     function playBeep() {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'sine';
-      osc.frequency.value = 880;
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+      osc.type = 'sine'; osc.frequency.value = 880;
       gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.08);
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.start(); osc.stop(audioCtx.currentTime + 0.08);
     }
 
     function triggerPulse() {
       const pulseBox = document.getElementById('pulse-box');
       pulseBox.classList.add('active');
       playBeep();
-      setTimeout(() => {
-        pulseBox.classList.remove('active');
-      }, 120);
+      setTimeout(() => { pulseBox.classList.remove('active'); }, 120);
     }
 
     function toggleMetronome() {
