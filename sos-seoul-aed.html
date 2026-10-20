@@ -15,282 +15,46 @@
       --text-main: #212529;
       --text-muted: #6c757d;
     }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-    }
-
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 440px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+    body { background-color: var(--bg-color); color: var(--text-main); padding: 16px; display: flex; flex-direction: column; align-items: center; }
+    .container { width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 16px; }
 
     /* 상단 헤더 & 위치 안내 */
-    .header-card {
-      background: var(--card-bg);
-      border-radius: 14px;
-      padding: 16px;
-      text-align: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      border-top: 4px solid var(--primary-red);
-    }
-
-    .title {
-      font-size: 1.25rem;
-      font-weight: 800;
-      color: var(--dark-red);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-
-    .location-box {
-      margin-top: 10px;
-      background: #fff3f3;
-      padding: 10px 12px;
-      border-radius: 8px;
-      border: 1px dashed #ef9a9a;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .loc-main-text {
-      font-size: 0.98rem;
-      font-weight: 800;
-      color: #c62828;
-      letter-spacing: -0.3px;
-      word-break: keep-all;
-      text-align: center;
-    }
-
-    .loc-sub-tag {
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: #e53935;
-      background: rgba(229, 57, 53, 0.08);
-      padding: 2px 8px;
-      border-radius: 12px;
-      display: inline-block;
-    }
+    .header-card { background: var(--card-bg); border-radius: 14px; padding: 16px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-top: 4px solid var(--primary-red); }
+    .title { font-size: 1.25rem; font-weight: 800; color: var(--dark-red); display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .location-box { margin-top: 10px; background: #fff3f3; padding: 10px 12px; border-radius: 8px; border: 1px dashed #ef9a9a; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .loc-main-text { font-size: 0.98rem; font-weight: 800; color: #c62828; letter-spacing: -0.3px; word-break: keep-all; text-align: center; }
+    .loc-sub-tag { font-size: 0.78rem; font-weight: 700; color: #e53935; background: rgba(229, 57, 53, 0.08); padding: 2px 8px; border-radius: 12px; display: inline-block; }
 
     /* 긴급 SOS 호출 버튼 */
-    .sos-button-area {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+    .sos-button-area { display: flex; flex-direction: column; gap: 10px; }
+    .btn-sos { background: linear-gradient(135deg, #e53935, #b71c1c); color: #ffffff; border: none; border-radius: 12px; padding: 18px; font-size: 1.2rem; font-weight: 800; cursor: pointer; box-shadow: 0 4px 12px rgba(211, 47, 47, 0.35); display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; -webkit-tap-highlight-color: transparent; }
+    .btn-sos:active { transform: scale(0.98); }
+    .btn-sub-call { background: #ffffff; color: var(--text-main); border: 1.5px solid #ced4da; border-radius: 10px; padding: 12px; font-size: 0.95rem; font-weight: 700; text-align: center; display: flex; justify-content: center; align-items: center; gap: 6px; width: 100%; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .btn-sub-call:active { background: #f1f3f5; }
 
-    .btn-sos {
-      background: linear-gradient(135deg, #e53935, #b71c1c);
-      color: #ffffff;
-      border: none;
-      border-radius: 12px;
-      padding: 18px;
-      font-size: 1.2rem;
-      font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(211, 47, 47, 0.35);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
-      width: 100%;
-      -webkit-tap-highlight-color: transparent;
-      transition: transform 0.1s;
-    }
-
-    .btn-sos:active {
-      transform: scale(0.98);
-    }
-
-    .btn-sub-call {
-      background: #ffffff;
-      color: var(--text-main);
-      border: 1.5px solid #ced4da;
-      border-radius: 10px;
-      padding: 12px;
-      font-size: 0.95rem;
-      font-weight: 700;
-      text-align: center;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 6px;
-      width: 100%;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .btn-sub-call:active {
-      background: #f1f3f5;
-    }
-
-    /* 카드 공통 스타일 */
-    .section-card {
-      background: var(--card-bg);
-      border-radius: 14px;
-      padding: 16px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    }
-
-    .section-title {
-      font-size: 1.05rem;
-      font-weight: 700;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
+    /* 공통 카드 */
+    .section-card { background: var(--card-bg); border-radius: 14px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .section-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
 
     /* AED 안내 섹션 */
-    .aed-badge {
-      background: #e8f5e9;
-      color: #2e7d32;
-      font-size: 0.75rem;
-      padding: 3px 8px;
-      border-radius: 20px;
-      font-weight: 600;
-    }
-
-    .aed-info-box {
-      background: #f1f8e9;
-      border-left: 4px solid #43a047;
-      padding: 12px;
-      border-radius: 6px;
-      margin-bottom: 10px;
-    }
-
-    .aed-location-text {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: #1b5e20;
-    }
-
-    /* 평소 알아두기 공공데이터 버튼 */
-    .btn-seoulmap {
-      background: #e8f5e9;
-      color: #1b5e20;
-      border: 1.5px solid #81c784;
-      border-radius: 10px;
-      padding: 12px;
-      font-size: 0.92rem;
-      font-weight: 700;
-      text-align: center;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 6px;
-      width: 100%;
-      cursor: pointer;
-      margin-top: 8px;
-      transition: background 0.15s;
-    }
-
-    .btn-seoulmap:active {
-      background: #c8e6c9;
-    }
+    .aed-badge { background: #e8f5e9; color: #2e7d32; font-size: 0.75rem; padding: 3px 8px; border-radius: 20px; font-weight: 600; }
+    .aed-info-box { background: #f1f8e9; border-left: 4px solid #43a047; padding: 12px; border-radius: 6px; margin-bottom: 10px; }
+    .aed-location-text { font-size: 0.95rem; font-weight: 700; color: #1b5e20; }
+    .btn-seoulmap { background: #e8f5e9; color: #1b5e20; border: 1.5px solid #81c784; border-radius: 10px; padding: 12px; font-size: 0.92rem; font-weight: 700; text-align: center; display: flex; justify-content: center; align-items: center; gap: 6px; width: 100%; cursor: pointer; margin-top: 8px; }
 
     /* CPR 가이드 및 메트로놈 */
-    .metronome-box {
-      background: #e3f2fd;
-      border-radius: 10px;
-      padding: 14px;
-      text-align: center;
-      margin-bottom: 12px;
-    }
+    .metronome-box { background: #e3f2fd; border-radius: 10px; padding: 14px; text-align: center; margin-bottom: 12px; }
+    .pulse-circle { width: 70px; height: 70px; border-radius: 50%; background: #90caf9; margin: 10px auto; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: #ffffff; transition: transform 0.1s ease-out, background-color 0.1s; }
+    .pulse-circle.active { background: #e53935; transform: scale(1.18); }
+    .btn-metronome { background: var(--accent-blue); color: #ffffff; border: none; padding: 10px 20px; font-size: 0.95rem; font-weight: 700; border-radius: 25px; cursor: pointer; margin-top: 6px; }
+    .btn-metronome.running { background: #424242; }
 
-    .pulse-circle {
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      background: #90caf9;
-      margin: 10px auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8rem;
-      color: #ffffff;
-      transition: transform 0.1s ease-out, background-color 0.1s;
-    }
+    .cpr-steps { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+    .step-item { display: flex; align-items: flex-start; gap: 10px; font-size: 0.88rem; padding: 8px; background: #f8f9fa; border-radius: 6px; }
+    .step-num { background: #495057; color: #ffffff; border-radius: 50%; min-width: 20px; height: 20px; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
 
-    .pulse-circle.active {
-      background: #e53935;
-      transform: scale(1.18);
-    }
-
-    .btn-metronome {
-      background: var(--accent-blue);
-      color: #ffffff;
-      border: none;
-      padding: 10px 20px;
-      font-size: 0.95rem;
-      font-weight: 700;
-      border-radius: 25px;
-      cursor: pointer;
-      margin-top: 6px;
-    }
-
-    .btn-metronome.running {
-      background: #424242;
-    }
-
-    .cpr-steps {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .step-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      font-size: 0.88rem;
-      padding: 8px;
-      background: #f8f9fa;
-      border-radius: 6px;
-    }
-
-    .step-num {
-      background: #495057;
-      color: #ffffff;
-      border-radius: 50%;
-      min-width: 20px;
-      height: 20px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .footer {
-      text-align: center;
-      font-size: 0.83rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      margin-top: 8px;
-      margin-bottom: 16px;
-      letter-spacing: -0.3px;
-    }
+    .footer { text-align: center; font-size: 0.83rem; font-weight: 700; color: var(--text-muted); margin-top: 8px; margin-bottom: 16px; letter-spacing: -0.3px; }
   </style>
 </head>
 <body>
@@ -308,14 +72,14 @@
     <!-- 1단계: 긴급 SOS 호출 버튼 -->
     <div class="sos-button-area">
       <button type="button" class="btn-sos" id="btn-call-station" onclick="handleEmergencyAction('CALL')">
-        📞 <span id="btn-call-label">역무실</span> 긴급 통화
+        📞 <span id="btn-call-label">방배역 역무실</span> 긴급 통화
       </button>
       <button type="button" class="btn-sub-call" id="btn-sms-station" onclick="handleEmergencyAction('SMS')">
         ✉️ 조용한 문자 SOS 신고 (위치 자동전송)
       </button>
     </div>
 
-    <!-- 2단계: AED 위치 안내 (역사 내부 즉시 이용 + 주변 공공 AED 정밀 표출) -->
+    <!-- 2단계: AED 위치 안내 -->
     <div class="section-card">
       <div class="section-title">
         <span>⚡ 자동심장충격기(AED) 위치 안내</span>
@@ -393,7 +157,7 @@
     // 1. 공통 백엔드 GAS API 엔드포인트
     const COMMON_GAS_API_URL = "https://script.google.com/macros/s/AKfycbyzrsIu45C5gzLqB_7xMM4Gea0NkRJyljlyQFdmKEPW96s3j-X5JRztvM1jnGcTrz-2/exec";
 
-    // 2. 신대방영업사업소 횡단전개 메타데이터 레지스트리 (실제 공식 좌표 내장)
+    // 2. 신대방영업사업소 횡단전개 메타데이터 레지스트리
     const STATION_REGISTRY = {
       "bangbae": {
         stationName: "방배역",
@@ -424,9 +188,9 @@
       }
     };
 
-    // 3. 방배·강남·신림 및 주요 공공 거점 정밀 실측 AED 마스터 풀
+    // 3. 역사 인근 정밀 실측 공공 AED 마스터 풀
     const PUBLIC_AED_MASTER_POOL = [
-      // [서초구 / 방배역 인근 정밀 실측 공공 거점]
+      // 서초구 / 방배역 인근
       { name: "방배1동 주민센터", address: "서울 서초구 방배로 89", place: "1층 민원실 입구 민원안내데스크 좌측", hours: "평일 09:00~18:00", lat: 37.4828, lon: 126.9961 },
       { name: "방배파출소", address: "서울 서초구 방배로 104", place: "1층 민원접수대 전면 (24시간 이용 가능)", hours: "24시간 연중무휴", lat: 37.4839, lon: 126.9982 },
       { name: "서초대로변 공영주차장 관리동", address: "서울 서초구 방배동 909-1", place: "지하 1층 주차관리실 정면", hours: "24시간", lat: 37.4845, lon: 126.9954 },
@@ -434,83 +198,101 @@
       { name: "서초구민체육센터", address: "서울 서초구 사평대로 55", place: "1층 로비 고객안내실 벽면", hours: "06:00~22:00", lat: 37.4980, lon: 126.9960 },
       { name: "사당역 (2·4호선)", address: "서울 동작구 동작대로 지하 3", place: "지하 1층 환승통로 안내센터 옆", hours: "첫차~막차", lat: 37.4765, lon: 126.9816 },
 
-      // [강남구 / 강남역 인근 정밀 실측 공공 거점]
+      // 강남구 / 강남역 인근
       { name: "강남역 서초플라자 보행통로", address: "서울 서초구 서초대로78길 5", place: "지하 1층 연결통로 비상용품함", hours: "상시 개방", lat: 37.4985, lon: 127.0261 },
       { name: "역삼1동 주민센터", address: "서울 강남구 역삼로7길 16", place: "1층 종합민원실 안내창구 우측 벽면", hours: "평일 09:00~18:00", lat: 37.4954, lon: 127.0332 },
       { name: "역삼지구대", address: "서울 강남구 테헤란로8길 36", place: "1층 안내데스크 전면 (24시간)", hours: "24시간 연중무휴", lat: 37.5002, lon: 127.0365 },
       { name: "국기원 (세계태권도본부)", address: "서울 강남구 테헤란로7길 32", place: "중앙 안내실 정면 벽체", hours: "09:00~18:00", lat: 37.5020, lon: 127.0298 },
 
-      // [관악구 / 신림역 인근 정밀 실측 공공 거점]
+      // 관악구 / 신림역 인근
       { name: "신림동 주민센터", address: "서울 관악구 신림로 282", place: "1층 행정복지센터 민원안내대 바로 옆", hours: "평일 09:00~18:00", lat: 37.4825, lon: 126.9315 },
       { name: "신원치안센터", address: "서울 관악구 신원로 35", place: "1층 민원접수실 입구 안내창구", hours: "24시간", lat: 37.4812, lon: 126.9284 },
       { name: "관악우체국", address: "서울 관악구 시흥대로 568", place: "1층 금융영업창구 고객쉼터 코너", hours: "평일 09:00~18:00", lat: 37.4868, lon: 126.9271 },
       { name: "보라매병원 (서울대병원운영)", address: "서울 동작구 보라매로5길 20", place: "본관 1층 로비 원무과 출입구 옆", hours: "24시간", lat: 37.4925, lon: 126.9248 }
     ];
 
-    // 4. URL 파라미터 분석 및 화면 렌더링
-    const urlParams = new URLSearchParams(window.location.search);
-    const stationParam = (urlParams.get('station') || 'bangbae').toLowerCase();
-    const currentStation = STATION_REGISTRY[stationParam] || STATION_REGISTRY['bangbae'];
+    // 전역 상태
+    var currentStation = STATION_REGISTRY['bangbae'];
+    var normalizedCode = '402-in';
+    var resolvedLocation = '방배역 승강장';
+    var isAedOpen = false;
 
-    const inputCode = urlParams.get('code');
-    const rawLoc = urlParams.get('loc');
-    const normalizedCode = inputCode ? inputCode.toLowerCase().trim() : '402-in';
+    // 페이지 초기화 로직 (안전 가드 탑재)
+    function initPage() {
+      try {
+        var urlParams = new URLSearchParams(window.location.search);
+        var stationParam = (urlParams.get('station') || 'bangbae').toLowerCase();
+        currentStation = STATION_REGISTRY[stationParam] || STATION_REGISTRY['bangbae'];
 
-    let resolvedLocation = `${currentStation.stationName} 승강장`;
-    if (rawLoc) {
-      try { resolvedLocation = decodeURIComponent(rawLoc.replace(/\\+/g, ' ')); } catch (e) { resolvedLocation = rawLoc; }
-    } else if (currentStation.presets[normalizedCode]) {
-      resolvedLocation = currentStation.presets[normalizedCode];
-    } else if (inputCode) {
-      resolvedLocation = `${currentStation.stationName} ${inputCode}`;
+        var inputCode = urlParams.get('code');
+        var rawLoc = urlParams.get('loc');
+        normalizedCode = inputCode ? inputCode.toLowerCase().trim() : '402-in';
+
+        resolvedLocation = currentStation.stationName + " 승강장";
+        if (rawLoc) {
+          try {
+            resolvedLocation = decodeURIComponent(rawLoc.replace(/\\+/g, ' '));
+          } catch (e) {
+            resolvedLocation = rawLoc;
+          }
+        } else if (currentStation.presets && currentStation.presets[normalizedCode]) {
+          resolvedLocation = currentStation.presets[normalizedCode];
+        } else if (inputCode) {
+          resolvedLocation = currentStation.stationName + " " + inputCode;
+        }
+
+        document.title = currentStation.stationName + " 스마트 안심·응급 케어 (SOS)";
+        var elMainTitle = document.getElementById('main-title');
+        var elLocText = document.getElementById('loc-main-text');
+        var elBtnCall = document.getElementById('btn-call-label');
+        var elAedMain = document.getElementById('aed-main');
+        var elFooter = document.getElementById('footer-text');
+
+        if (elMainTitle) elMainTitle.innerText = "🚨 " + currentStation.stationName + " 스마트 안심케어";
+        if (elLocText) elLocText.innerText = "현재 위치: " + resolvedLocation;
+        if (elBtnCall) elBtnCall.innerText = currentStation.stationName + " 역무실";
+        if (elAedMain) elAedMain.innerText = currentStation.aedMain;
+        if (elFooter) elFooter.innerText = "서울교통공사 " + currentStation.stationName + " 360° 스마트 시민 안심망";
+      } catch (err) {
+        console.error("초기화 예외:", err);
+      }
     }
 
-    document.title = `${currentStation.stationName} 스마트 안심·응급 케어 (SOS)`;
-    document.getElementById('main-title').innerText = `🚨 ${currentStation.stationName} 스마트 안심케어`;
-    document.getElementById('loc-main-text').innerText = `현재 위치: ${resolvedLocation}`;
-    document.getElementById('btn-call-label').innerText = `${currentStation.stationName} 역무실`;
-    document.getElementById('aed-main').innerText = currentStation.aedMain;
-    document.getElementById('footer-text').innerText = `서울교통공사 ${currentStation.stationName} 360° 스마트 시민 안심망`;
-
-    // 5. 하버사인(Haversine) 공식 거리 계산 함수
+    // 거리 계산
     function haversineDist(lat1, lon1, lat2, lon2) {
-      const R = 6371; // km
-      const rad = x => x * Math.PI / 180;
-      const dLat = rad(lat2 - lat1);
-      const dLon = rad(lon2 - lon1);
-      const a = Math.sin(dLat / 2) ** 2 +
-                Math.cos(rad(lat1)) * Math.cos(rad(lat2)) * Math.sin(dLon / 2) ** 2;
-      return 2 * R * Math.asin(Math.sqrt(a)); // km
+      var R = 6371;
+      var rad = function(x) { return x * Math.PI / 180; };
+      var dLat = rad(lat2 - lat1);
+      var dLon = rad(lon2 - lon1);
+      var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(rad(lat1)) * Math.cos(rad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      return 2 * R * Math.asin(Math.sqrt(a));
     }
 
-    // 6. [핵심 로직] 역사 기준 기본 정렬 + GPS 동적 재계산 듀얼 모드
-    let isAedOpen = false;
-
+    // AED 토글 표출
     function togglePublicAedDisplay() {
-      const container = document.getElementById("public-aed-container");
-      const btn = document.getElementById("btn-toggle-public-aed");
+      var container = document.getElementById("public-aed-container");
+      var btn = document.getElementById("btn-toggle-public-aed");
 
       if (isAedOpen) {
         container.style.display = "none";
-        btn.innerText = `🧭 [평소 알아두기] 이 역사 인근 가장 가까운 공공 AED (거리순 정렬) ▼`;
+        btn.innerText = "🧭 [평소 알아두기] 이 역사 인근 가장 가까운 공공 AED (거리순 정렬) ▼";
         btn.style.background = "#e8f5e9";
         isAedOpen = false;
         return;
       }
 
       container.style.display = "flex";
-      btn.innerText = `🧭 공공 AED 위치 목록 닫기 ▲`;
+      btn.innerText = "🧭 공공 AED 위치 목록 닫기 ▲";
       btn.style.background = "#c8e6c9";
       isAedOpen = true;
 
-      // ★ 태그 위치가 지하철 역사이므로 기본값은 "해당 역사 좌표" 기준으로 즉시 정렬
-      renderNearestAeds(currentStation.lat, currentStation.lon, `${currentStation.stationName} (역사 중심 기준)`);
+      renderNearestAeds(currentStation.lat, currentStation.lon, currentStation.stationName + " (역사 중심 기준)");
     }
 
-    // 사용자가 원할 때 언제든 실시간 스마트폰 GPS로 재계산하는 보조 함수
     function recalcWithGps() {
-      const statusEl = document.getElementById("aed-calc-status");
-      statusEl.innerText = "⏳ 스마트폰 GPS 확인 중...";
+      var statusEl = document.getElementById("aed-calc-status");
+      if (statusEl) statusEl.innerText = "⏳ 스마트폰 GPS 확인 중...";
 
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
@@ -519,7 +301,7 @@
           },
           function(err) {
             alert("실내/지하 음영 또는 권한 미허용으로 GPS를 수신할 수 없어 해당 역사 기준으로 유지합니다.");
-            renderNearestAeds(currentStation.lat, currentStation.lon, `${currentStation.stationName} (역사 중심 기준)`);
+            renderNearestAeds(currentStation.lat, currentStation.lon, currentStation.stationName + " (역사 중심 기준)");
           },
           { enableHighAccuracy: true, timeout: 5000, maximumAge: 10000 }
         );
@@ -529,75 +311,70 @@
     }
 
     function renderNearestAeds(userLat, userLon, sourceName) {
-      const statusEl = document.getElementById("aed-calc-status");
-      const listEl = document.getElementById("public-aed-list");
+      var statusEl = document.getElementById("aed-calc-status");
+      var listEl = document.getElementById("public-aed-list");
 
-      statusEl.innerHTML = `📍 <strong>기준 위치:</strong> ${sourceName}`;
+      if (statusEl) statusEl.innerHTML = "📍 <strong>기준 위치:</strong> " + sourceName;
 
-      // 1) 전체 풀에서 거리 계산
-      const calculated = PUBLIC_AED_MASTER_POOL.map(item => {
-        const km = haversineDist(userLat, userLon, item.lat, item.lon);
+      var calculated = PUBLIC_AED_MASTER_POOL.map(function(item) {
+        var km = haversineDist(userLat, userLon, item.lat, item.lon);
         return {
-          ...item,
+          name: item.name,
+          address: item.address,
+          place: item.place,
+          hours: item.hours,
+          lat: item.lat,
+          lon: item.lon,
           km: km,
           distStr: km < 1 ? Math.round(km * 1000) + "m" : km.toFixed(2) + "km",
           walkMin: Math.max(1, Math.round((km * 1000) / 65))
         };
       });
 
-      // 2) 오름차순(거리순) 정렬
-      calculated.sort((a, b) => a.km - b.km);
+      calculated.sort(function(a, b) { return a.km - b.km; });
+      var top3 = calculated.slice(0, 3);
 
-      // 3) 상위 3곳 인라인 렌더링
-      const top3 = calculated.slice(0, 3);
-      listEl.innerHTML = "";
+      if (listEl) {
+        listEl.innerHTML = "";
+        top3.forEach(function(item, index) {
+          var itemBox = document.createElement("div");
+          itemBox.style.background = "#ffffff";
+          itemBox.style.border = index === 0 ? "2px solid #2e7d32" : "1.5px solid #c8e6c9";
+          itemBox.style.borderRadius = "10px";
+          itemBox.style.padding = "12px 14px";
+          itemBox.style.display = "flex";
+          itemBox.style.flexDirection = "column";
+          itemBox.style.gap = "4px";
 
-      top3.forEach((item, index) => {
-        const itemBox = document.createElement("div");
-        itemBox.style.background = "#ffffff";
-        itemBox.style.border = index === 0 ? "2px solid #2e7d32" : "1.5px solid #c8e6c9";
-        itemBox.style.borderRadius = "10px";
-        itemBox.style.padding = "12px 14px";
-        itemBox.style.display = "flex";
-        itemBox.style.flexDirection = "column";
-        itemBox.style.gap = "4px";
+          var naverWalkUrl = "https://map.naver.com/p/directions/-/" + item.lon + "," + item.lat + "," + encodeURIComponent(item.name) + ",PLACE_POI/-/walk";
+          var kakaoWalkUrl = "https://map.kakao.com/link/to/" + encodeURIComponent(item.name) + "," + item.lat + "," + item.lon;
 
-        // 네이버지도 및 카카오맵 정밀 도보 길찾기 딥링크
-        const naverWalkUrl = `https://map.naver.com/p/directions/-/${item.lon},${item.lat},${encodeURIComponent(item.name)},PLACE_POI/-/walk`;
-        const kakaoWalkUrl = `https://map.kakao.com/link/to/${encodeURIComponent(item.name)},${item.lat},${item.lon}`;
+          var rankBadge = index === 0 
+            ? '<span style="background:#2e7d32; color:#fff; font-size:0.72rem; font-weight:800; padding:2px 6px; border-radius:4px; margin-right:5px;">1위 (최근접)</span>'
+            : '<span style="background:#455a64; color:#fff; font-size:0.72rem; font-weight:800; padding:2px 6px; border-radius:4px; margin-right:5px;">' + (index+1) + '위</span>';
 
-        const rankBadge = index === 0 
-          ? `<span style="background:#2e7d32; color:#fff; font-size:0.72rem; font-weight:800; padding:2px 6px; border-radius:4px; margin-right:5px;">1위 (최근접)</span>`
-          : `<span style="background:#455a64; color:#fff; font-size:0.72rem; font-weight:800; padding:2px 6px; border-radius:4px; margin-right:5px;">${index+1}위</span>`;
-
-        itemBox.innerHTML = `
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-weight: 800; font-size: 0.95rem; color: #1b5e20;">${rankBadge}${item.name}</span>
-            <span style="font-size: 0.8rem; color: #d32f2f; font-weight: 800; background: #ffebee; padding: 2px 7px; border-radius: 10px;">${item.distStr} (도보 ${item.walkMin}분)</span>
-          </div>
-          <div style="font-size: 0.82rem; color: #37474f; margin-top: 2px; line-height: 1.4;">
-            • 설치위치: <strong>${item.place || item.address}</strong><br>
-            • 주소/운영: ${item.address} ${item.hours ? '· ' + item.hours : ''}
-          </div>
-          <div style="display: flex; justify-content: flex-end; gap: 6px; margin-top: 6px;">
-            <a href="${naverWalkUrl}" target="_blank" 
-               style="font-size: 0.74rem; color: #0288d1; text-decoration: none; font-weight: 700; border: 1px solid #b3e5fc; padding: 3px 8px; border-radius: 4px; background: #e1f5fe;">
-              🚶 네이버 도보길찾기
-            </a>
-            <a href="${kakaoWalkUrl}" target="_blank" 
-               style="font-size: 0.74rem; color: #e65100; text-decoration: none; font-weight: 700; border: 1px solid #ffe0b2; padding: 3px 8px; border-radius: 4px; background: #fff3e0;">
-              🗺️ 카카오맵
-            </a>
-          </div>
-        `;
-        listEl.appendChild(itemBox);
-      });
+          itemBox.innerHTML = 
+            '<div style="display: flex; justify-content: space-between; align-items: center;">' +
+              '<span style="font-weight: 800; font-size: 0.95rem; color: #1b5e20;">' + rankBadge + item.name + '</span>' +
+              '<span style="font-size: 0.8rem; color: #d32f2f; font-weight: 800; background: #ffebee; padding: 2px 7px; border-radius: 10px;">' + item.distStr + ' (도보 ' + item.walkMin + '분)</span>' +
+            '</div>' +
+            '<div style="font-size: 0.82rem; color: #37474f; margin-top: 2px; line-height: 1.4;">' +
+              '• 설치위치: <strong>' + (item.place || item.address) + '</strong><br>' +
+              '• 주소/운영: ' + item.address + (item.hours ? ' · ' + item.hours : '') +
+            '</div>' +
+            '<div style="display: flex; justify-content: flex-end; gap: 6px; margin-top: 6px;">' +
+              '<a href="' + naverWalkUrl + '" target="_blank" style="font-size: 0.74rem; color: #0288d1; text-decoration: none; font-weight: 700; border: 1px solid #b3e5fc; padding: 3px 8px; border-radius: 4px; background: #e1f5fe;">🚶 네이버 도보길찾기</a>' +
+              '<a href="' + kakaoWalkUrl + '" target="_blank" style="font-size: 0.74rem; color: #e65100; text-decoration: none; font-weight: 700; border: 1px solid #ffe0b2; padding: 3px 8px; border-radius: 4px; background: #fff3e0;">🗺️ 카카오맵</a>' +
+            '</div>';
+          listEl.appendChild(itemBox);
+        });
+      }
     }
 
-    // 7. 비상 호출 핸들러
+    // 비상 호출
     function handleEmergencyAction(actionType) {
-      const callTypeKor = (actionType === 'SMS') ? "문자 신고" : "역무실 호출";
-      const payload = {
+      var callTypeKor = (actionType === 'SMS') ? "문자 신고" : "역무실 호출";
+      var payload = {
         station: currentStation.stationName,
         type: callTypeKor,
         locCode: normalizedCode,
@@ -605,7 +382,7 @@
       };
 
       if (currentStation.apiUrl && !currentStation.apiUrl.includes("여기에")) {
-        const jsonStr = JSON.stringify(payload);
+        var jsonStr = JSON.stringify(payload);
         if (navigator.sendBeacon) {
           navigator.sendBeacon(currentStation.apiUrl, new Blob([jsonStr], { type: 'text/plain' }));
         } else {
@@ -615,23 +392,23 @@
 
       setTimeout(function() {
         if (actionType === 'CALL') {
-          window.location.href = `tel:${currentStation.tel}`;
+          window.location.href = "tel:" + currentStation.tel;
         } else if (actionType === 'SMS') {
-          const cleanTel = currentStation.tel.replace(/-/g, '');
-          const smsBody = encodeURIComponent(`[${currentStation.stationName} 응급호출] ${resolvedLocation} 위치에서 응급 상황이 발생했습니다. 즉시 출동 바랍니다.`);
-          window.location.href = `sms:${cleanTel}?body=${smsBody}`;
+          var cleanTel = currentStation.tel.replace(/-/g, '');
+          var smsBody = encodeURIComponent("[" + currentStation.stationName + " 응급호출] " + resolvedLocation + " 위치에서 응급 상황이 발생했습니다. 즉시 출동 바랍니다.");
+          window.location.href = "sms:" + cleanTel + "?body=" + smsBody;
         }
       }, 200);
     }
 
-    // 8. CPR 110 BPM 메트로놈 (Web Audio API)
-    let audioCtx = null, isRunning = false, timerId = null;
-    const bpm = 110, intervalMs = (60 / bpm) * 1000;
+    // CPR 메트로놈
+    var audioCtx = null, isRunning = false, timerId = null;
+    var bpm = 110, intervalMs = (60 / bpm) * 1000;
 
     function playBeep() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       if (audioCtx.state === 'suspended') audioCtx.resume();
-      const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+      var osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
       osc.type = 'sine'; osc.frequency.value = 880;
       gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
@@ -640,26 +417,39 @@
     }
 
     function triggerPulse() {
-      const pulseBox = document.getElementById('pulse-box');
-      pulseBox.classList.add('active');
-      playBeep();
-      setTimeout(() => { pulseBox.classList.remove('active'); }, 120);
+      var pulseBox = document.getElementById('pulse-box');
+      if (pulseBox) {
+        pulseBox.classList.add('active');
+        playBeep();
+        setTimeout(function() { pulseBox.classList.remove('active'); }, 120);
+      }
     }
 
     function toggleMetronome() {
-      const btn = document.getElementById('metro-toggle-btn');
+      var btn = document.getElementById('metro-toggle-btn');
       if (!isRunning) {
         isRunning = true;
-        btn.innerText = '⏹ 박자 멈추기';
-        btn.classList.add('running');
+        if (btn) { btn.innerText = '⏹ 박자 멈추기'; btn.classList.add('running'); }
         triggerPulse();
         timerId = setInterval(triggerPulse, intervalMs);
       } else {
         isRunning = false;
         clearInterval(timerId);
-        btn.innerText = '▶ CPR 박자 시작하기';
-        btn.classList.remove('running');
+        if (btn) { btn.innerText = '▶ CPR 박자 시작하기'; btn.classList.remove('running'); }
       }
+    }
+
+    // 전역 등록 (HTML onclick 직결)
+    window.handleEmergencyAction = handleEmergencyAction;
+    window.togglePublicAedDisplay = togglePublicAedDisplay;
+    window.recalcWithGps = recalcWithGps;
+    window.toggleMetronome = toggleMetronome;
+
+    // 즉시 실행 (DOM 준비 즉시 구동)
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initPage);
+    } else {
+      initPage();
     }
   </script>
 </body>
