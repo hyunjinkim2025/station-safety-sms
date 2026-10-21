@@ -39,9 +39,17 @@
 
     /* AED 안내 섹션 */
     .aed-badge { background: #e8f5e9; color: #2e7d32; font-size: 0.75rem; padding: 3px 8px; border-radius: 20px; font-weight: 600; }
-    .aed-info-box { background: #f1f8e9; border-left: 4px solid #43a047; padding: 12px; border-radius: 6px; margin-bottom: 10px; }
-    .aed-location-text { font-size: 0.95rem; font-weight: 700; color: #1b5e20; }
-    .btn-seoulmap { background: #e8f5e9; color: #1b5e20; border: 1.5px solid #81c784; border-radius: 10px; padding: 12px; font-size: 0.92rem; font-weight: 700; text-align: center; display: flex; justify-content: center; align-items: center; gap: 6px; width: 100%; cursor: pointer; margin-top: 8px; }
+    .station-aed-section { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+    .zone-card { background: #f8faf9; border: 1.5px solid #dbe7e1; border-radius: 10px; overflow: hidden; }
+    .zone-header { background: #e8f3ee; padding: 8px 12px; font-size: 0.88rem; font-weight: 800; color: #164e3b; border-bottom: 1px solid #dbe7e1; display: flex; justify-content: space-between; align-items: center; }
+    .zone-badge { font-size: 0.75rem; font-weight: 700; color: #1b5e20; background: #ffffff; padding: 2px 7px; border-radius: 12px; border: 1px solid #c4ded2; }
+    .zone-items { display: flex; flex-direction: column; }
+    .zone-item { padding: 9px 12px; border-bottom: 1px solid #edf2f0; display: flex; align-items: flex-start; gap: 8px; font-size: 0.86rem; color: #2c3e35; line-height: 1.45; }
+    .zone-item:last-child { border-bottom: none; }
+    .zone-dot { color: #2e7d32; font-weight: 900; margin-top: 1px; }
+
+    .btn-seoulmap { background: #e8f5e9; color: #1b5e20; border: 1.5px solid #81c784; border-radius: 10px; padding: 12px; font-size: 0.92rem; font-weight: 700; text-align: center; display: flex; justify-content: center; align-items: center; gap: 6px; width: 100%; cursor: pointer; margin-top: 4px; }
+    .btn-seoulmap:active { background: #c8e6c9; }
 
     /* CPR 가이드 및 메트로놈 */
     .metronome-box { background: #e3f2fd; border-radius: 10px; padding: 14px; text-align: center; margin-bottom: 12px; }
@@ -62,9 +70,9 @@
   <div class="container">
     <!-- 상단 헤더 & 위치 안내 -->
     <div class="header-card">
-      <div class="title" id="main-title">🚨 방배역 스마트 안심케어</div>
+      <div class="title" id="main-title">🚨 스마트 안심케어</div>
       <div class="location-box">
-        <div class="loc-main-text" id="loc-main-text">현재 위치: 확인 중...</div>
+        <div class="loc-main-text" id="loc-main-text">현재 위치 확인 중...</div>
         <div class="loc-sub-tag">⚡ 위치 자동확인됨</div>
       </div>
     </div>
@@ -72,7 +80,7 @@
     <!-- 1단계: 긴급 SOS 호출 버튼 -->
     <div class="sos-button-area">
       <button type="button" class="btn-sos" id="btn-call-station" onclick="handleEmergencyAction('CALL')">
-        📞 <span id="btn-call-label">방배역 역무실</span> 긴급 통화
+        📞 <span id="btn-call-label">역무실</span> 긴급 통화
       </button>
       <button type="button" class="btn-sub-call" id="btn-sms-station" onclick="handleEmergencyAction('SMS')">
         ✉️ 조용한 문자 SOS 신고 (위치 자동전송)
@@ -86,22 +94,24 @@
         <span class="aed-badge">골든타임 4분</span>
       </div>
       
-      <!-- 역사 내부 최우선 거점 (0초 즉각 이용) -->
-      <div class="aed-info-box">
-        <div style="font-size: 0.8rem; color: #2e7d32; font-weight: 800; margin-bottom: 2px;">[역사 내부 최우선 거점 - 즉시 이용]</div>
-        <div class="aed-location-text" id="aed-main">📍 지하1층 대합실 고객안전실(역무실) 우측</div>
+      <!-- [상단 메뉴] 해당 역사 내부 전수 구역별 그룹핑 배치 현황 -->
+      <div style="font-size: 0.82rem; color: #2e7d32; font-weight: 800; margin-bottom: 8px;">
+        🏛️ <span id="station-aed-header-name">역사</span> 구내 AED 비치 거점 (총 <span id="station-aed-count">0</span>개소):
+      </div>
+      
+      <div class="station-aed-section" id="station-aed-container">
       </div>
 
-      <!-- 주변 공공 AED 토글 버튼 -->
+      <!-- [하단 메뉴] 외부 공공 AED (역사 구내 제외) 토글 버튼 -->
       <button type="button" class="btn-seoulmap" id="btn-toggle-public-aed" onclick="togglePublicAedDisplay()">
-        🧭 [평소 알아두기] 내 위치 기준 가장 가까운 공공 AED (거리순 정렬) ▼
+        🏢 [평소 알아두기] 역사 밖 인근 공공 AED (거리순) ▼
       </button>
 
-      <!-- 인라인 펼쳐짐 영역 -->
+      <!-- 인라인 거리순 정렬 리스트 (역사 외 순수 외부 공공기관만 표출) -->
       <div id="public-aed-container" style="display: none; margin-top: 10px; flex-direction: column; gap: 8px;">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #c8e6c9; padding-bottom: 6px;">
-          <div id="aed-calc-status" style="font-size: 0.82rem; font-weight: 700; color: #1565c0;">
-            📍 위치 계산 중...
+          <div id="aed-calc-status" style="font-size: 0.8rem; font-weight: 700; color: #1565c0;">
+            📍 기준 위치: 역사 기준
           </div>
           <button type="button" onclick="recalcWithGps()" style="font-size: 0.72rem; font-weight: 700; color: #2e7d32; background: #e8f5e9; border: 1px solid #81c784; padding: 3px 8px; border-radius: 6px; cursor: pointer;">
             🔄 GPS 재계산
@@ -111,19 +121,8 @@
         <div id="public-aed-list" style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
         </div>
 
-        <!-- 데이터 교체/업로드 접이식 패널 (관리자용) -->
-        <details style="margin-top: 6px; font-size: 0.78rem; color: #555; background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 6px 10px;">
-          <summary style="cursor: pointer; font-weight: 700; color: #424242;">📂 데이터 파일 교체 (CSV/JSON 업로드)</summary>
-          <div style="margin-top: 8px;">
-            <input type="file" id="aed-file-input" accept=".csv,.json,application/json,text/csv" onchange="handleAedFileReplace(event)" style="font-size: 0.75rem; width: 100%;">
-            <div style="font-size: 0.72rem; color: #757575; margin-top: 4px;">
-              * 서울시 열린데이터광장 CSV/JSON 파일을 선택하면 즉시 해당 데이터로 최신화되어 브라우저에서 계산됩니다.
-            </div>
-          </div>
-        </details>
-
-        <div style="font-size: 0.76rem; color: #757575; line-height: 1.35; margin-top: 4px;">
-          ※ 서울시 공공데이터 기준이며, 평소 생활 반경 내 AED 위치를 사전 숙지하여 위기 상황 시 신속히 대처하기 위한 안심 서비스입니다.
+        <div style="font-size: 0.75rem; color: #757575; line-height: 1.35; margin-top: 4px;">
+          ※ 역사 내부 AED와 중복을 방지하기 위해 역사 밖 인근 관공서·공공기관 위주로 거리순 정렬됩니다.
         </div>
       </div>
     </div>
@@ -160,7 +159,7 @@
     </div>
 
     <div class="footer" id="footer-text">
-      서울교통공사 방배역 360° 스마트 시민 안심망
+      서울교통공사 360° 스마트 시민 안심망
     </div>
   </div>
 
@@ -168,62 +167,120 @@
     // 1. 공통 백엔드 GAS API 엔드포인트
     const COMMON_GAS_API_URL = "https://script.google.com/macros/s/AKfycbyzrsIu45C5gzLqB_7xMM4Gea0NkRJyljlyQFdmKEPW96s3j-X5JRztvM1jnGcTrz-2/exec";
 
-    // 2. 신대방영업사업소 횡단전개 메타데이터 레지스트리
+    // 2. [공사 공식 관리대장 전수 반영] 구역별 그룹핑 & 호기 삭제 & 내/외선 방면 명기
     const STATION_REGISTRY = {
+      // [방배역 - 총 1대]
       "bangbae": {
         stationName: "방배역",
         tel: "02-6110-2251",
         lat: 37.4814,
         lon: 126.9976,
         apiUrl: COMMON_GAS_API_URL,
-        aedMain: "📍 지하1층 대합실 고객안전실(역무실) 우측",
+        zones: [
+          {
+            zoneName: "지하 1층 대합실",
+            items: [
+              "고객안전실(역무실) 우측 5m 벽면"
+            ]
+          }
+        ],
         presets: { '402-in': '내선승강장(사당방면) 4-2', '402-out': '외선승강장(서초방면) 4-2' }
       },
+      // [강남역 - 총 2대]
       "gangnam": {
         stationName: "강남역",
         tel: "02-6110-2221",
         lat: 37.4979,
         lon: 127.0276,
         apiUrl: COMMON_GAS_API_URL,
-        aedMain: "📍 지하1층 대합실 고객안전실(역무실) 우측",
+        zones: [
+          {
+            zoneName: "지하 1층 대합실",
+            items: [
+              "고객안전실(역무실) 옆 2m",
+              "교대방향 엘리베이터(E/L) 옆"
+            ]
+          }
+        ],
         presets: { '204-in': '내선승강장(교대방면) 2-4', '701-out': '외선승강장(역삼방면) 7-1' }
       },
+      // [신림역 - 총 6대 / 대합실 3대 + 승강장 3대 구역별 분리]
       "sillim": {
         stationName: "신림역",
         tel: "02-6110-2301",
         lat: 37.4842,
         lon: 126.9298,
         apiUrl: COMMON_GAS_API_URL,
-        aedMain: "📍 지하1층 대합실 고객안전실(역무실) 좌측",
+        zones: [
+          {
+            zoneName: "지하 1층 대합실 (3개소)",
+            items: [
+              "고객안전실(역무실) 옆",
+              "아이센터 (i-Center) 안내데스크",
+              "나 게이트(개찰구) 앞"
+            ]
+          },
+          {
+            zoneName: "지하 2층 승강장 (3개소)",
+            items: [
+              "내선 (신대방 방면) 7-4 승강장 앞",
+              "외선 (봉천 방면) 5-2 승강장 앞",
+              "외선 (봉천 방면) 8-1 승강장 앞"
+            ]
+          }
+        ],
         presets: { '302-in': '내선승강장(신대방방면) 3-2', '803-out': '외선승강장(봉천방면) 8-3' }
       }
     };
 
-    // 3. 서울 주요 거점 실측 공공 AED 기본 풀
+    // 3. 역사 외 순수 외부 공공기관 AED 데이터 풀 (지하철 역사 제외 필터링 적용)
     let dynamicAedPool = [
+      // 서초구 / 방배역 인근 관공서
       { name: "방배1동 주민센터", address: "서울 서초구 방배로 89", place: "1층 민원실 입구 민원안내데스크 좌측", lat: 37.4828, lon: 126.9961 },
-      { name: "방배파출소", address: "서울 서초구 방배로 104", place: "1층 민원접수대 전면", lat: 37.4839, lon: 126.9982 },
+      { name: "방배파출소", address: "서울 서초구 방배로 104", place: "1층 민원접수대 전면 (24시간 이용 가능)", lat: 37.4839, lon: 126.9982 },
       { name: "서초대로변 공영주차장 관리동", address: "서울 서초구 방배동 909-1", place: "지하 1층 주차관리실 정면", lat: 37.4845, lon: 126.9954 },
-      { name: "강남역 서초플라자 보행통로", address: "서울 서초구 서초대로78길 5", place: "지하 1층 연결통로 비상용품함", lat: 37.4985, lon: 127.0261 },
+      { name: "방배3동 주민센터", address: "서울 서초구 방배로10길 10", place: "1층 행정복지센터 안내데스크 옆", lat: 37.4785, lon: 127.0012 },
+      { name: "서초구민체육센터", address: "서울 서초구 사평대로 55", place: "1층 로비 고객안내실 벽면", lat: 37.4980, lon: 126.9960 },
+
+      // 강남구 / 강남역 인근 관공서 및 공공시설
+      { name: "서초플라자 보행통로", address: "서울 서초구 서초대로78길 5", place: "지하 1층 연결통로 비상용품함", lat: 37.4985, lon: 127.0261 },
       { name: "역삼1동 주민센터", address: "서울 강남구 역삼로7길 16", place: "1층 종합민원실 안내창구 우측 벽면", lat: 37.4954, lon: 127.0332 },
+      { name: "역삼지구대", address: "서울 강남구 테헤란로8길 36", place: "1층 안내데스크 전면 (24시간)", lat: 37.5002, lon: 127.0365 },
+      { name: "국기원 (세계태권도본부)", address: "서울 강남구 테헤란로7길 32", place: "중앙 안내실 정면 벽체", lat: 37.5020, lon: 127.0298 },
+
+      // 관악구 / 신림역 인근 관공서
       { name: "신림동 주민센터", address: "서울 관악구 신림로 282", place: "1층 행정복지센터 민원안내대 바로 옆", lat: 37.4825, lon: 126.9315 },
       { name: "신원치안센터", address: "서울 관악구 신원로 35", place: "1층 민원접수실 입구 안내창구", lat: 37.4812, lon: 126.9284 },
+      { name: "관악우체국", address: "서울 관악구 시흥대로 568", place: "1층 금융영업창구 고객쉼터 코너", lat: 37.4868, lon: 126.9271 },
+      { name: "보라매병원 (서울대병원운영)", address: "서울 동작구 보라매로5길 20", place: "본관 1층 로비 원무과 출입구 옆", lat: 37.4925, lon: 126.9248 },
+
+      // 양천구 / 신월·신정 권역
       { name: "신월4동 주민센터", address: "서울 양천구 오목로 45", place: "1층 민원실 입구 민원안내데스크 좌측", lat: 37.5218, lon: 126.8532 },
       { name: "신월7동 주민센터", address: "서울 양천구 지양로 37", place: "1층 로비 자동문 우측 비치", lat: 37.5165, lon: 126.8402 },
-      { name: "신정네거리역 (2호선)", address: "서울 양천구 중앙로 지하 261", place: "지하 1층 고객안내센터(역무실) 앞", lat: 37.5202, lon: 126.8598 }
+      { name: "양천구민체육센터", address: "서울 양천구 목동서로 357", place: "1층 안내데스크 정면 벽면", lat: 37.5195, lon: 126.8665 }
     ];
 
-    // 백그라운드에서 서울시 전수 데이터(seoul_aed.json) 자동 로드
+    // 백그라운드 데이터 로드 시 역사 중복 데이터 자동 제외 필터링
     fetch("seoul_aed.json")
       .then(function(res) { return res.json(); })
       .then(function(data) {
         if (Array.isArray(data) && data.length > 0) {
-          dynamicAedPool = data;
-          console.log("서울시 공공 AED 전수 데이터 연동 완료:", data.length, "개소");
+          var filtered = data.filter(function(item) {
+            var n = item.name || "";
+            var a = item.address || "";
+            var p = item.place || "";
+            var isSubway = n.includes("역") || n.includes("호선") || n.includes("교통공사") || 
+                           n.includes("메트로") || a.includes("지하철") || p.includes("승강장") || p.includes("대합실");
+            return !isSubway;
+          });
+          if (filtered.length > 0) {
+            dynamicAedPool = filtered;
+            console.log("역사 외 순수 외부 공공기관 AED 로드 완료:", filtered.length, "개소");
+          }
         }
       })
       .catch(function(err) {
-        console.log("기본 내장 데이터셋으로 대기:", dynamicAedPool.length, "개소");
+        console.log("기본 외부 공공데이터 풀 가동");
       });
 
     // 전역 상태
@@ -245,29 +302,60 @@
 
         resolvedLocation = currentStation.stationName + " 승강장";
         if (rawLoc) {
-          try {
-            resolvedLocation = decodeURIComponent(rawLoc.replace(/\+/g, ' '));
-          } catch (e) {
-            resolvedLocation = rawLoc;
-          }
+          try { resolvedLocation = decodeURIComponent(rawLoc.replace(/\\+/g, ' ')); } catch (e) { resolvedLocation = rawLoc; }
         } else if (currentStation.presets && currentStation.presets[normalizedCode]) {
           resolvedLocation = currentStation.presets[normalizedCode];
         } else if (inputCode) {
           resolvedLocation = currentStation.stationName + " " + inputCode;
         }
 
+        // 헤더 및 텍스트 갱신
         document.title = currentStation.stationName + " 스마트 안심·응급 케어 (SOS)";
         var elMainTitle = document.getElementById('main-title');
         var elLocText = document.getElementById('loc-main-text');
         var elBtnCall = document.getElementById('btn-call-label');
-        var elAedMain = document.getElementById('aed-main');
         var elFooter = document.getElementById('footer-text');
+        var elHeaderName = document.getElementById('station-aed-header-name');
+        var elCount = document.getElementById('station-aed-count');
 
         if (elMainTitle) elMainTitle.innerText = "🚨 " + currentStation.stationName + " 스마트 안심케어";
         if (elLocText) elLocText.innerText = "현재 위치: " + resolvedLocation;
         if (elBtnCall) elBtnCall.innerText = currentStation.stationName + " 역무실";
-        if (elAedMain) elAedMain.innerText = currentStation.aedMain;
         if (elFooter) elFooter.innerText = "서울교통공사 " + currentStation.stationName + " 360° 스마트 시민 안심망";
+        if (elHeaderName) elHeaderName.innerText = currentStation.stationName;
+
+        // 총 대수 계산
+        var totalCount = 0;
+        currentStation.zones.forEach(function(z) { totalCount += z.items.length; });
+        if (elCount) elCount.innerText = totalCount;
+
+        // 구역별(대합실/승강장) 그룹핑 렌더링
+        var aedContainer = document.getElementById('station-aed-container');
+        if (aedContainer) {
+          aedContainer.innerHTML = "";
+          currentStation.zones.forEach(function(zone) {
+            var zoneCard = document.createElement('div');
+            zoneCard.className = 'zone-card';
+
+            var header = document.createElement('div');
+            header.className = 'zone-header';
+            header.innerHTML = '<span>📍 ' + zone.zoneName + '</span><span class="zone-badge">' + zone.items.length + '대 비치</span>';
+            zoneCard.appendChild(header);
+
+            var itemsBox = document.createElement('div');
+            itemsBox.className = 'zone-items';
+
+            zone.items.forEach(function(itemText) {
+              var itemDiv = document.createElement('div');
+              itemDiv.className = 'zone-item';
+              itemDiv.innerHTML = '<span class="zone-dot">✔</span><span>' + itemText + '</span>';
+              itemsBox.appendChild(itemDiv);
+            });
+
+            zoneCard.appendChild(itemsBox);
+            aedContainer.appendChild(zoneCard);
+          });
+        }
       } catch (err) {
         console.error("초기화 예외:", err);
       }
@@ -284,24 +372,25 @@
       return 2 * R * Math.asin(Math.sqrt(a));
     }
 
-    // AED 토글 표출
+    // 외부 공공 AED 목록 펼치기 (중복 원천 배제)
     function togglePublicAedDisplay() {
       var container = document.getElementById("public-aed-container");
       var btn = document.getElementById("btn-toggle-public-aed");
 
       if (isAedOpen) {
         container.style.display = "none";
-        btn.innerText = "🧭 [평소 알아두기] 내 위치 기준 가장 가까운 공공 AED (거리순 정렬) ▼";
+        btn.innerText = "🏢 [평소 알아두기] 역사 밖 인근 공공 AED (거리순) ▼";
         btn.style.background = "#e8f5e9";
         isAedOpen = false;
         return;
       }
 
       container.style.display = "flex";
-      btn.innerText = "🧭 공공 AED 위치 목록 닫기 ▲";
+      btn.innerText = "🏢 공공 AED 위치 목록 닫기 ▲";
       btn.style.background = "#c8e6c9";
       isAedOpen = true;
 
+      // 1순위: 실시간 GPS -> 2순위: 역사 중심 좌표
       if (navigator.geolocation) {
         var statusEl = document.getElementById("aed-calc-status");
         if (statusEl) statusEl.innerText = "⏳ 실시간 위치 확인 중...";
@@ -340,11 +429,12 @@
       }
     }
 
+    // 거리순 계산 및 상위 3곳 렌더링
     function renderNearestAeds(userLat, userLon, sourceName) {
       var statusEl = document.getElementById("aed-calc-status");
       var listEl = document.getElementById("public-aed-list");
 
-      if (statusEl) statusEl.innerHTML = "📍 <strong>기준 위치:</strong> " + sourceName + " <span style='font-size:0.75rem; color:#616161;'>(" + dynamicAedPool.length.toLocaleString() + "개소 비교)</span>";
+      if (statusEl) statusEl.innerHTML = "📍 <strong>기준 위치:</strong> " + sourceName + " <span style='font-size:0.75rem; color:#616161;'>(외부 " + dynamicAedPool.length.toLocaleString() + "개소 비교)</span>";
 
       var calculated = dynamicAedPool.map(function(item) {
         var km = haversineDist(userLat, userLon, item.lat, item.lon);
@@ -400,78 +490,6 @@
           listEl.appendChild(itemBox);
         });
       }
-    }
-
-    // 관리자용 CSV/JSON 파일 업로드 시 즉시 데이터 교체 처리 함수
-    function handleAedFileReplace(event) {
-      var file = event.target.files[0];
-      if (!file) return;
-
-      var reader = new FileReader();
-      var isJson = file.name.endsWith('.json');
-
-      reader.onload = function(e) {
-        try {
-          var text = e.target.result;
-          var newRecords = [];
-
-          if (isJson) {
-            var rawData = JSON.parse(text);
-            var list = Array.isArray(rawData) ? rawData : (rawData.DATA || rawData.data || []);
-            list.forEach(function(r) {
-              var lat = parseFloat(r.WGS84LAT || r.lat || r.위도);
-              var lon = parseFloat(r.WGS84LON || r.lon || r.경도);
-              if (!isNaN(lat) && !isNaN(lon) && lat > 33 && lat < 39 && lon > 124 && lon < 132) {
-                newRecords.push({
-                  name: r.ORG || r.name || r.설치기관명 || "공공 AED",
-                  address: r.BUILDADDRESS || r.address || r.설치기관주소 || "",
-                  place: r.BUILDPLACE || r.place || r.설치위치 || "",
-                  lat: lat,
-                  lon: lon
-                });
-              }
-            });
-          } else {
-            var lines = text.split(/\r\n|\n/);
-            if (lines.length > 1) {
-              var headers = lines[0].split(',').map(function(h) { return h.replace(/["\r\n]/g, '').trim(); });
-              var latI = headers.findIndex(function(h) { return h.includes('위도') || h.includes('WGS84LAT') || h.toLowerCase().includes('lat'); });
-              var lonI = headers.findIndex(function(h) { return h.includes('경도') || h.includes('WGS84LON') || h.toLowerCase().includes('lon'); });
-              var nameI = headers.findIndex(function(h) { return h.includes('기관명') || h.includes('ORG') || h.includes('시설명'); });
-              var addrI = headers.findIndex(function(h) { return h.includes('주소') || h.includes('BUILDADDRESS'); });
-              var placeI = headers.findIndex(function(h) { return h.includes('위치') || h.includes('BUILDPLACE'); });
-
-              for (var i = 1; i < lines.length; i++) {
-                if (!lines[i].trim()) continue;
-                var cols = lines[i].split(',').map(function(c) { return c.replace(/^"|"$/g, '').trim(); });
-                var lat = parseFloat(cols[latI]);
-                var lon = parseFloat(cols[lonI]);
-                if (!isNaN(lat) && !isNaN(lon) && lat > 33 && lat < 39 && lon > 124 && lon < 132) {
-                  newRecords.push({
-                    name: nameI >= 0 ? cols[nameI] : "공공 AED",
-                    address: addrI >= 0 ? cols[addrI] : "",
-                    place: placeI >= 0 ? cols[placeI] : "",
-                    lat: lat,
-                    lon: lon
-                  });
-                }
-              }
-            }
-          }
-
-          if (newRecords.length > 0) {
-            dynamicAedPool = newRecords;
-            alert("총 " + newRecords.length.toLocaleString() + "개소의 최신 공공 AED 데이터가 성공적으로 반영되었습니다!");
-            recalcWithGps();
-          } else {
-            alert("유효한 위경도 좌표를 가진 데이터가 없습니다. 파일 형식을 확인해주세요.");
-          }
-        } catch (err) {
-          alert("파일 처리 오류: " + err.message);
-        }
-      };
-
-      reader.readAsText(file, "utf-8");
     }
 
     // 비상 호출
@@ -547,7 +565,6 @@
     window.togglePublicAedDisplay = togglePublicAedDisplay;
     window.recalcWithGps = recalcWithGps;
     window.toggleMetronome = toggleMetronome;
-    window.handleAedFileReplace = handleAedFileReplace;
 
     // 즉시 실행
     if (document.readyState === 'loading') {
