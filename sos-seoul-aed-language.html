@@ -398,7 +398,7 @@
         ],
         presets: { '204-in': '내선승강장(교대방면) 2-4', '701-out': '외선승강장(역삼방면) 7-1' }
       },
-      // [신림역 - 총 6대 / 대합실 3대 + 승강장 3대 구역별 분리]
+      //  [신림역 - 대합실 3대 + 승강장 3대 구역별 분리]
       "sillim": {
         stationName: "신림역",
         tel: "02-6110-2301",
@@ -423,7 +423,13 @@
             ]
           }
         ],
-        presets: { '302-in': '내선승강장(신대방방면) 3-2', '803-out': '외선승강장(봉천방면) 8-3' }
+        presets: { '302-in': '내선승강장(신대방방면) 3-2', '803-out': '외선승강장(봉천방면) 8-3' },
+        // [신규] 승강장 기둥별 최적 AED 위치 매핑 데이터 (전 역 확산형 구조)
+        platformAeds: [
+          { type: 'inner', car: 7, door: 4, name: '7-4' },
+          { type: 'outer', car: 5, door: 2, name: '5-2' },
+          { type: 'outer', car: 8, door: 1, name: '8-1' }
+        ]
       }
     };
 
@@ -916,7 +922,7 @@
       updateTtsButtonState(false);
     }
 
-    // 3. 현재 위치(기둥/구역) 기반 최적의 근접 AED 1개소 동적 선별
+    // 3. 현재 위치(기둥/구역) 기반 최적의 근접 AED 1개소 동적 선별 (전 역 확산형 엔진)
     function getTargetAedLocation(lang) {
       var raw = resolvedLocation || "";
       var stKey = "bangbae";
@@ -927,31 +933,71 @@
         }
       }
 
-      var aedDesc = {
+      var stationData = currentStation || STATION_REGISTRY[stKey];
+
+      // 기본 디폴트 안내 (대합실에만 있거나 대합실 위치인 경우)
+      var defaultDesc = {
         ko: "지하 1층 역무실 우측에 있습니다.",
         en: "is located on the right side of the station office on the B1 level.",
         zh: "位于地下1层车站控制室右侧。",
         ja: "地下1階の駅事務室右側にあります。"
       };
 
-      // 신림역 승강장 태깅 시 승강장 내 AED 우선 안내
-      if (stKey === 'sillim' && (raw.includes("승강장") || raw.includes("내선") || raw.includes("외선"))) {
-        aedDesc = {
-          ko: "현재 계신 지하 2층 승강장에 있습니다.",
-          en: "is located right here on the B2 platform.",
-          zh: "位于您所在的地下2层站台上。",
-          ja: "現在いらっしゃる地下2階のホームにあります。"
-        };
-      } else if (stKey === 'gangnam') {
-        aedDesc = {
+      // 승강장에 위치해 있고, 해당 역사의 승강장 AED 메타데이터가 존재하는 경우 (신림역 등)
+      var isPlatform = raw.includes("승강장") || raw.includes("내선") || raw.includes("외선");
+      if (isPlatform && stationData.platformAeds && stationData.platformAeds.length > 0) {
+        var isInner = raw.includes("내선") || raw.includes("신대방");
+        var isOuter = raw.includes("외선") || raw.includes("봉천");
+
+        // 현재 승객 기둥 번호 파싱 (예: 3-2 -> 차량 3, 도어 2)
+        var pillarMatch = raw.match(/(\d+)-(\d+)/);
+        var curCar = pillarMatch ? parseInt(pillarMatch[1], 10) : 5;
+
+        // 동일 방향 승강장 AED 필터링
+        var candidateAeds = stationData.platformAeds.filter(function(a) {
+          if (isInner) return a.type === 'inner';
+          if (isOuter) return a.type === 'outer';
+          return true;
+        });
+
+        if (candidateAeds.length === 0) candidateAeds = stationData.platformAeds;
+
+        // 현재 차량 위치와 가장 거리가 가까운 AED 1개소 자동 선별
+        var closestAed = candidateAeds[0];
+        var minDiff = 999;
+        candidateAeds.forEach(function(aed) {
+          var diff = Math.abs(aed.car - curCar);
+          if (diff < minDiff) {
+            minDiff = diff;
+            closestAed = aed;
+          }
+        });
+
+        var aedName = closestAed.name; // 예: "7-4"
+        var aedPillarKo = aedName.replace(/(\d+)-(\d+)/, "$1다시$2");
+        var aedPillarEn = aedName.replace(/(\d+)-(\d+)/, "Pillar $1 dash $2");
+        var aedPillarZh = aedName.replace(/(\d+)-(\d+)/, "$1杠$2号柱");
+        var aedPillarJa = aedName.replace(/(\d+)-(\d+)/, "$1の$2番柱");
+
+        return {
+          ko: "현재 계신 지하 2층 승강장 " + aedPillarKo + " 지점에 있습니다.",
+          en: "is located right here on the B2 platform near " + aedPillarEn + ".",
+          zh: "位于您所在的地下2层站台 " + aedPillarZh + " 处。",
+          ja: "現在いらっしゃる地下2階ホームの " + aedPillarJa + " 付近にあります。"
+        }[lang] || defaultDesc['ko'];
+      }
+
+      // 강남역 특화 예외 처리
+      if (stKey === 'gangnam') {
+        return {
           ko: "지하 1층 역무실 우측 및 엘리베이터 옆에 있습니다.",
           en: "is on the B1 level next to the station office and elevator.",
           zh: "位于地下1层车站控制室右侧及电梯旁。",
           ja: "地下1階の駅事務室右側およびエレベーター横にあります。"
-        };
+        }[lang] || defaultDesc['ko'];
       }
 
-      return aedDesc[lang] || aedDesc['ko'];
+      return defaultDesc[lang] || defaultDesc['ko'];
     }
 
     // 4. 위치 텍스트 4개국어 완전 변환 및 발음 최적화 (풀네임 완벽 대응)
