@@ -954,37 +954,69 @@
       return aedDesc[lang] || aedDesc['ko'];
     }
 
-    // 4. 위치 텍스트 발음 최적화 전처리 (4-2 발음, 일본어 음독 방베에키, 중국어 간체)
+    // 4. 위치 텍스트 4개국어 완전 변환 및 발음 최적화 (풀네임 완벽 대응)
     function getPhoneticLocation(lang) {
       var raw = resolvedLocation || (currentStation.stationName + " 승강장");
       
+      // [한국어] 4-2를 '4다시2'로 최적화
       if (lang === 'ko') {
         return raw.replace(/(\d+)-(\d+)/g, "$1다시$2");
       }
+
+      // [영어] 영어 TTS가 한글을 건너뛰지 않도록 전 구역 영문 완벽 치환
+      if (lang === 'en') {
+        var enLoc = raw.replace(/방배역/g, "Bangbae Station, ")
+                       .replace(/신림역/g, "Sillim Station, ")
+                       .replace(/강남역/g, "Gangnam Station, ")
+                       .replace(/내선승강장/g, "Inner circle platform")
+                       .replace(/외선승강장/g, "Outer circle platform")
+                       .replace(/승강장/g, "Platform")
+                       .replace(/\(사당방면\)/g, " towards Sadang, ")
+                       .replace(/\(서초방면\)/g, " towards Seocho, ")
+                       .replace(/\(신대방방면\)/g, " towards Sindaebang, ")
+                       .replace(/\(봉천방면\)/g, " towards Bongcheon, ")
+                       .replace(/\(교대방면\)/g, " towards Seoul Nat'l Univ. of Education, ")
+                       .replace(/\(역삼방면\)/g, " towards Yeoksam, ")
+                       .replace(/(\d+)-(\d+)/g, "Pillar $1 dash $2");
+        return enLoc;
+      }
+
+      // [일본어] 공식 발음(방베에키) 및 일본 철도식 방향·기둥 완벽 표기
       if (lang === 'ja') {
-        return raw.replace(/방배역/g, "バンベエキ")
-                  .replace(/신림역/g, "シンリムエキ")
-                  .replace(/강남역/g, "カンナムエキ")
-                  .replace(/내선승강장/g, "内回りホーム")
-                  .replace(/외선승강장/g, "外回りホーム")
-                  .replace(/사당방면/g, "サダン方面")
-                  .replace(/서초방면/g, "ソチョ方面")
-                  .replace(/신대방방면/g, "シンデバン方面")
-                  .replace(/봉천방면/g, "ポンチョン方面")
-                  .replace(/교대방면/g, "キョデ方面")
-                  .replace(/역삼방면/g, "ヨクサム方面")
-                  .replace(/(\d+)-(\d+)/g, "$1の$2番柱");
+        var jaLoc = raw.replace(/방배역/g, "バンベエキ、")
+                       .replace(/신림역/g, "シンリムエキ、")
+                       .replace(/강남역/g, "カンナムエキ、")
+                       .replace(/내선승강장/g, "内回りホーム")
+                       .replace(/외선승강장/g, "外回りホーム")
+                       .replace(/승강장/g, "ホーム")
+                       .replace(/\(사당방면\)/g, "（サダン方面）")
+                       .replace(/\(서초방면\)/g, "（ソチョ方面）")
+                       .replace(/\(신대방방면\)/g, "（シンデバン方面）")
+                       .replace(/\(봉천방면\)/g, "（ポンチョン方面）")
+                       .replace(/\(교대방면\)/g, "（キョデ方面）")
+                       .replace(/\(역삼방면\)/g, "（ヨクサム方面）")
+                       .replace(/(\d+)-(\d+)/g, " $1の$2番柱");
+        return jaLoc;
       }
+
+      // [중국어 간체] 중국어 표준 지하철 방면 및 기둥 완벽 표기
       if (lang === 'zh') {
-        return raw.replace(/방배역/g, "方背站")
-                  .replace(/신림역/g, "新林站")
-                  .replace(/강남역/g, "江南站")
-                  .replace(/내선승강장/g, "内环站台")
-                  .replace(/외선승강장/g, "外环站台")
-                  .replace(/사당방면/g, "舍堂方向")
-                  .replace(/서초방면/g, "瑞草方向")
-                  .replace(/(\d+)-(\d+)/g, "$1杠$2号柱");
+        var zhLoc = raw.replace(/방배역/g, "方背站，")
+                       .replace(/신림역/g, "新林站，")
+                       .replace(/강남역/g, "江南站，")
+                       .replace(/내선승강장/g, "内环站台")
+                       .replace(/외선승강장/g, "外环站台")
+                       .replace(/승강장/g, "站台")
+                       .replace(/\(사당방면\)/g, "（舍堂方向）")
+                       .replace(/\(서초방면\)/g, "（瑞草方向）")
+                       .replace(/\(신대방방면\)/g, "（新大方方向）")
+                       .replace(/\(봉천방면\)/g, "（奉天方向）")
+                       .replace(/\(교대방면\)/g, "（教大方向）")
+                       .replace(/\(역삼방면\)/g, "（驿三方向）")
+                       .replace(/(\d+)-(\d+)/g, " $1杠$2号柱");
+        return zhLoc;
       }
+
       return raw;
     }
 
