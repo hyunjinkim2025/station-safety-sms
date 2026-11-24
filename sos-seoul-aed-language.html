@@ -869,67 +869,141 @@
     } else {
       initPage();
     }
-    // === [On-Device AI 다국어 음성 가이드 엔진 (Web Speech API)] ===
+  // === [On-Device AI 다국어 음성 가이드 엔진 (고도화 버전)] ===
     var currentAiLang = 'ko';
     var isAiSpeaking = false;
 
+    // 1. 언어별 버튼 및 뱃지 UI 다국어 사전
+    var AI_UI_TEXT = {
+      ko: {
+        badge: "🤖 On-Device AI 음성안내",
+        idle: "🔊 AI 비상 음성 안내 듣기",
+        speaking: "⏹ 음성 안내 중지"
+      },
+      en: {
+        badge: "🤖 On-Device AI Voice",
+        idle: "🔊 Listen to Emergency Audio",
+        speaking: "⏹ Stop Audio"
+      },
+      zh: {
+        badge: "🤖 设备端 AI 语音导览",
+        idle: "🔊 收听紧急语音播报",
+        speaking: "⏹ 停止播放"
+      },
+      ja: {
+        badge: "🤖 オンデバイス AI 音声案内",
+        idle: "🔊 緊急音声案内を聞く",
+        speaking: "⏹ 音声案内停止"
+      }
+    };
+
+    // 2. 언어 선택 시 UI 즉시 갱신 및 기존 발화 리셋
     function setAiLanguage(langCode) {
       currentAiLang = langCode;
+      
+      // 언어 칩 활성화 상태 변경
       var chips = document.querySelectorAll('.lang-chip');
       chips.forEach(function(chip) { chip.classList.remove('active'); });
       if (event && event.target) event.target.classList.add('active');
 
+      // 진행 중인 음성 즉시 정지
       if (window.speechSynthesis && window.speechSynthesis.speaking) {
         window.speechSynthesis.cancel();
         isAiSpeaking = false;
-        updateTtsButtonState(false);
       }
+      
+      // 하단 버튼 및 상단 뱃지 텍스트를 해당 언어로 즉시 동기화
+      updateTtsButtonState(false);
     }
 
-    // 위치 텍스트 발음 최적화 전처리
+    // 3. 현재 위치(기둥/구역) 기반 최적의 근접 AED 1개소 동적 선별
+    function getTargetAedLocation(lang) {
+      var raw = resolvedLocation || "";
+      var stKey = "bangbae";
+      for (var key in STATION_REGISTRY) {
+        if (STATION_REGISTRY[key].stationName === currentStation.stationName) {
+          stKey = key;
+          break;
+        }
+      }
+
+      var aedDesc = {
+        ko: "지하 1층 역무실 우측에 있습니다.",
+        en: "is located on the right side of the station office on the B1 level.",
+        zh: "位于地下1层车站控制室右侧。",
+        ja: "地下1階の駅事務室右側にあります。"
+      };
+
+      // 신림역 승강장 태깅 시 승강장 내 AED 우선 안내
+      if (stKey === 'sillim' && (raw.includes("승강장") || raw.includes("내선") || raw.includes("외선"))) {
+        aedDesc = {
+          ko: "현재 계신 지하 2층 승강장에 있습니다.",
+          en: "is located right here on the B2 platform.",
+          zh: "位于您所在的地下2层站台上。",
+          ja: "現在いらっしゃる地下2階のホームにあります。"
+        };
+      } else if (stKey === 'gangnam') {
+        aedDesc = {
+          ko: "지하 1층 역무실 우측 및 엘리베이터 옆에 있습니다.",
+          en: "is on the B1 level next to the station office and elevator.",
+          zh: "位于地下1层车站控制室右侧及电梯旁。",
+          ja: "地下1階の駅事務室右側およびエレベーター横にあります。"
+        };
+      }
+
+      return aedDesc[lang] || aedDesc['ko'];
+    }
+
+    // 4. 위치 텍스트 발음 최적화 전처리 (4-2 발음, 일본어 음독 방베에키, 중국어 간체)
     function getPhoneticLocation(lang) {
       var raw = resolvedLocation || (currentStation.stationName + " 승강장");
       
       if (lang === 'ko') {
-        // '4-2' -> '4다시2' 변환
         return raw.replace(/(\d+)-(\d+)/g, "$1다시$2");
       }
       if (lang === 'ja') {
-        // 한자 훈독 방지 및 '방베에키' 정확한 발음 적용
-        var jaLoc = raw.replace(/방배역/g, "バンベエキ")
-                       .replace(/내선승강장/g, "内回りホーム")
-                       .replace(/외선승강장/g, "外回りホーム")
-                       .replace(/사당방면/g, "サダン方面")
-                       .replace(/서초방면/g, "ソチョ方面")
-                       .replace(/(\d+)-(\d+)/g, "$1の$2番柱");
-        return jaLoc;
+        return raw.replace(/방배역/g, "バンベエキ")
+                  .replace(/신림역/g, "シンリムエキ")
+                  .replace(/강남역/g, "カンナムエキ")
+                  .replace(/내선승강장/g, "内回りホーム")
+                  .replace(/외선승강장/g, "外回りホーム")
+                  .replace(/사당방면/g, "サダン方面")
+                  .replace(/서초방면/g, "ソチョ方面")
+                  .replace(/신대방방면/g, "シンデバン方面")
+                  .replace(/봉천방면/g, "ポンチョン方面")
+                  .replace(/교대방면/g, "キョデ方面")
+                  .replace(/역삼방면/g, "ヨクサム方面")
+                  .replace(/(\d+)-(\d+)/g, "$1の$2番柱");
       }
       if (lang === 'zh') {
-        // 중국어 간체 변환
-        var zhLoc = raw.replace(/방배역/g, "方背站")
-                       .replace(/내선승강장/g, "内环站台")
-                       .replace(/외선승강장/g, "外环站台")
-                       .replace(/사당방면/g, "舍堂方向")
-                       .replace(/서초방면/g, "瑞草方向")
-                       .replace(/(\d+)-(\d+)/g, "$1杠$2号柱");
-        return zhLoc;
+        return raw.replace(/방배역/g, "方背站")
+                  .replace(/신림역/g, "新林站")
+                  .replace(/강남역/g, "江南站")
+                  .replace(/내선승강장/g, "内环站台")
+                  .replace(/외선승강장/g, "外环站台")
+                  .replace(/사당방면/g, "舍堂方向")
+                  .replace(/서초방면/g, "瑞草方向")
+                  .replace(/(\d+)-(\d+)/g, "$1杠$2号柱");
       }
       return raw;
     }
 
+    // 5. 4개국어 표준화 비상 멘트 생성
     function generateAiScript(lang) {
       var loc = getPhoneticLocation(lang);
-      var station = currentStation.stationName;
+      var aedNear = getTargetAedLocation(lang);
 
       var scripts = {
-        ko: "비상 상황 안내입니다. 현재 위치는 " + loc + "입니다. 역무실에 즉시 긴급 출동을 요청했습니다. 호흡이 없다면 지체 없이 주변에 119 신고와 심장충격기를 요청하고, 분당 110회 템포로 가슴 중앙을 5센티미터 깊이로 강하게 압박하십시오.",
-        en: "Emergency announcement. Current location: " + loc + ". The station office has been alerted. If the patient is unresponsive, call for help immediately and perform chest compressions at 110 beats per minute.",
-        zh: "紧急广播。当前位置是" + loc + "。已通知车站控制室。如果患者失去知觉且无呼吸，请立即请求现场人员协助并取来自动体外除颤器，以每分钟110次的节奏用力按压胸部正中央。",
-        ja: "緊急アナウンスです。現在地は、" + loc + "です。駅事務室へ緊急出動を要請しました。意識や呼吸がない場合は、直ちに胸骨圧迫を開始してください。テンポは1分間に110回です。"
+        ko: "모바일 SOS 긴급구호 안내입니다. 현재 위치는 " + loc + "입니다. 통화버튼이나 SOS 신고 버튼을 누르시면 즉시 역무실로 구호요청 메시지가 전송됩니다. 자동심장충격기는 " + aedNear,
+        en: "Mobile SOS emergency announcement. Current location: " + loc + ". If you press the call button or SOS report button, an emergency relief message will be sent to the station office immediately. The automated external defibrillator " + aedNear,
+        zh: "移动端SOS紧急救助播报。当前位置是" + loc + "。按通话按钮或SOS报警按钮，将立即向车站控制室发送救援信息。自动体外除颤器" + aedNear,
+        ja: "モバイルSOS緊急救護アナウンスです。現在地は、" + loc + "です。通話ボタンまたはSOS通報ボタンを押すと、直ちに駅事務室へ救護要請メッセージが送信されます。自動体外式除細動器は、" + aedNear
       };
+
       return scripts[lang] || scripts['ko'];
     }
 
+    // 6. On-Device 음성 합성 실행/중지 토글
     function toggleAiSpeech() {
       if (!('speechSynthesis' in window)) {
         alert("현재 브라우저는 On-Device AI 음성을 지원하지 않습니다.");
@@ -969,17 +1043,25 @@
       window.speechSynthesis.speak(utterance);
     }
 
+    // 7. 언어별 버튼 및 뱃지 텍스트 갱신 헬퍼
     function updateTtsButtonState(speaking) {
       var btn = document.getElementById('btn-tts-trigger');
       var label = document.getElementById('tts-btn-label');
+      var badge = document.querySelector('.ai-voice-badge');
       if (!btn || !label) return;
+
+      var langDict = AI_UI_TEXT[currentAiLang] || AI_UI_TEXT['ko'];
+
+      if (badge) {
+        badge.innerText = langDict.badge;
+      }
 
       if (speaking) {
         btn.classList.add('speaking');
-        label.innerText = "⏹ 음성 안내 중지 (Speaking...)";
+        label.innerText = langDict.speaking;
       } else {
         btn.classList.remove('speaking');
-        label.innerText = "🔊 AI 비상 음성 안내 듣기";
+        label.innerText = langDict.idle;
       }
     }
 
